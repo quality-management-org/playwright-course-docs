@@ -1,6 +1,7 @@
 ---
-description: "Thao tác với mọi loại phần tử, viết assertion kiểm tra kết quả và hiểu cơ chế auto-wait giúp vĩnh biệt sleep()."
-icon: hand-pointer
+description: >-
+  Thao tác với mọi loại phần tử, viết assertion kiểm tra kết quả và hiểu cơ chế
+  auto-wait giúp vĩnh biệt sleep().
 ---
 
 # Buổi 6 · Actions, Assertions & Auto-wait
@@ -13,16 +14,16 @@ icon: hand-pointer
 
 Một test = chuỗi **thao tác** (actions) + các điểm **kiểm tra** (assertions). Đây là các action bạn sẽ dùng hằng ngày:
 
-| Action                        | Tác dụng                              | Ví dụ                                                       |
-| ----------------------------- | ------------------------------------- | ----------------------------------------------------------- |
-| `.click()`                    | Bấm chuột trái                        | `await loginButton.click()`                                 |
-| `.fill(text)`                 | Xóa sạch rồi điền text vào ô nhập     | `await usernameInput.fill("standard_user")`                 |
-| `.selectOption(value)`        | Chọn giá trị trong dropdown `<select>`| `await sortDropdown.selectOption("lohi")`                   |
-| `.check()` / `.uncheck()`     | Tick / bỏ tick checkbox, radio        | `await agreeCheckbox.check()`                               |
-| `.hover()`                    | Di chuột lên phần tử (mở menu ẩn)     | `await menuItem.hover()`                                    |
-| `.dblclick()`                 | Bấm đúp                               | `await cell.dblclick()`                                     |
-| `.press(key)`                 | Gõ phím (Enter, Tab, Escape...)       | `await searchBox.press("Enter")`                            |
-| `.setInputFiles(path)`        | Upload file vào input file            | `await uploadInput.setInputFiles("data/avatar.png")`        |
+| Action                    | Tác dụng                               | Ví dụ                                                |
+| ------------------------- | -------------------------------------- | ---------------------------------------------------- |
+| `.click()`                | Bấm chuột trái                         | `await loginButton.click()`                          |
+| `.fill(text)`             | Xóa sạch rồi điền text vào ô nhập      | `await usernameInput.fill("standard_user")`          |
+| `.selectOption(value)`    | Chọn giá trị trong dropdown `<select>` | `await sortDropdown.selectOption("lohi")`            |
+| `.check()` / `.uncheck()` | Tick / bỏ tick checkbox, radio         | `await agreeCheckbox.check()`                        |
+| `.hover()`                | Di chuột lên phần tử (mở menu ẩn)      | `await menuItem.hover()`                             |
+| `.dblclick()`             | Bấm đúp                                | `await cell.dblclick()`                              |
+| `.press(key)`             | Gõ phím (Enter, Tab, Escape...)        | `await searchBox.press("Enter")`                     |
+| `.setInputFiles(path)`    | Upload file vào input file             | `await uploadInput.setInputFiles("data/avatar.png")` |
 
 Thử nhanh với dropdown sắp xếp của Saucedemo (sau khi login):
 
@@ -34,18 +35,18 @@ await expect(page.locator(".inventory_item_name").first()).toHaveText("Sauce Lab
 
 ## 2. Assertions — trái tim của test
 
-Action mà không có assertion thì chưa phải test — chỉ là "máy bấm nút". Assertion trả lời câu hỏi: *"kết quả có đúng như mong đợi không?"*
+Action mà không có assertion thì chưa phải test — chỉ là "máy bấm nút". Assertion trả lời câu hỏi: _"kết quả có đúng như mong đợi không?"_
 
-| Assertion                       | Kiểm tra điều gì                                   |
-| ------------------------------- | --------------------------------------------------- |
-| `toBeVisible()`                 | Phần tử hiển thị trên trang                         |
-| `toHaveText(text)`              | Text **khớp chính xác toàn bộ**                     |
-| `toContainText(text)`           | Text **chứa** đoạn này (khớp một phần)              |
-| `toHaveValue(value)`            | Giá trị hiện tại của ô nhập                         |
-| `toHaveURL(url hoặc regex)`     | URL trang hiện tại                                  |
-| `toBeChecked()`                 | Checkbox/radio đang được tick                       |
-| `toBeEnabled()` / `toBeDisabled()` | Nút bấm được / bị khóa                           |
-| `toHaveCount(n)`                | Số lượng phần tử mà locator tìm thấy                |
+| Assertion                          | Kiểm tra điều gì                       |
+| ---------------------------------- | -------------------------------------- |
+| `toBeVisible()`                    | Phần tử hiển thị trên trang            |
+| `toHaveText(text)`                 | Text **khớp chính xác toàn bộ**        |
+| `toContainText(text)`              | Text **chứa** đoạn này (khớp một phần) |
+| `toHaveValue(value)`               | Giá trị hiện tại của ô nhập            |
+| `toHaveURL(url hoặc regex)`        | URL trang hiện tại                     |
+| `toBeChecked()`                    | Checkbox/radio đang được tick          |
+| `toBeEnabled()` / `toBeDisabled()` | Nút bấm được / bị khóa                 |
+| `toHaveCount(n)`                   | Số lượng phần tử mà locator tìm thấy   |
 
 ```typescript
 test("thêm sản phẩm vào giỏ hàng", async ({ page }) => {
@@ -64,7 +65,7 @@ test("thêm sản phẩm vào giỏ hàng", async ({ page }) => {
 ```
 
 {% hint style="info" %}
-**Điểm cực hay của assertion trong Playwright:** `expect(...).toBeVisible()` không kiểm tra đúng 1 lần rồi kết luận — nó **tự thử lại liên tục** cho đến khi điều kiện đúng hoặc hết timeout. Vậy nên trang load chậm 1–2 giây cũng không làm test fail oan. Đây gọi là *web-first assertions*.
+**Điểm cực hay của assertion trong Playwright:** `expect(...).toBeVisible()` không kiểm tra đúng 1 lần rồi kết luận — nó **tự thử lại liên tục** cho đến khi điều kiện đúng hoặc hết timeout. Vậy nên trang load chậm 1–2 giây cũng không làm test fail oan. Đây gọi là _web-first assertions_.
 {% endhint %}
 
 ## 3. Soft assertions — kiểm tra nhiều điều, không dừng giữa chừng
@@ -102,12 +103,12 @@ Playwright làm khác: **trước mỗi action, nó tự chờ phần tử sẵn
 
 ## 5. Lỗi thường gặp
 
-| Triệu chứng                                            | Nguyên nhân                                          | Cách xử lý                                                                 |
-| ------------------------------------------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------- |
-| `toHaveText` fail dù text nhìn đúng                    | Text trên trang có thêm phần khác (giá, đơn vị...)   | Dùng `toContainText` khi chỉ cần khớp một phần                              |
-| Lỗi "element intercepts pointer events" khi click      | Phần tử bị che bởi popup/banner khác                 | Đóng popup trước, hoặc kiểm tra lại flow — có thể thiếu 1 bước               |
-| Test thỉnh thoảng pass thỉnh thoảng fail (flaky)       | Thiếu assertion "neo" giữa các bước chuyển trang     | Thêm assertion xác nhận trạng thái (URL, element chính) trước bước tiếp theo |
-| Quên `await` trước `expect(...)`                       | Assertion không được chờ, kết quả sai lệch           | Mọi assertion với locator đều cần `await` phía trước                         |
+| Triệu chứng                                       | Nguyên nhân                                        | Cách xử lý                                                                   |
+| ------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `toHaveText` fail dù text nhìn đúng               | Text trên trang có thêm phần khác (giá, đơn vị...) | Dùng `toContainText` khi chỉ cần khớp một phần                               |
+| Lỗi "element intercepts pointer events" khi click | Phần tử bị che bởi popup/banner khác               | Đóng popup trước, hoặc kiểm tra lại flow — có thể thiếu 1 bước               |
+| Test thỉnh thoảng pass thỉnh thoảng fail (flaky)  | Thiếu assertion "neo" giữa các bước chuyển trang   | Thêm assertion xác nhận trạng thái (URL, element chính) trước bước tiếp theo |
+| Quên `await` trước `expect(...)`                  | Assertion không được chờ, kết quả sai lệch         | Mọi assertion với locator đều cần `await` phía trước                         |
 
 ## 6. Bài tập về nhà (45–60 phút)
 

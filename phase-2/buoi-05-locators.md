@@ -1,6 +1,7 @@
 ---
-description: "Học cách chọn phần tử web đúng chuẩn với getByRole, getByText... — kỹ năng quyết định test của bạn bền hay flaky."
-icon: magnifying-glass
+description: >-
+  Học cách chọn phần tử web đúng chuẩn với getByRole, getByText... — kỹ năng
+  quyết định test của bạn bền hay flaky.
 ---
 
 # Buổi 5 · Locators: Chọn phần tử đúng cách
@@ -19,15 +20,15 @@ Nguyên tắc vàng: **chọn locator theo cách người dùng nhìn trang web*
 
 Đi từ trên xuống — chỉ xuống mức dưới khi mức trên không dùng được:
 
-| Ưu tiên | Locator               | Dùng khi                                     | Ví dụ                                            |
-| ------- | --------------------- | -------------------------------------------- | ------------------------------------------------ |
-| 1       | `getByRole()`         | Hầu hết mọi trường hợp — nút, link, heading  | `page.getByRole("button", { name: "Login" })`    |
-| 2       | `getByLabel()`        | Ô nhập liệu có nhãn (label)                  | `page.getByLabel("Password")`                    |
-| 3       | `getByPlaceholder()`  | Ô nhập chỉ có chữ gợi ý bên trong            | `page.getByPlaceholder("Username")`              |
-| 4       | `getByText()`         | Phần tử nhận diện bằng nội dung chữ          | `page.getByText("Products")`                     |
-| 5       | `getByTestId()`       | Team dev có gắn thuộc tính test riêng        | `page.getByTestId("login-button")`               |
-| 6       | CSS selector          | Không còn cách nào ở trên dùng được          | `page.locator("#login-button")`                  |
-| 7       | XPath                 | Gần như không bao giờ — xem mục 3            | —                                                |
+| Ưu tiên | Locator              | Dùng khi                                    | Ví dụ                                         |
+| ------- | -------------------- | ------------------------------------------- | --------------------------------------------- |
+| 1       | `getByRole()`        | Hầu hết mọi trường hợp — nút, link, heading | `page.getByRole("button", { name: "Login" })` |
+| 2       | `getByLabel()`       | Ô nhập liệu có nhãn (label)                 | `page.getByLabel("Password")`                 |
+| 3       | `getByPlaceholder()` | Ô nhập chỉ có chữ gợi ý bên trong           | `page.getByPlaceholder("Username")`           |
+| 4       | `getByText()`        | Phần tử nhận diện bằng nội dung chữ         | `page.getByText("Products")`                  |
+| 5       | `getByTestId()`      | Team dev có gắn thuộc tính test riêng       | `page.getByTestId("login-button")`            |
+| 6       | CSS selector         | Không còn cách nào ở trên dùng được         | `page.locator("#login-button")`               |
+| 7       | XPath                | Gần như không bao giờ — xem mục 3           | —                                             |
 
 Thử ngay trên Saucedemo:
 
@@ -66,7 +67,7 @@ page.locator(".inventory_item")
   .getByRole("button", { name: "Add to cart" });
 ```
 
-Cách 1 vỡ ngay khi: dev thêm 1 sản phẩm (thứ tự đổi), đổi tên class, bọc thêm 1 div. Cách 2 chỉ vỡ khi chính sản phẩm hoặc nút biến mất — tức là khi *thực sự* có thay đổi đáng để test fail. XPath không "sai" — nó chỉ mong manh, và test mong manh (flaky) là thứ khiến cả team mất niềm tin vào automation.
+Cách 1 vỡ ngay khi: dev thêm 1 sản phẩm (thứ tự đổi), đổi tên class, bọc thêm 1 div. Cách 2 chỉ vỡ khi chính sản phẩm hoặc nút biến mất — tức là khi _thực sự_ có thay đổi đáng để test fail. XPath không "sai" — nó chỉ mong manh, và test mong manh (flaky) là thứ khiến cả team mất niềm tin vào automation.
 
 ## 4. Chaining và filter — trỏ chính xác trong danh sách
 
@@ -95,12 +96,12 @@ Tư duy: giống như chỉ đường — "vào tòa nhà A (filter), lên phòn
 
 ## 6. Lỗi thường gặp
 
-| Triệu chứng                                              | Nguyên nhân                                             | Cách xử lý                                                                                 |
-| -------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Lỗi "strict mode violation: resolved to N elements"      | Locator trúng nhiều phần tử cùng lúc                    | Khoanh vùng bằng `.filter()` hoặc thêm điều kiện `{ name: ... }` cho cụ thể hơn             |
-| Timeout dù phần tử nhìn thấy rõ trên trang               | Sai chữ hoa/thường hoặc thừa khoảng trắng trong `name`  | Copy chính xác text trên trang; hoặc dùng regex: `{ name: /login/i }` để bỏ qua hoa thường  |
-| `getByText` không tìm thấy dù text có trên trang         | Text bị tách trong nhiều thẻ HTML con                   | Tìm bằng phần text ngắn hơn, hoặc dùng `getByRole` của phần tử cha                          |
-| `getByTestId` không hoạt động trên Saucedemo             | Trang dùng `data-test`, không phải `data-testid`        | Config `testIdAttribute: "data-test"` — xem hint ở mục 2                                    |
+| Triệu chứng                                         | Nguyên nhân                                            | Cách xử lý                                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Lỗi "strict mode violation: resolved to N elements" | Locator trúng nhiều phần tử cùng lúc                   | Khoanh vùng bằng `.filter()` hoặc thêm điều kiện `{ name: ... }` cho cụ thể hơn            |
+| Timeout dù phần tử nhìn thấy rõ trên trang          | Sai chữ hoa/thường hoặc thừa khoảng trắng trong `name` | Copy chính xác text trên trang; hoặc dùng regex: `{ name: /login/i }` để bỏ qua hoa thường |
+| `getByText` không tìm thấy dù text có trên trang    | Text bị tách trong nhiều thẻ HTML con                  | Tìm bằng phần text ngắn hơn, hoặc dùng `getByRole` của phần tử cha                         |
+| `getByTestId` không hoạt động trên Saucedemo        | Trang dùng `data-test`, không phải `data-testid`       | Config `testIdAttribute: "data-test"` — xem hint ở mục 2                                   |
 
 ## 7. Bài tập về nhà (45–60 phút)
 
