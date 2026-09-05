@@ -1,6 +1,7 @@
 ---
-description: "Refactor toàn bộ test sang POM và học cách review code như một automation engineer thực thụ."
-icon: code-pull-request
+description: >-
+  Refactor toàn bộ test sang POM và học cách review code như một automation
+  engineer thực thụ.
 ---
 
 # Buổi 8 · Hoàn thiện POM & Code Review
@@ -88,32 +89,32 @@ Từ buổi này, mỗi PR đều được một bạn học review trước khi
 
 Review không phải là "bắt lỗi nhau" — là cùng nâng chất lượng code chung. Vài nguyên tắc từ môi trường làm việc thật:
 
-| Nên                                                        | Tránh                                        |
-| ---------------------------------------------------------- | --------------------------------------------- |
-| Comment vào **đúng dòng code** cụ thể trên PR               | Nhận xét chung chung "code chưa ổn lắm"       |
-| Hỏi để hiểu: *"Vì sao bạn chọn CSS selector ở đây?"*        | Phán xét: *"Sai rồi, dùng getByRole đi"*      |
-| Khen điểm tốt trước khi góp ý: *"Tách method này hay đấy"*  | Chỉ liệt kê lỗi                               |
-| Gợi ý kèm ví dụ code ngắn                                   | Bắt sửa mà không nói sửa thế nào              |
+| Nên                                                        | Tránh                                    |
+| ---------------------------------------------------------- | ---------------------------------------- |
+| Comment vào **đúng dòng code** cụ thể trên PR              | Nhận xét chung chung "code chưa ổn lắm"  |
+| Hỏi để hiểu: _"Vì sao bạn chọn CSS selector ở đây?"_       | Phán xét: _"Sai rồi, dùng getByRole đi"_ |
+| Khen điểm tốt trước khi góp ý: _"Tách method này hay đấy"_ | Chỉ liệt kê lỗi                          |
+| Gợi ý kèm ví dụ code ngắn                                  | Bắt sửa mà không nói sửa thế nào         |
 
 Và ở vai người **được** review: mọi comment là góp ý cho code, không phải chê con người bạn. Trả lời từng comment (sửa rồi / giải thích lý do giữ nguyên) — kỹ năng phản hồi review chuyên nghiệp cũng là thứ nhà tuyển dụng để ý khi xem GitHub của bạn.
 
 ## 5. Tổng kết anti-patterns — bảng "cấm kỵ" của automation
 
-| Anti-pattern                     | Vì sao tệ                                                        | Thay bằng                                              |
-| -------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------- |
-| `page.waitForTimeout(3000)`      | Chậm khi thừa, flaky khi thiếu — thua đủ đường                   | Assertion neo trạng thái (`toHaveURL`, `toBeVisible`)   |
-| XPath bám cấu trúc HTML          | UI đổi nhẹ là vỡ, không ai đọc hiểu                              | `getByRole` + `filter` (Buổi 5)                         |
-| Test phụ thuộc thứ tự chạy       | Chạy song song hoặc chạy lẻ 1 test là fail                       | Mỗi test tự chuẩn bị dữ liệu của mình                   |
-| Magic string rải khắp nơi        | `"standard_user"` xuất hiện 25 chỗ, đổi 1 lần sửa 25 chỗ         | Hằng số / test data tập trung (học kỹ ở Phase 4)        |
-| Method ôm đồm làm 5 việc         | `loginAndAddToCartAndCheckout()` — không tái sử dụng được         | Tách nhỏ theo hành vi, test tự ghép các bước            |
+| Anti-pattern                | Vì sao tệ                                                 | Thay bằng                                             |
+| --------------------------- | --------------------------------------------------------- | ----------------------------------------------------- |
+| `page.waitForTimeout(3000)` | Chậm khi thừa, flaky khi thiếu — thua đủ đường            | Assertion neo trạng thái (`toHaveURL`, `toBeVisible`) |
+| XPath bám cấu trúc HTML     | UI đổi nhẹ là vỡ, không ai đọc hiểu                       | `getByRole` + `filter` (Buổi 5)                       |
+| Test phụ thuộc thứ tự chạy  | Chạy song song hoặc chạy lẻ 1 test là fail                | Mỗi test tự chuẩn bị dữ liệu của mình                 |
+| Magic string rải khắp nơi   | `"standard_user"` xuất hiện 25 chỗ, đổi 1 lần sửa 25 chỗ  | Hằng số / test data tập trung (học kỹ ở Phase 4)      |
+| Method ôm đồm làm 5 việc    | `loginAndAddToCartAndCheckout()` — không tái sử dụng được | Tách nhỏ theo hành vi, test tự ghép các bước          |
 
 ## 6. Lỗi thường gặp khi refactor
 
-| Triệu chứng                                   | Nguyên nhân                                             | Cách xử lý                                                       |
-| --------------------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------- |
-| Refactor xong fail hàng loạt                  | Đổi quá nhiều thứ cùng lúc rồi mới chạy test            | Quay lại commit gần nhất còn pass, chuyển lại từng phần nhỏ        |
-| Hai class cùng khai báo 1 locator             | Locator dùng chung (header, menu) bị copy nhiều nơi     | Tạm chấp nhận ở Phase 2; Phase 4 sẽ học cách tách component chung  |
-| Import vòng: A import B, B import A           | Hai page object gọi lẫn nhau                            | Page object không import page object khác — test là nơi ghép nối   |
+| Triệu chứng                         | Nguyên nhân                                         | Cách xử lý                                                        |
+| ----------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------- |
+| Refactor xong fail hàng loạt        | Đổi quá nhiều thứ cùng lúc rồi mới chạy test        | Quay lại commit gần nhất còn pass, chuyển lại từng phần nhỏ       |
+| Hai class cùng khai báo 1 locator   | Locator dùng chung (header, menu) bị copy nhiều nơi | Tạm chấp nhận ở Phase 2; Phase 4 sẽ học cách tách component chung |
+| Import vòng: A import B, B import A | Hai page object gọi lẫn nhau                        | Page object không import page object khác — test là nơi ghép nối  |
 
 ## 7. Bài tập về nhà (45–60 phút)
 

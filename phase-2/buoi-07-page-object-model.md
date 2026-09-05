@@ -1,6 +1,7 @@
 ---
-description: "Tổ chức test theo chuẩn công nghiệp: mỗi trang web là một class, sửa UI chỉ cần sửa đúng một chỗ."
-icon: layer-group
+description: >-
+  Tổ chức test theo chuẩn công nghiệp: mỗi trang web là một class, sửa UI chỉ
+  cần sửa đúng một chỗ.
 ---
 
 # Buổi 7 · Page Object Model: Khái niệm & Xây dựng
@@ -74,12 +75,12 @@ export class LoginPage {
 
 Giải thích từng phần:
 
-| Phần                          | Ý nghĩa                                                                                             |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `export class LoginPage`      | `export` để file test import được; tên PascalCase đúng convention Buổi 3                              |
-| `readonly ... : Locator`      | Khai báo trước các locator của trang; `readonly` = gán 1 lần trong constructor, không ai sửa được nữa |
-| `constructor(page: Page)`     | Nhận `page` từ test truyền vào — mỗi test có `page` riêng, class chỉ "mượn" dùng                      |
-| `async login(...)`            | Method mô tả **hành vi người dùng**, không phải thao tác kỹ thuật — đọc tên hiểu ngay làm gì          |
+| Phần                      | Ý nghĩa                                                                                               |
+| ------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `export class LoginPage`  | `export` để file test import được; tên PascalCase đúng convention Buổi 3                              |
+| `readonly ... : Locator`  | Khai báo trước các locator của trang; `readonly` = gán 1 lần trong constructor, không ai sửa được nữa |
+| `constructor(page: Page)` | Nhận `page` từ test truyền vào — mỗi test có `page` riêng, class chỉ "mượn" dùng                      |
+| `async login(...)`        | Method mô tả **hành vi người dùng**, không phải thao tác kỹ thuật — đọc tên hiểu ngay làm gì          |
 
 ## 4. Dùng POM trong test — trước và sau
 
@@ -106,12 +107,12 @@ test("login thất bại khi sai password", async ({ page }) => {
 });
 ```
 
-So với bản "trần": test giờ đọc như một kịch bản kiểm thử — *mở trang, login, kiểm tra kết quả*. Chi tiết "điền ô nào, bấm nút nào" đã giấu gọn trong class. Người mới vào team đọc test hiểu ngay nghiệp vụ mà chưa cần biết UI.
+So với bản "trần": test giờ đọc như một kịch bản kiểm thử — _mở trang, login, kiểm tra kết quả_. Chi tiết "điền ô nào, bấm nút nào" đã giấu gọn trong class. Người mới vào team đọc test hiểu ngay nghiệp vụ mà chưa cần biết UI.
 
 ## 5. Quy ước thiết kế Page Object của lớp
 
 * **Method = hành vi người dùng**, đặt tên theo nghiệp vụ: `login()`, `addProductToCart(name)`, `checkout()` — không đặt kiểu kỹ thuật `clickBtn1()`, `fillInput()`.
-* **Assertion để trong test, không để trong page object.** Page object chỉ *thao tác* và *cung cấp locator*; việc *phán xét đúng sai* là của test. (Đi làm bạn sẽ gặp team làm khác — không sao, đây là quy ước để lớp thống nhất và cũng là trường phái phổ biến nhất.)
+* **Assertion để trong test, không để trong page object.** Page object chỉ _thao tác_ và _cung cấp locator_; việc _phán xét đúng sai_ là của test. (Đi làm bạn sẽ gặp team làm khác — không sao, đây là quy ước để lớp thống nhất và cũng là trường phái phổ biến nhất.)
 * **Mỗi trang một file**, tên file kebab-case: `login-page.ts`, `inventory-page.ts`, `cart-page.ts`.
 * Locator nào chỉ dùng nội bộ trong class → cân nhắc để `private` (kiến thức Buổi 3).
 
@@ -152,12 +153,12 @@ export class InventoryPage {
 
 ## 7. Lỗi thường gặp
 
-| Triệu chứng                                       | Nguyên nhân                                        | Cách xử lý                                                              |
-| ------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------ |
-| Lỗi "Cannot find module '../pages/login-page'"    | Sai đường dẫn import hoặc quên `export`            | Kiểm tra đường dẫn tương đối từ file test, và chữ `export` trước `class`  |
-| `this.page is undefined`                          | Quên truyền `page` khi tạo: `new LoginPage()`      | Luôn viết `new LoginPage(page)`                                          |
-| Method chạy không làm gì cả                       | Quên `await` khi gọi: `loginPage.login(...)`       | Method async thì lời gọi phải có `await`                                 |
-| Sửa locator trong class rồi mà test vẫn fail cũ   | Test vẫn đang dùng locator "trần" chưa refactor    | Rà lại test: mọi thao tác phải đi qua page object                        |
+| Triệu chứng                                     | Nguyên nhân                                     | Cách xử lý                                                               |
+| ----------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------ |
+| Lỗi "Cannot find module '../pages/login-page'"  | Sai đường dẫn import hoặc quên `export`         | Kiểm tra đường dẫn tương đối từ file test, và chữ `export` trước `class` |
+| `this.page is undefined`                        | Quên truyền `page` khi tạo: `new LoginPage()`   | Luôn viết `new LoginPage(page)`                                          |
+| Method chạy không làm gì cả                     | Quên `await` khi gọi: `loginPage.login(...)`    | Method async thì lời gọi phải có `await`                                 |
+| Sửa locator trong class rồi mà test vẫn fail cũ | Test vẫn đang dùng locator "trần" chưa refactor | Rà lại test: mọi thao tác phải đi qua page object                        |
 
 ## 8. Bài tập về nhà (45–60 phút)
 
