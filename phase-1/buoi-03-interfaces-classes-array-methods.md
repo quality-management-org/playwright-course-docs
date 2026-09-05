@@ -1,51 +1,58 @@
+---
+description: "Mô tả dữ liệu bằng interface, viết class với constructor và private field, tách file bằng import/export, xử lý mảng bằng map, filter, find."
+icon: cubes
+---
+
 # Buổi 3 · Interfaces, Classes, npm & Array methods
 
 {% hint style="info" %}
-**Sau buổi này bạn sẽ:** mô tả được dữ liệu bằng interface, viết được class (nền tảng của Page Object Model), và xử lý dữ liệu bằng map/filter/find. Cuối buổi có bài checkpoint tổng hợp toàn bộ Phase 1.
+**Sau buổi này bạn sẽ:** mô tả được cấu trúc dữ liệu bằng interface, viết được class (nền tảng của Page Object Model ở Buổi 7), và xử lý dữ liệu bằng map, filter, find. Cuối buổi có bài checkpoint tổng hợp toàn bộ Phase 1.
 {% endhint %}
 
-## 1. Interface — mô tả "hình dạng" của dữ liệu
+## 1. Interface: mô tả cấu trúc của dữ liệu
 
-Interface cho TypeScript biết một object **phải có những field nào, kiểu gì**. Thiếu field hay sai kiểu → báo đỏ ngay:
+Interface khai báo một object phải có những field nào và mỗi field thuộc kiểu gì. Object thiếu field hoặc sai kiểu bị TypeScript báo lỗi ngay khi viết code:
 
 ```typescript
 interface Product {
   id: number;
   name: string;
   price: number;
-  tag?: string; // dấu ? = optional, có cũng được không có cũng được
+  tag?: string; // dấu ? đánh dấu field optional, có thể bỏ trống
 }
 
 const backpack: Product = { id: 1, name: "Sauce Labs Backpack", price: 29.99 };
 // const hat: Product = { id: 2 }; // LỖI: thiếu name và price
 ```
 
-Với tester, interface cực hữu ích khi làm việc với test data và response API: bạn biết chính xác dữ liệu có gì, gõ sai tên field là biết liền thay vì đợi chạy mới phát hiện.
+Với tester, interface đặc biệt hữu ích khi làm việc với test data và response của API: cấu trúc dữ liệu được ghi rõ trong code, và lỗi gõ sai tên field được phát hiện ngay trong VS Code thay vì khi chạy.
 
 ## 2. Type alias và Union type
 
 ```typescript
-// Union type: giá trị chỉ được phép là 1 trong các lựa chọn
+// Union type: giá trị chỉ được phép là một trong các lựa chọn
 type PaymentMethod = "cash" | "card" | "momo";
 
 const payment: PaymentMethod = "card"; // OK
-// const wrong: PaymentMethod = "kard"; // LỖI — gõ sai là biết ngay
+// const wrong: PaymentMethod = "kard"; // LỖI: giá trị không nằm trong danh sách cho phép
 ```
 
-> **Quy ước của lớp:** mô tả object → dùng `interface`; kiểu dạng lựa chọn/union → dùng `type`. Đi làm bạn sẽ gặp cả hai — không cần tranh luận cái nào "đúng hơn".
+{% hint style="info" %}
+**Quy ước của lớp:** dùng `interface` để mô tả object, dùng `type` cho union type và các kiểu dạng lựa chọn. Cả hai cách đều xuất hiện trong các project thực tế.
+{% endhint %}
 
-## 3. Class — khuôn đúc ra object
+## 3. Class
 
-Class là "khuôn" định nghĩa một lần, tạo ra nhiều object cùng cấu trúc:
+Class là bản thiết kế được định nghĩa một lần, dùng để tạo ra nhiều object có cùng cấu trúc và hành vi:
 
 ```typescript
 class UserAccount {
-  public username: string;   // public: bên ngoài đọc được
-  private password: string;  // private: chỉ dùng được BÊN TRONG class
+  public username: string;   // public: đọc được từ bên ngoài class
+  private password: string;  // private: chỉ dùng được bên trong class
 
   // constructor: hàm chạy khi tạo object mới bằng từ khóa new
   constructor(username: string, password: string) {
-    this.username = username; // this = "chính object này"
+    this.username = username; // this trỏ đến chính object đang được tạo
     this.password = password;
   }
 
@@ -61,14 +68,14 @@ console.log(account.checkPassword("x"));  // false
 ```
 
 {% hint style="info" %}
-**Vì sao tester phải học class?** Ở Buổi 7, bạn sẽ học **Page Object Model** — cách tổ chức test chuẩn công nghiệp, trong đó mỗi trang web là 1 class và mỗi thao tác là 1 method. Học class hôm nay tức là bạn đã đi trước 50% quãng đường POM.
+**Liên hệ với Playwright:** ở Buổi 7, bạn học Page Object Model, cách tổ chức test trong đó mỗi trang web là một class và mỗi thao tác người dùng là một method. Kiến thức về class ở buổi này là nền tảng trực tiếp cho POM.
 {% endhint %}
 
-**Convention:** tên Class và Interface viết **PascalCase** (`UserAccount`, `Product`) — khác với camelCase của biến/hàm đã học Buổi 1.
+**Convention:** tên class và interface viết PascalCase (`UserAccount`, `Product`), khác với camelCase dùng cho biến và hàm đã học ở Buổi 1.
 
 ## 4. Tách file với import/export
 
-Project thật không viết hết vào 1 file. Cách tách:
+Project thực tế không viết toàn bộ code trong một file. Cách tách:
 
 ```typescript
 // file: utils.ts
@@ -84,21 +91,23 @@ import { formatPrice } from "./utils";
 console.log(formatPrice(29.99)); // "29.99 USD"
 ```
 
-Những file/folder bạn sẽ thấy trong mọi project:
+Các file và folder có trong mọi project Node.js:
 
-| Tên             | Vai trò                                                                                |
-| --------------- | --------------------------------------------------------------------------------------- |
-| `package.json`  | Danh sách thư viện project dùng + các lệnh tắt (scripts)                                 |
-| `node_modules/` | Nơi chứa code của các thư viện đã cài. **Không bao giờ sửa tay, không commit lên Git**   |
-| `tsconfig.json` | Cấu hình TypeScript — hiện tại chỉ cần biết nó tồn tại, không cần thuộc                  |
+| Tên             | Vai trò                                                                                            |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| `package.json`  | Danh sách thư viện project sử dụng và các lệnh tắt (scripts)                                       |
+| `node_modules/` | Nơi chứa code của các thư viện đã cài. Không sửa tay và không commit lên Git                        |
+| `tsconfig.json` | Cấu hình TypeScript. Ở giai đoạn này chỉ cần biết file này tồn tại, Buổi 13 trình bày chi tiết hơn |
 
 ## 5. Ba array methods quan trọng nhất: map, filter, find
 
-| Method   | Trả về                       | Dùng khi muốn                              |
-| -------- | ---------------------------- | ------------------------------------------- |
-| `filter` | Mảng mới                     | **Lọc** các phần tử thỏa điều kiện          |
-| `map`    | Mảng mới (cùng độ dài)       | **Biến đổi** từng phần tử sang dạng khác    |
-| `find`   | 1 phần tử (hoặc undefined)   | **Tìm** phần tử đầu tiên thỏa điều kiện     |
+| Method   | Trả về                     | Dùng khi muốn                            |
+| -------- | -------------------------- | ---------------------------------------- |
+| `filter` | Mảng mới                   | Lọc các phần tử thỏa điều kiện           |
+| `map`    | Mảng mới (cùng độ dài)     | Biến đổi từng phần tử sang dạng khác     |
+| `find`   | 1 phần tử (hoặc undefined) | Tìm phần tử đầu tiên thỏa điều kiện      |
+
+Ví dụ sử dụng interface `Product` đã khai báo ở mục 1:
 
 ```typescript
 const products: Product[] = [
@@ -113,24 +122,37 @@ const productNames = products.map((p) => p.name);                   // mảng 4 
 const backpack = products.find((p) => p.name.includes("Backpack")); // 1 sản phẩm
 ```
 
-> Để ý: dữ liệu trên lấy từ [Saucedemo.com](https://www.saucedemo.com) — trang web bạn sẽ tự động hóa từ Buổi 4. Sau này đây chính là cách bạn xử lý test data: lọc user theo role, tìm sản phẩm theo tên, biến đổi response API trước khi kiểm tra.
+{% hint style="info" %}
+Dữ liệu trong ví dụ lấy từ [Saucedemo](https://www.saucedemo.com), trang web bạn sẽ tự động hóa từ Buổi 4. Đây cũng là cách xử lý test data về sau: lọc user theo role, tìm sản phẩm theo tên, biến đổi response API trước khi kiểm tra.
+{% endhint %}
 
 ## 6. Bài checkpoint cuối Phase 1 (làm tại lớp)
 
-**Đề bài:** gọi API `https://jsonplaceholder.typicode.com/users`, lọc ra các user có email đuôi `.biz`, lấy danh sách tên của họ và log ra màn hình. Yêu cầu: có interface `User`, có try/catch.
+**Đề bài:** gọi API `https://jsonplaceholder.typicode.com/users`, lọc ra các user có email kết thúc bằng `.biz`, lấy danh sách tên của họ và log ra màn hình. Yêu cầu: có interface `User`, có try/catch.
 
-Gợi ý các bước (tự làm trước khi nhìn gợi ý nhé):
+Các bước gợi ý (nên tự làm trước khi đọc phần này):
 
-1. Khai báo interface `User` với các field bạn cần dùng (id, name, email)
-2. Viết hàm async, gọi API và lấy dữ liệu (nhớ await 2 lần!)
-3. Dùng `filter` với điều kiện `u.email.endsWith(".biz")`
-4. Dùng `map` để lấy ra mảng tên
-5. Log số lượng và danh sách tên
+1. Khai báo interface `User` với các field cần dùng (`id`, `name`, `email`).
+2. Viết hàm async gọi API và lấy dữ liệu, với `await` ở cả `fetch` và `response.json()` (đã học ở Buổi 2).
+3. Dùng `filter` với điều kiện `u.email.endsWith(".biz")`.
+4. Dùng `map` để lấy ra mảng tên.
+5. Log số lượng và danh sách tên.
 
-Bài này gộp đủ kiến thức 3 buổi. **Tự làm được bài này = bạn đã sẵn sàng học Playwright.** Nếu còn vướng chỗ nào, nhắn trainer để được kèm thêm trước Buổi 4 — đừng ngại, đây là mục đích của bài checkpoint.
+Bài này tổng hợp kiến thức của cả 3 buổi. Tự hoàn thành được bài này nghĩa là bạn đã sẵn sàng học Playwright ở Buổi 4. Nếu còn vướng ở bước nào, liên hệ trainer để được hỗ trợ thêm trước Buổi 4; đây là mục đích của bài checkpoint.
 
-## 7. Bài tập về nhà (45–60 phút)
+## 7. Lỗi thường gặp
 
-1. Viết class `Product` có: constructor, ít nhất 1 field private, và method `getDisplayPrice()` trả về chuỗi dạng `"29.99 USD"`
-2. Hoàn thiện bài checkpoint nếu chưa xong tại lớp
-3. Push tất cả lên repo lớp qua Pull Request, nhánh `ten-cua-ban/buoi3`
+| Triệu chứng                                                        | Nguyên nhân                                              | Cách xử lý                                                              |
+| ------------------------------------------------------------------ | -------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Lỗi "Object literal may only specify known properties"             | Gán field không có trong interface, thường do gõ sai tên | So sánh tên field với khai báo interface                                |
+| Lỗi "Property 'password' is private and only accessible within..." | Truy cập field private từ bên ngoài class                | Thêm method public trong class để đọc hoặc kiểm tra giá trị đó          |
+| Lỗi "Cannot find module './utils'"                                 | Sai đường dẫn import hoặc thiếu `./`                     | Kiểm tra file tồn tại, import file cùng folder phải bắt đầu bằng `./`   |
+| `find` trả về `undefined`, gọi `.name` báo lỗi                     | Không có phần tử nào thỏa điều kiện                      | Kiểm tra kết quả trước khi dùng: `if (backpack) { ... }`                |
+
+## 8. Bài tập về nhà (45-60 phút)
+
+1. Trong folder `lesson-03`, viết class `Product` có constructor, ít nhất 1 field private, và method `getDisplayPrice()` trả về chuỗi dạng `"29.99 USD"`.
+2. Hoàn thiện bài checkpoint ở mục 6 nếu chưa xong tại lớp, lưu vào file `checkpoint-phase-1.ts`.
+3. Push toàn bộ lên repo lớp qua Pull Request, nhánh `your-name/lesson-3`.
+
+**Checklist trước khi nộp:** code chạy không lỗi · class và interface đặt tên PascalCase · bài checkpoint có interface `User` và try/catch · đúng quy ước tên nhánh `your-name/lesson-3`.
