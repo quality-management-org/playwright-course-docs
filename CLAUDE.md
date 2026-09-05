@@ -53,6 +53,15 @@ Sample quality:
 
 Scope: the English naming rule applies to code inside lessons. The repo's own .md filenames keep the `buoi-XX-*.md` pattern (see Repo structure).
 
+## Illustrative images
+
+- Add a screenshot when a step depends on a UI the reader must recognize: VS Code menus and dialogs, the GitHub PR banner and form, Playwright HTML report, Trace Viewer, Codegen window, error messages shown in the editor. Do not add images for content a code block or table already shows completely (terminal output, file trees, code).
+- Claude cannot capture screenshots. When a lesson needs one, insert a placeholder on its own line at the exact spot where the image belongs:
+  `<!-- TODO(image): mo ta anh can chup, gom trang thai man hinh va phan can khoanh/danh dau -->`
+  Description in Vietnamese, specific enough for the trainer to reproduce the screen. HTML comments are not rendered by GitBook, so a placeholder is safe to publish. Never write a visible `//TODO` in body text.
+- The trainer replaces the placeholder with the image. Image files go in `.gitbook/assets/`, named `buoi-XX-<short-name>.png` (kebab-case ASCII), inserted as `![mo ta ngan](../.gitbook/assets/buoi-XX-<short-name>.png)` with Vietnamese alt text. Remove the TODO once the image is in place.
+- Quality checks report every remaining `TODO(image)` placeholder in the file.
+
 ## Cross-references between sessions
 
 When reusing earlier knowledge, cite the source ("destructuring da hoc o Buoi 1"). When mentioning a concept taught later, add a forward reference ("Buoi 9 trinh bay chi tiet playwright.config.ts").

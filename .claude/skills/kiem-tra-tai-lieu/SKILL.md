@@ -16,6 +16,7 @@ Read the specified file and grade each criterion. Report as a table: Criterion /
 3. Code samples: valid TypeScript/Playwright; locators prefer getByRole/getByLabel/getByPlaceholder/getByText; no `waitForTimeout`, no XPath (except labeled anti-patterns); English identifiers and example filenames; branch names `your-name/lesson-X`; Vietnamese comments and test descriptions.
 4. Cross-references: every "đã học ở Buổi X" / "Buổi Y sẽ trình bày" matches `course-outline.md`.
 5. Structure: the file has a SUMMARY.md entry and a README.md card.
+6. Images: list every remaining `<!-- TODO(image): ... -->` placeholder with its line number and description, so the trainer knows which screenshots are still missing. A lesson with open placeholders is not ready to announce as final.
 
 ## Mode 2: Repo-wide structure sync
 

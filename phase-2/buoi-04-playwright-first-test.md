@@ -19,17 +19,19 @@ So với các tool phổ biến khác:
 
 Không có tool nào "thắng tuyệt đối" — nhưng kỹ năng cốt lõi bạn học trong khóa (locator, assertion, POM, tư duy test design) dùng lại được ở mọi tool.
 
-## 2. Cài đặt Playwright
+## 2. Cài đặt Playwright vào project
 
-{% hint style="success" %}
-**Nên chạy lệnh này ở nhà trước buổi học** — bước tải browser nặng vài trăm MB, mạng yếu sẽ chờ lâu.
-{% endhint %}
+Playwright được cài thêm vào project `playwright-course` đã dùng từ Phase 1, không tạo project mới. Mở project bằng VS Code (File > Open Folder), mở Terminal > New Terminal và chạy:
 
 ```bash
 npm init playwright@latest
 ```
 
-Trả lời các câu hỏi khi cài như sau:
+{% hint style="success" %}
+**Nên chạy lệnh này ở nhà trước buổi học.** Bước tải browser nặng vài trăm MB, mạng yếu sẽ chờ lâu.
+{% endhint %}
+
+Lệnh này nhận ra `package.json` sẵn có và chỉ bổ sung thư viện `@playwright/test` cùng các file cấu hình. Các folder `lesson-01`, `lesson-02`, `lesson-03` và file `tsconfig.json` giữ nguyên. Trả lời các câu hỏi khi cài như sau:
 
 | Câu hỏi                          | Chọn                   | Vì sao                    |
 | -------------------------------- | ---------------------- | ------------------------- |
@@ -40,11 +42,28 @@ Trả lời các câu hỏi khi cài như sau:
 
 Cấu trúc project sau khi cài:
 
-| File / Folder          | Vai trò                                                    |
-| ---------------------- | ----------------------------------------------------------- |
-| `tests/`               | Nơi chứa các file test — bạn làm việc chủ yếu ở đây          |
-| `playwright.config.ts` | Cấu hình chung (browser, timeout...) — Buổi 9 học sâu        |
-| `playwright-report/`   | Report HTML sinh ra sau mỗi lần chạy test                    |
+```
+playwright-course/
+├── node_modules/
+├── lesson-01/
+├── lesson-02/
+├── lesson-03/
+├── tests/
+│   └── example.spec.ts
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── playwright.config.ts
+└── tsconfig.json
+```
+
+| File / Folder            | Vai trò                                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `tests/`                 | Nơi chứa các file test. Từ buổi này bạn làm việc chủ yếu ở đây                                            |
+| `tests/example.spec.ts`  | Test mẫu do Playwright sinh ra, có thể xóa sau khi tham khảo                                              |
+| `playwright.config.ts`   | Cấu hình chung (browser, timeout...). Buổi 9 trình bày chi tiết                                           |
+| `.gitignore`             | Playwright tự bổ sung các dòng bỏ qua `test-results/` và `playwright-report/`                             |
+| `playwright-report/`     | Report HTML sinh ra sau mỗi lần chạy test, Git bỏ qua                                                     |
 
 ## 3. Test đầu tiên — login vào Saucedemo
 
@@ -112,7 +131,7 @@ Test fail là chuyện bình thường hằng ngày của automation tester. Cá
 
 | Triệu chứng                          | Nguyên nhân                        | Cách xử lý                                                     |
 | ------------------------------------ | ---------------------------------- | --------------------------------------------------------------- |
-| No tests found                       | Chạy lệnh sai folder               | cd vào folder gốc của project (nơi có playwright.config.ts)     |
+| No tests found                       | Terminal không đứng ở gốc project  | Dùng File > Open Folder mở `playwright-course` rồi mở terminal mới |
 | Báo thiếu browser executable         | Browser chưa được cài              | Chạy `npx playwright install`                                   |
 | Test chạy loạn thứ tự, fail khó hiểu | Quên `await` trước thao tác page   | Rà lại: mọi dòng page.xxx đều phải có await                     |
 | Timeout dù code đúng                 | Mạng chậm, trang tải lâu           | Chạy lại; kiểm tra mở được Saucedemo bằng tay không             |

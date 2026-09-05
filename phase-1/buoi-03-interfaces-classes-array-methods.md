@@ -67,6 +67,8 @@ console.log(account.checkPassword("x"));  // false
 // console.log(account.password);         // LỖI: password là private
 ```
 
+<!-- TODO(image): VS Code với dòng console.log(account.password) đã bỏ comment và bị gạch đỏ, tooltip hiện Property 'password' is private and only accessible within class 'UserAccount'. -->
+
 {% hint style="info" %}
 **Liên hệ với Playwright:** ở Buổi 7, bạn học Page Object Model, cách tổ chức test trong đó mỗi trang web là một class và mỗi thao tác người dùng là một method. Kiến thức về class ở buổi này là nền tảng trực tiếp cho POM.
 {% endhint %}
@@ -75,29 +77,49 @@ console.log(account.checkPassword("x"));  // false
 
 ## 4. Tách file với import/export
 
-Project thực tế không viết toàn bộ code trong một file. Cách tách:
+Project thực tế không viết toàn bộ code trong một file. Mở project `playwright-course` trong repo lớp bằng VS Code (File > Open Folder), tạo folder `lesson-03` bằng Explorer (chuột phải > New Folder), rồi tạo 2 file sau trong folder đó:
 
 ```typescript
-// file: utils.ts
+// file: lesson-03/utils.ts
 export function formatPrice(price: number): string {
   return `${price} USD`;
 }
 ```
 
 ```typescript
-// file: main.ts
+// file: lesson-03/main.ts
 import { formatPrice } from "./utils";
 
 console.log(formatPrice(29.99)); // "29.99 USD"
 ```
 
-Các file và folder có trong mọi project Node.js:
+Chạy bằng `npx tsx lesson-03/main.ts`. Đường dẫn `./utils` trong `import` là đường dẫn tương đối tính từ file đang viết, nên hai file phải nằm cùng folder.
 
-| Tên             | Vai trò                                                                                            |
-| --------------- | -------------------------------------------------------------------------------------------------- |
-| `package.json`  | Danh sách thư viện project sử dụng và các lệnh tắt (scripts)                                       |
-| `node_modules/` | Nơi chứa code của các thư viện đã cài. Không sửa tay và không commit lên Git                        |
-| `tsconfig.json` | Cấu hình TypeScript. Ở giai đoạn này chỉ cần biết file này tồn tại, Buổi 13 trình bày chi tiết hơn |
+Cấu trúc project `playwright-course` đến thời điểm này:
+
+```
+playwright-course/
+├── node_modules/
+├── lesson-01/
+├── lesson-02/
+├── lesson-03/
+│   ├── main.ts
+│   └── utils.ts
+├── .gitignore
+├── package.json
+├── package-lock.json
+└── tsconfig.json
+```
+
+Vai trò của các file ở gốc project, đã tạo ở Buổi 1 và gặp lại trong mọi project Node.js:
+
+| Tên                 | Vai trò                                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------------------------------- |
+| `package.json`      | Danh sách thư viện project sử dụng và các lệnh tắt (scripts)                                              |
+| `package-lock.json` | Phiên bản chính xác của từng thư viện, npm tự sinh. Không sửa tay, có commit lên Git                       |
+| `node_modules/`     | Nơi chứa code của các thư viện đã cài. Không sửa tay, không commit lên Git                                 |
+| `.gitignore`        | Danh sách file và folder Git bỏ qua, hiện chỉ có `node_modules/`                                           |
+| `tsconfig.json`     | Cấu hình TypeScript. Buổi 13 trình bày thêm các tùy chọn nâng cao                                          |
 
 ## 5. Ba array methods quan trọng nhất: map, filter, find
 
@@ -128,7 +150,7 @@ Dữ liệu trong ví dụ lấy từ [Saucedemo](https://www.saucedemo.com), tr
 
 ## 6. Bài checkpoint cuối Phase 1 (làm tại lớp)
 
-**Đề bài:** gọi API `https://jsonplaceholder.typicode.com/users`, lọc ra các user có email kết thúc bằng `.biz`, lấy danh sách tên của họ và log ra màn hình. Yêu cầu: có interface `User`, có try/catch.
+**Đề bài:** tạo file `lesson-03/checkpoint-phase-1.ts`, gọi API `https://jsonplaceholder.typicode.com/users`, lọc ra các user có email kết thúc bằng `.biz`, lấy danh sách tên của họ và log ra màn hình. Yêu cầu: có interface `User`, có try/catch.
 
 Các bước gợi ý (nên tự làm trước khi đọc phần này):
 
@@ -151,8 +173,8 @@ Bài này tổng hợp kiến thức của cả 3 buổi. Tự hoàn thành đư
 
 ## 8. Bài tập về nhà (45-60 phút)
 
-1. Trong folder `lesson-03`, viết class `Product` có constructor, ít nhất 1 field private, và method `getDisplayPrice()` trả về chuỗi dạng `"29.99 USD"`.
-2. Hoàn thiện bài checkpoint ở mục 6 nếu chưa xong tại lớp, lưu vào file `checkpoint-phase-1.ts`.
-3. Push toàn bộ lên repo lớp qua Pull Request, nhánh `your-name/lesson-3`.
+1. Tạo file `lesson-03/product.ts`, viết class `Product` có constructor, ít nhất 1 field private, và method `getDisplayPrice()` trả về chuỗi dạng `"29.99 USD"`.
+2. Hoàn thiện bài checkpoint ở mục 6 trong file `lesson-03/checkpoint-phase-1.ts` nếu chưa xong tại lớp.
+3. Push project `playwright-course` lên repo lớp qua Pull Request theo quy trình ở Buổi 2, nhánh `your-name/lesson-3`.
 
 **Checklist trước khi nộp:** code chạy không lỗi · class và interface đặt tên PascalCase · bài checkpoint có interface `User` và try/catch · đúng quy ước tên nhánh `your-name/lesson-3`.

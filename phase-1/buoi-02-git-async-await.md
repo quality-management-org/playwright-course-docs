@@ -26,7 +26,7 @@ Trong Playwright, mọi thao tác với trang web (mở trang, điền form, b�
 
 ## 2. Gọi API thật với fetch()
 
-Tạo folder `lesson-02` theo đúng các bước ở Buổi 1 (`npm init -y`, cài `typescript` và `tsx`), sau đó tạo file `get-users.ts`:
+Mở project `playwright-course` của Buổi 1 bằng VS Code (File > Open Folder). Trong Explorer, chuột phải vào vùng trống của project, chọn **New Folder**, đặt tên `lesson-02`. Không cần cài lại thư viện, vì `package.json` và `node_modules/` của project dùng chung cho toàn khóa học. Tạo file `lesson-02/get-users.ts`:
 
 ```typescript
 async function getUsers() {
@@ -47,7 +47,7 @@ getUsers();
 | `await response.json()`     | Chuyển phản hồi thành dữ liệu dùng được. Bước này cũng cần `await` |
 | `getUsers();`               | Gọi hàm để chương trình thực sự chạy                               |
 
-Chạy bằng `npx tsx get-users.ts`. Kết quả mong đợi:
+Chạy từ gốc project bằng `npx tsx lesson-02/get-users.ts`. Kết quả mong đợi:
 
 ```
 Lấy được 10 user
@@ -117,33 +117,68 @@ Git là hệ thống quản lý phiên bản: lưu lại lịch sử mọi thay 
 
 ## 5. Quy trình nộp bài của lớp
 
-Lớp dùng chung một repo GitHub. Mỗi lần nộp bài, thực hiện đúng 5 bước sau:
+Lớp dùng chung một repo GitHub. Bài tập được nộp bằng cách đưa project `playwright-course` vào repo này.
+
+### Bước 1: tải repo lớp về máy (chỉ làm lần đầu)
+
+1. Mở VS Code, chọn File > Open Folder, chọn folder Documents (hoặc nơi bạn muốn lưu repo lớp).
+2. Mở Terminal > New Terminal và chạy lệnh sau. Lệnh này tải toàn bộ repo (code và lịch sử) về một folder mới cùng tên repo, nằm trong Documents.
+
+   ```bash
+   git clone <class-repo-url>
+   ```
+
+### Bước 2: đưa project vào repo lớp (chỉ làm lần đầu)
+
+1. Dùng File Explorer hoặc Finder, di chuyển nguyên folder `playwright-course` (kể cả `node_modules/`) vào folder `students/<your-name>/` trong repo lớp vừa tải về. Sau bước này, project chỉ còn một bản duy nhất nằm trong repo lớp.
+2. Trong VS Code, chọn File > Open Folder và mở đúng folder `playwright-course` bên trong repo. Từ Buổi 2 trở đi, luôn mở project theo cách này.
+
+Cấu trúc repo lớp sau khi di chuyển:
+
+```
+<repo-name>/
+└── students/
+    └── linh/
+        └── playwright-course/
+            ├── node_modules/
+            ├── lesson-01/
+            ├── lesson-02/
+            ├── .gitignore
+            ├── package.json
+            ├── package-lock.json
+            └── tsconfig.json
+```
+
+{% hint style="info" %}
+Git tự tìm folder `.git` ở các cấp thư mục phía trên, nên mọi lệnh Git chạy được ngay trong folder `playwright-course` mà không cần chuyển ra gốc repo. `git add .` khi đó chỉ đưa các file trong project của bạn vào commit, không ảnh hưởng đến folder của học viên khác.
+{% endhint %}
+
+### Bước 3: tạo nhánh, commit và push
+
+Mở Terminal > New Terminal trong cửa sổ project và chạy lần lượt:
 
 ```bash
-# Bước 1, chỉ làm lần đầu: tải repo về máy
-git clone <class-repo-url>
-cd <repo-name>
-
-# Bước 2: tạo nhánh riêng theo quy ước your-name/lesson-X
+# Tạo nhánh riêng theo quy ước your-name/lesson-X
 git checkout -b linh/lesson-2
 
-# Bước 3: đưa các file thay đổi vào danh sách chờ commit
+# Đưa các file thay đổi vào danh sách chờ commit
 git add .
 
-# Bước 4: lưu mốc thay đổi kèm mô tả ngắn
+# Lưu mốc thay đổi kèm mô tả ngắn
 git commit -m "lesson 2: async await homework"
 
-# Bước 5: đẩy nhánh lên GitHub
+# Đẩy nhánh lên GitHub
 git push -u origin linh/lesson-2
 ```
 
-| Lệnh                                 | Ý nghĩa                                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------------------- |
-| `git clone <class-repo-url>`         | Tải toàn bộ repo (code và lịch sử) về máy, chỉ cần làm một lần                              |
-| `git checkout -b linh/lesson-2`      | Tạo nhánh mới tên `linh/lesson-2` và chuyển sang nhánh đó. Thay `linh` bằng tên của bạn     |
-| `git add .`                          | Đưa mọi file đã thay đổi trong folder hiện tại vào danh sách chờ commit                     |
-| `git commit -m "..."`                | Lưu một mốc thay đổi kèm mô tả ngắn bằng tiếng Anh                                          |
-| `git push -u origin linh/lesson-2`   | Đẩy nhánh lên GitHub. Cờ `-u` liên kết nhánh trên máy với nhánh trên GitHub cho các lần sau |
+| Lệnh                               | Ý nghĩa                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------- |
+| `git checkout -b linh/lesson-2`    | Tạo nhánh mới tên `linh/lesson-2` và chuyển sang nhánh đó. Thay `linh` bằng tên của bạn     |
+| `git add .`                        | Đưa mọi file đã thay đổi trong folder hiện tại (project của bạn) vào danh sách chờ commit, trừ những gì `.gitignore` liệt kê |
+| `git commit -m "..."`              | Lưu một mốc thay đổi kèm mô tả ngắn bằng tiếng Anh                                          |
+| `git push -u origin linh/lesson-2` | Đẩy nhánh lên GitHub. Cờ `-u` liên kết nhánh trên máy với nhánh trên GitHub cho các lần sau |
+
+Kiểm tra trước khi commit bằng `git status`: danh sách file chỉ gồm các file trong `playwright-course/`, không có file nào thuộc `node_modules/`.
 
 {% hint style="info" %}
 **Vì sao không push thẳng vào `main`?** Nhánh `main` của lớp được bật branch protection: mọi thay đổi bắt buộc đi qua Pull Request và được review. Đây cũng là quy trình phổ biến ở phần lớn công ty, nên bạn đang thực hành quy trình thật ngay từ buổi thứ hai.
@@ -153,11 +188,19 @@ git push -u origin linh/lesson-2
 **Personal Access Token:** GitHub không chấp nhận mật khẩu tài khoản khi push từ terminal. Nếu Git yêu cầu username và password, dùng Personal Access Token thay cho password (tạo tại GitHub > Settings > Developer settings > Personal access tokens). Token chỉ hiển thị một lần khi tạo, cần lưu lại ở nơi an toàn.
 {% endhint %}
 
+<!-- TODO(image): Trang GitHub > Settings > Developer settings > Personal access tokens (Tokens classic), nút Generate new token được khoanh. Che mọi token đang hiển thị. -->
+
 ## 6. Tạo Pull Request trên GitHub
 
 1. Mở repo lớp trên GitHub. Banner màu vàng gợi ý nhánh vừa push xuất hiện ở đầu trang, bấm **Compare & pull request**.
+
+   <!-- TODO(image): Trang repo lớp trên GitHub ngay sau khi push: banner màu vàng "linh/lesson-2 had recent pushes" ở đầu trang, nút Compare & pull request được khoanh. -->
+
 2. Đặt tiêu đề rõ ràng, ví dụ: `[Linh] Lesson 2 - Async/Await`.
 3. Bấm **Create pull request**.
+
+   <!-- TODO(image): Form tạo Pull Request trên GitHub: base là main, compare là linh/lesson-2, ô tiêu đề điền "[Linh] Lesson 2 - Async/Await", nút Create pull request được khoanh. -->
+
 4. Chờ trainer review. Nếu có comment, sửa code rồi push lại lên đúng nhánh đó, PR tự cập nhật.
 
 ## 7. Lỗi thường gặp
@@ -169,10 +212,11 @@ git push -u origin linh/lesson-2
 | Push bị từ chối (rejected)                   | Đang đứng ở nhánh `main`                       | Kiểm tra nhánh bằng `git branch`, tạo nhánh riêng rồi push lại                |
 | Lỗi "Authentication failed" khi push         | Dùng mật khẩu tài khoản thay vì token          | Tạo Personal Access Token và dùng token ở ô password                          |
 | Không thấy banner tạo PR                     | Banner chỉ hiện trong ít phút sau khi push     | Vào tab Pull requests > New pull request > chọn nhánh của bạn                 |
+| `git status` liệt kê hàng nghìn file trong `node_modules/` | Thiếu file `.gitignore` trong `playwright-course` | Tạo `.gitignore` theo mục 2 của Buổi 1, chạy `git rm -r --cached node_modules` rồi `git add .` lại |
 
 ## 8. Bài tập về nhà (45-60 phút)
 
-1. Tạo file `homework-lesson-02.ts` trong folder `lesson-02`. Viết hàm `getProducts()` gọi API `https://fakestoreapi.com/products`, log ra tổng số sản phẩm và tên sản phẩm đầu tiên (field `title`), có try/catch đầy đủ.
-2. Đưa folder `lesson-01` (bài Buổi 1) và `lesson-02` vào repo lớp, push qua Pull Request trên nhánh `your-name/lesson-2`.
+1. Tạo file `lesson-02/homework-lesson-02.ts`. Viết hàm `getProducts()` gọi API `https://fakestoreapi.com/products`, log ra tổng số sản phẩm và tên sản phẩm đầu tiên (field `title`), có try/catch đầy đủ. Chạy bằng `npx tsx lesson-02/homework-lesson-02.ts`.
+2. Đưa project `playwright-course` (gồm `lesson-01` và `lesson-02`) vào repo lớp theo mục 5, tạo Pull Request trên nhánh `your-name/lesson-2`.
 
 **Checklist trước khi nộp:** code chạy không lỗi · có try/catch · tên biến đúng convention · đúng quy ước tên nhánh `your-name/lesson-2` · PR có tiêu đề rõ ràng.
