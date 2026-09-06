@@ -1,5 +1,7 @@
 ---
-description: "Cài đặt Node.js, VS Code và Git, tạo project dùng cho cả khóa học, làm quen với kiểu dữ liệu, function và destructuring."
+description: >-
+  Cài đặt Node.js, VS Code và Git, tạo project dùng cho cả khóa học, làm quen
+  với kiểu dữ liệu, function và destructuring.
 icon: laptop-code
 ---
 
@@ -40,8 +42,7 @@ Toàn bộ khóa học sử dụng một project duy nhất tên `playwright-cou
 2. Mở VS Code, chọn menu File > Open Folder, chọn folder vừa tạo. Khung Explorer bên trái hiển thị nội dung project (hiện đang trống).
 3. Mở terminal bằng menu Terminal > New Terminal. Terminal tự động đứng tại gốc project. Mọi lệnh trong khóa học đều chạy từ vị trí này.
 
-<!-- TODO(image): Cửa sổ VS Code sau khi mở folder playwright-course: khung Explorer bên trái đang trống, terminal mở bên dưới với đường dẫn kết thúc bằng playwright-course. Khoanh menu Terminal > New Terminal. -->
-![alt text](image.png)
+![alt text](../.gitbook/assets/image.png)
 
 ### Bước 2: khởi tạo project và cài thư viện
 
@@ -52,9 +53,9 @@ npm init -y
 npm install typescript tsx @types/node --save-dev
 ```
 
-| Lệnh                                                | Ý nghĩa                                                                                                                                                                                                       |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm init -y`                                       | Tạo file `package.json` tại folder terminal đang đứng, nơi ghi tên project và danh sách thư viện đã cài                                                                                                       |
+| Lệnh                                                | Ý nghĩa                                                                                                                                                                                                                  |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm init -y`                                       | Tạo file `package.json` tại folder terminal đang đứng, nơi ghi tên project và danh sách thư viện đã cài                                                                                                                  |
 | `npm install typescript tsx @types/node --save-dev` | Cài 3 thư viện: `typescript` (bộ kiểm tra kiểu dữ liệu), `tsx` (công cụ chạy trực tiếp file .ts) và `@types/node` (mô tả kiểu cho các API có sẵn của Node.js). Cờ `--save-dev` đánh dấu thư viện chỉ dùng khi phát triển |
 
 Sau 2 lệnh này, Explorer hiển thị thêm `package.json`, `package-lock.json` và folder `node_modules/`.
@@ -62,8 +63,6 @@ Sau 2 lệnh này, Explorer hiển thị thêm `package.json`, `package-lock.jso
 ### Bước 3: tạo file cấu hình
 
 Trong Explorer, chuột phải vào vùng trống của project, chọn **New File**, tạo 2 file sau ở gốc project. Nội dung cần sao chép chính xác, kể cả dấu phẩy cuối mỗi dòng.
-
-<!-- TODO(image): Menu chuột phải trong khung Explorer của VS Code, hai mục New File và New Folder được khoanh. -->
 
 File `tsconfig.json`:
 
@@ -81,14 +80,14 @@ File `tsconfig.json`:
 }
 ```
 
-| Dòng                                                   | Ý nghĩa                                                                                                          |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `"target": "ESNext"`                                   | Cho phép dùng các cú pháp JavaScript mới nhất                                                                    |
-| `"module": "ESNext"`, `"moduleResolution": "bundler"`  | Cách TypeScript xử lý `import` và `export` giữa các file (dùng ở Buổi 3)                                          |
-| `"strict": true`                                       | Bật toàn bộ kiểm tra kiểu nghiêm ngặt                                                                            |
-| `"moduleDetection": "force"`                           | Coi mỗi file là một module riêng, để hai file trong project cùng khai báo `const user` không bị báo trùng tên    |
-| `"skipLibCheck": true`                                 | Không kiểm tra kiểu bên trong `node_modules/`, giúp VS Code phản hồi nhanh và tránh lỗi phát sinh từ thư viện    |
-| `"types": ["node"]`                                    | Nạp mô tả kiểu của Node.js từ `@types/node` (cần cho `playwright.config.ts` ở Buổi 4)                            |
+| Dòng                                                  | Ý nghĩa                                                                                                       |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `"target": "ESNext"`                                  | Cho phép dùng các cú pháp JavaScript mới nhất                                                                 |
+| `"module": "ESNext"`, `"moduleResolution": "bundler"` | Cách TypeScript xử lý `import` và `export` giữa các file (dùng ở Buổi 3)                                      |
+| `"strict": true`                                      | Bật toàn bộ kiểm tra kiểu nghiêm ngặt                                                                         |
+| `"moduleDetection": "force"`                          | Coi mỗi file là một module riêng, để hai file trong project cùng khai báo `const user` không bị báo trùng tên |
+| `"skipLibCheck": true`                                | Không kiểm tra kiểu bên trong `node_modules/`, giúp VS Code phản hồi nhanh và tránh lỗi phát sinh từ thư viện |
+| `"types": ["node"]`                                   | Nạp mô tả kiểu của Node.js từ `@types/node` (cần cho `playwright.config.ts` ở Buổi 4)                         |
 
 File `.gitignore` (tên file bắt đầu bằng dấu chấm, không có phần mở rộng):
 
@@ -123,16 +122,14 @@ playwright-course/
 └── tsconfig.json
 ```
 
-<!-- TODO(image): Khung Explorer của VS Code hiển thị đúng cấu trúc project ở trên sau khi hoàn tất Bước 4, folder lesson-01 đang mở để thấy hello.ts. -->
-
-| File / folder       | Cách tạo | Vai trò                                                                                      |
-| ------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| File / folder       | Cách tạo | Vai trò                                                                                       |
+| ------------------- | -------- | --------------------------------------------------------------------------------------------- |
 | `node_modules/`     | npm      | Code của các thư viện đã cài. Không sửa tay, không đưa lên Git                                |
 | `lesson-01/`        | Thủ công | Folder chứa toàn bộ file của Buổi 1. Buổi 2 và 3 có folder tương ứng `lesson-02`, `lesson-03` |
-| `.gitignore`        | Thủ công | Danh sách file và folder Git bỏ qua                                                          |
-| `package.json`      | npm      | Tên project và danh sách thư viện                                                            |
-| `package-lock.json` | npm      | Phiên bản chính xác của từng thư viện đã cài. Không sửa tay                                  |
-| `tsconfig.json`     | Thủ công | Cấu hình TypeScript                                                                          |
+| `.gitignore`        | Thủ công | Danh sách file và folder Git bỏ qua                                                           |
+| `package.json`      | npm      | Tên project và danh sách thư viện                                                             |
+| `package-lock.json` | npm      | Phiên bản chính xác của từng thư viện đã cài. Không sửa tay                                   |
+| `tsconfig.json`     | Thủ công | Cấu hình TypeScript                                                                           |
 
 ### Bước 5: chạy file
 
@@ -154,11 +151,11 @@ Chào mừng đến với Automation Testing từ Zero đến Hero, buổi 1
 
 ## 3. TypeScript là gì
 
+TypeScript = JavaScript + kiểu dữ liệu
+
 TypeScript là JavaScript có bổ sung hệ thống kiểu dữ liệu (type). Khi một biến được khai báo là `string`, TypeScript báo lỗi ngay nếu biến đó bị gán một số, trước khi chương trình chạy.
 
 Thử trực tiếp: thêm vào cuối `hello.ts` dòng `const wrongNumber: number = "hai";`. VS Code gạch đỏ ngay với thông báo `Type 'string' is not assignable to type 'number'`. Với tester, đây là nguyên tắc quen thuộc: phát hiện lỗi càng sớm, chi phí sửa càng thấp. Playwright chọn TypeScript làm ngôn ngữ mặc định cũng vì lý do này. Xóa dòng thử nghiệm trước khi tiếp tục.
-
-<!-- TODO(image): File hello.ts trong VS Code với dòng const wrongNumber: number = "hai" bị gạch đỏ, con trỏ chuột đặt lên dòng lỗi để hiện tooltip Type 'string' is not assignable to type 'number'. -->
 
 ## 4. Biến và kiểu dữ liệu
 
@@ -255,15 +252,15 @@ Code đặt tên tốt là code người khác đọc hiểu mà không cần gi
 
 ## 9. Lỗi thường gặp
 
-| Triệu chứng                                                  | Nguyên nhân                                              | Cách xử lý                                                                                          |
-| ------------------------------------------------------------ | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Gõ `node -v` báo không tìm thấy lệnh                         | Terminal được mở trước khi cài Node.js                   | Đóng và mở lại terminal, hoặc khởi động lại VS Code                                                 |
-| `npm init` hoặc `npm install` tạo file ở sai chỗ             | Terminal không đứng ở gốc project                        | Kiểm tra bằng `pwd`. Nếu sai, dùng File > Open Folder chọn `playwright-course` rồi mở terminal mới  |
-| `npx tsx` báo không tìm thấy file                            | Thiếu tiền tố folder trong đường dẫn                     | Chạy từ gốc project với đường dẫn đầy đủ, ví dụ `npx tsx lesson-01/hello.ts`                         |
-| VS Code gạch đỏ ngay trong `tsconfig.json`                   | JSON sai cú pháp: thiếu dấu phẩy, dấu ngoặc hoặc dấu nháy | So sánh từng dòng với nội dung ở mục 2. Mỗi dòng trong `compilerOptions` kết thúc bằng dấu phẩy, trừ dòng cuối |
-| Lỗi "Cannot find type definition file for 'node'"            | Chưa cài `@types/node`                                   | Chạy lại `npm install typescript tsx @types/node --save-dev`                                        |
-| Gạch đỏ "Cannot redeclare block-scoped variable"             | Thiếu `tsconfig.json` hoặc thiếu dòng `moduleDetection`  | Kiểm tra `tsconfig.json` ở gốc project có đúng nội dung ở mục 2                                     |
-| VS Code không gạch đỏ khi sai kiểu                           | File chưa lưu hoặc chưa cài đủ extension                 | Lưu file (`Ctrl+S`), kiểm tra lại mục 1                                                             |
+| Triệu chứng                                       | Nguyên nhân                                               | Cách xử lý                                                                                                     |
+| ------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Gõ `node -v` báo không tìm thấy lệnh              | Terminal được mở trước khi cài Node.js                    | Đóng và mở lại terminal, hoặc khởi động lại VS Code                                                            |
+| `npm init` hoặc `npm install` tạo file ở sai chỗ  | Terminal không đứng ở gốc project                         | Kiểm tra bằng `pwd`. Nếu sai, dùng File > Open Folder chọn `playwright-course` rồi mở terminal mới             |
+| `npx tsx` báo không tìm thấy file                 | Thiếu tiền tố folder trong đường dẫn                      | Chạy từ gốc project với đường dẫn đầy đủ, ví dụ `npx tsx lesson-01/hello.ts`                                   |
+| VS Code gạch đỏ ngay trong `tsconfig.json`        | JSON sai cú pháp: thiếu dấu phẩy, dấu ngoặc hoặc dấu nháy | So sánh từng dòng với nội dung ở mục 2. Mỗi dòng trong `compilerOptions` kết thúc bằng dấu phẩy, trừ dòng cuối |
+| Lỗi "Cannot find type definition file for 'node'" | Chưa cài `@types/node`                                    | Chạy lại `npm install typescript tsx @types/node --save-dev`                                                   |
+| Gạch đỏ "Cannot redeclare block-scoped variable"  | Thiếu `tsconfig.json` hoặc thiếu dòng `moduleDetection`   | Kiểm tra `tsconfig.json` ở gốc project có đúng nội dung ở mục 2                                                |
+| VS Code không gạch đỏ khi sai kiểu                | File chưa lưu hoặc chưa cài đủ extension                  | Lưu file (`Ctrl+S`), kiểm tra lại mục 1                                                                        |
 
 ## 10. Bài tập về nhà (45-60 phút)
 
