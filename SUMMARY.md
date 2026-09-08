@@ -15,3 +15,10 @@
 * [Buổi 6 · Actions, Assertions & Auto-wait](phase-2/buoi-06-actions-assertions.md)
 * [Buổi 7 · Page Object Model: Khái niệm & Xây dựng](phase-2/buoi-07-page-object-model.md)
 * [Buổi 8 · Hoàn thiện POM & Code Review](phase-2/buoi-08-pom-code-review.md)
+
+## Phase 3 · Nâng cao
+
+* [Buổi 9 · playwright.config.ts, Fixtures & Chạy song song](phase-3/buoi-09-config-fixtures-parallel.md)
+* [Buổi 10 · Tổ chức Test Suite](phase-3/buoi-10-test-suite-organization.md)
+* [Buổi 11 · API Testing với Playwright](phase-3/buoi-11-api-testing.md)
+* [Buổi 12 · API + UI kết hợp & Network Mocking](phase-3/buoi-12-api-ui-network-mocking.md)

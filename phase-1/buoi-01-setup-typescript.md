@@ -40,7 +40,6 @@ Toàn bộ khóa học sử dụng một project duy nhất tên `playwright-cou
 2. Mở VS Code, chọn menu File > Open Folder, chọn folder vừa tạo. Khung Explorer bên trái hiển thị nội dung project (hiện đang trống).
 3. Mở terminal bằng menu Terminal > New Terminal. Terminal tự động đứng tại gốc project. Mọi lệnh trong khóa học đều chạy từ vị trí này.
 
-<!-- TODO(image): Cửa sổ VS Code sau khi mở folder playwright-course: khung Explorer bên trái đang trống, terminal mở bên dưới với đường dẫn kết thúc bằng playwright-course. Khoanh menu Terminal > New Terminal. -->
 ![alt text](image.png)
 
 ### Bước 2: khởi tạo project và cài thư viện
