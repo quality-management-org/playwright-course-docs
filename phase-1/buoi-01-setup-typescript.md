@@ -176,7 +176,7 @@ const isLoggedIn: boolean = false;
 
 ## 5. Function và Arrow function
 
-Có 2 cách viết hàm. Cả hai đều khai báo kiểu cho tham số và giá trị trả về:
+Có 2 cách viết hàm. Cả hai đều khai báo kiểu cho tham số và giá trị trả về. Cùng một hàm `add` được viết theo hai cách để so sánh:
 
 ```typescript
 // Cách 1: function truyền thống
@@ -184,38 +184,97 @@ function add(a: number, b: number): number {
   return a + b;
 }
 
-// Cách 2: arrow function, cú pháp được dùng trong mọi test Playwright
-const multiply = (a: number, b: number): number => {
-  return a * b;
-};
-
-console.log(add(2, 3));      // 5
-console.log(multiply(2, 3)); // 6
+console.log(add(2, 3)); // 5
 ```
 
-Hai cách gần như tương đương ở giai đoạn này. Điểm cần ghi nhớ là ký hiệu `=>`, vì mọi test Playwright đều được viết bằng arrow function.
+```typescript
+// Cách 2: arrow function, cú pháp được dùng trong mọi test Playwright
+const add = (a: number, b: number): number => {
+  return a + b;
+};
+
+console.log(add(2, 3)); // 5
+```
+
+Hai cách cho kết quả giống nhau. Điểm khác biệt về cú pháp:
+
+| Function truyền thống | Arrow function |
+| --- | --- |
+| Bắt đầu bằng từ khóa `function` | Gán vào một biến `const`, không có từ khóa `function` |
+| Tên hàm đứng ngay sau `function` | Tên hàm chính là tên biến |
+| Không có ký hiệu `=>` | Có ký hiệu `=>` giữa danh sách tham số và thân hàm |
+
+{% hint style="info" %}
+Trong cùng một file chỉ giữ một trong hai cách viết, vì TypeScript không cho phép khai báo hai hàm trùng tên `add`. Điểm cần ghi nhớ là ký hiệu `=>`, vì mọi test Playwright đều được viết bằng arrow function.
+{% endhint %}
 
 ## 6. Array và Object
 
+### Array: danh sách các giá trị cùng kiểu
+
+Array là danh sách có thứ tự, các phần tử cùng kiểu. Kiểu của array viết bằng tên kiểu phần tử kèm `[]`, ví dụ `string[]` là danh sách chuỗi:
+
 ```typescript
-// Array: danh sách các giá trị cùng kiểu
 const browsers: string[] = ["chromium", "firefox", "webkit"];
 browsers.push("edge");        // thêm phần tử vào cuối
 console.log(browsers.length); // 4
+console.log(browsers[0]);     // "chromium", chỉ số bắt đầu từ 0
 
 // Duyệt qua từng phần tử
 for (const browser of browsers) {
   console.log(`Đang test trên: ${browser}`);
 }
+```
 
-// Object: nhóm nhiều thông tin liên quan vào một chỗ
+### Object: nhóm nhiều thông tin liên quan vào một chỗ
+
+Object gồm nhiều cặp tên field và giá trị, mỗi field có thể khác kiểu. Truy cập một field bằng dấu chấm:
+
+```typescript
 const user = {
   username: "standard_user",
   password: "secret_sauce",
   role: "customer",
 };
-console.log(user.username);
+console.log(user.username); // "standard_user"
+console.log(user.role);     // "customer"
 ```
+
+### Array kết hợp Object: bộ dữ liệu test
+
+Kết hợp phổ biến nhất trong automation là một array mà mỗi phần tử là một object. Mỗi object là một bộ dữ liệu (test case), array là danh sách các bộ dữ liệu cần chạy. Cách này gọi là data-driven testing: viết một logic kiểm tra, chạy với nhiều bộ dữ liệu.
+
+Ví dụ với các tài khoản của Saucedemo:
+
+```typescript
+// Mỗi object là một tài khoản kèm kết quả mong đợi khi đăng nhập
+const accounts = [
+  { username: "standard_user", password: "secret_sauce", canLogin: true },
+  { username: "locked_out_user", password: "secret_sauce", canLogin: false },
+  { username: "problem_user", password: "secret_sauce", canLogin: true },
+  { username: "standard_user", password: "wrong_password", canLogin: false },
+];
+
+console.log(`Tổng số bộ dữ liệu: ${accounts.length}`); // 4
+console.log(accounts[0].username);                       // "standard_user"
+
+// Duyệt qua từng bộ dữ liệu, cùng một logic chạy cho mọi tài khoản
+for (const account of accounts) {
+  const expected = account.canLogin ? "đăng nhập thành công" : "bị từ chối";
+  console.log(`Đăng nhập với ${account.username}: mong đợi ${expected}`);
+}
+```
+
+| Dòng | Ý nghĩa |
+| --- | --- |
+| `const accounts = [ {...}, {...} ]` | Array gồm 4 object, mỗi object có cùng 3 field: `username`, `password`, `canLogin` |
+| `accounts[0].username` | Lấy phần tử đầu tiên của array (chỉ số bắt đầu từ 0), rồi lấy field `username` của object đó |
+| `for (const account of accounts)` | Mỗi vòng lặp, biến `account` là một object trong array |
+| `account.canLogin ? "..." : "..."` | Toán tử ba ngôi: nếu `canLogin` là `true` thì lấy giá trị đầu, ngược lại lấy giá trị sau |
+
+{% hint style="info" %}
+**Liên hệ với Playwright:** ở Buổi 10, bạn sẽ dùng đúng cấu trúc này để viết parameterized test: đặt `test(...)` bên trong vòng `for`, mỗi object trong array sinh ra một test độc lập trong report. Tài khoản `locked_out_user` là tài khoản bị khóa có sẵn trên Saucedemo, dùng để kiểm tra tình huống đăng nhập thất bại.
+{% endhint %}
 
 ## 7. Destructuring
 
@@ -247,6 +306,26 @@ console.log(username); // "standard_user"
 | Biến, hàm | camelCase                 | `getUserData`                    | `GetUserData`, `get_user_data` |
 | Tên biến  | Có ý nghĩa, tự giải thích | `loginButton`, `productPrice`    | `data`, `temp`, `a`, `b`       |
 | Comment   | Giải thích lý do          | `// retry 3 lần vì API hay chậm` | `// gán x bằng 3`              |
+
+![alt text](image-1.png)
+
+Comment dùng để giải thích **lý do** viết code như vậy, không lặp lại **việc** code đang làm, vì code đã tự thể hiện việc đó. Ví dụ cùng một đoạn code với hai cách comment:
+
+```typescript
+// Comment không cần thiết: lặp lại đúng những gì code đang làm
+const maxRetries = 3;                 // khai báo biến maxRetries bằng 3
+const timeout = 30000;                // gán timeout bằng 30000
+const password = "secret_sauce";      // gán password
+```
+
+```typescript
+// Comment tốt: giải thích lý do, người đọc hiểu vì sao chọn giá trị này
+const maxRetries = 3;                 // API staging hay lỗi tạm thời, retry 3 lần là đủ ổn định
+const timeout = 30000;                // trang checkout load chậm hơn mặc định 5 giây trên môi trường test
+const password = "secret_sauce";      // tài khoản demo công khai của Saucedemo, không phải mật khẩu thật
+```
+
+Quy tắc kiểm tra nhanh: nếu xóa comment mà người đọc vẫn hiểu đầy đủ, comment đó không cần thiết. Nếu xóa comment mà người đọc phải hỏi "tại sao lại là giá trị này", comment đó cần giữ.
 
 Code đặt tên tốt là code người khác đọc hiểu mà không cần giải thích thêm. Trainer sẽ review tiêu chí này trong mọi bài nộp.
 
