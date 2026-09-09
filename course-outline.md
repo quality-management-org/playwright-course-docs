@@ -7,7 +7,7 @@ Thông tin chung: 15 buổi, 2 buổi/tuần, 2 giờ/buổi, khoảng 8 tuần.
 ## Phase 1: Nền tảng TypeScript (Buổi 1-3)
 
 ### Buổi 1: Setup & TypeScript cơ bản
-Cài đặt Node.js, VS Code (ESLint, Prettier, Playwright extension), Git. Chạy file .ts đầu tiên. Variables (let/const), các kiểu cơ bản, functions, arrow functions. Arrays, objects, destructuring (trọng tâm, nền tảng của cú pháp `async ({ page })`). Coding convention: camelCase, tên có ý nghĩa.
+Cài đặt Node.js, VS Code (ESLint, Prettier, Playwright extension), Git. Chạy file .ts đầu tiên. Variables (let/const), các kiểu cơ bản. Toán tử quan hệ, toán tử bằng (=== và !==), toán tử logic. Câu lệnh if/else, else if, switch, toán tử ba ngôi. Functions, arrow functions, optional parameter và default parameter. Arrays, objects. Vòng lặp for...of, for với biến đếm, while, break/continue. Destructuring (trọng tâm, nền tảng của cú pháp `async ({ page })`). Coding convention: camelCase, tên có ý nghĩa.
 
 ### Buổi 2: Git cơ bản & Async/Await
 Async/await, try/catch, gọi API bằng fetch (dạy trước, dành nhiều thời gian thực hành nhất buổi). Git: clone, tạo branch theo quy ước ten-hoc-vien/buoi-X, add, commit, push, Pull Request. Nhánh main có branch protection, học viên cần Personal Access Token.
