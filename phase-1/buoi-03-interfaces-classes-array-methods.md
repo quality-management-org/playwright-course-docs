@@ -177,4 +177,10 @@ Bài này tổng hợp kiến thức của cả 3 buổi. Tự hoàn thành đư
 2. Hoàn thiện bài checkpoint ở mục 6 trong file `lesson-03/checkpoint-phase-1.ts` nếu chưa xong tại lớp.
 3. Push project `playwright-course` lên repo lớp qua Pull Request theo quy trình ở Buổi 2, nhánh `your-name/lesson-3`.
 
-**Checklist trước khi nộp:** code chạy không lỗi · class và interface đặt tên PascalCase · bài checkpoint có interface `User` và try/catch · đúng quy ước tên nhánh `your-name/lesson-3`.
+**Checklist trước khi nộp:**
+
+* [ ] Code chạy không lỗi bằng `npx tsx`
+* [ ] Class và interface đặt tên PascalCase
+* [ ] Class `Product` có ít nhất 1 field private và method `getDisplayPrice()`
+* [ ] Bài checkpoint có interface `User` và try/catch
+* [ ] Đúng quy ước tên nhánh `your-name/lesson-3`

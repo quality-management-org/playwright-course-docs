@@ -252,40 +252,40 @@ console.log(isStrongPassword); // true
 Câu lệnh `if` chạy một khối lệnh khi điều kiện là `true`. Khối `else` (không bắt buộc) chạy khi điều kiện là `false`:
 
 ```typescript
-const statusCode: number = 200;
+const age: number = 18;
 
-if (statusCode === 200) {
-  console.log("Request thành công");
+if (age >= 18) {
+  console.log("Người lớn");
 } else {
-  console.log("Request thất bại");
+  console.log("Trẻ vị thành niên");
 }
+// Kết quả: Người lớn
 ```
 
-| Thành phần                | Ý nghĩa                                                                                                          |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `if (statusCode === 200)` | Điều kiện đặt trong ngoặc tròn, là một biểu thức trả về `boolean` (thường dùng toán tử so sánh và logic ở mục 5) |
-| `{ ... }` ngay sau `if`   | Khối lệnh chạy khi điều kiện là `true`                                                                           |
-| `else { ... }`            | Khối lệnh chạy khi điều kiện là `false`. Có thể bỏ qua nếu không cần xử lý trường hợp sai                        |
+| Thành phần              | Ý nghĩa                                                                                                          |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `if (age >= 18)`        | Điều kiện đặt trong ngoặc tròn, là một biểu thức trả về `boolean` (thường dùng toán tử so sánh và logic ở mục 5) |
+| `{ ... }` ngay sau `if` | Khối lệnh chạy khi điều kiện là `true`                                                                           |
+| `else { ... }`          | Khối lệnh chạy khi điều kiện là `false`. Có thể bỏ qua nếu không cần xử lý trường hợp sai                        |
 
 ### Nhiều nhánh với else if
 
 Khi có nhiều hơn hai trường hợp, dùng `else if`. Các điều kiện được kiểm tra lần lượt từ trên xuống và chỉ nhánh đầu tiên có điều kiện đúng được chạy:
 
 ```typescript
-const statusCode: number = 404;
+const age: number = 16;
 
-if (statusCode >= 200 && statusCode < 300) {
-  console.log("Thành công");
-} else if (statusCode === 404) {
-  console.log("Không tìm thấy resource");
-} else if (statusCode >= 500) {
-  console.log("Lỗi phía server");
+if (age >= 18) {
+  console.log("Người lớn");
+} else if (age >= 13) {
+  console.log("Thiếu niên");
 } else {
-  console.log(`Mã trạng thái khác: ${statusCode}`);
+  console.log("Trẻ em");
 }
+// Kết quả: Thiếu niên
 ```
 
-Kết quả in ra là `Không tìm thấy resource`: mã 404 không thỏa điều kiện nhánh đầu, thỏa điều kiện nhánh thứ hai, và các nhánh còn lại không được kiểm tra nữa.
+Tuổi 16 không thỏa điều kiện nhánh đầu (`age >= 18`), thỏa điều kiện nhánh thứ hai (`age >= 13`), nên nhánh `else` không được chạy.
 
 ### switch: chọn nhánh theo một giá trị cụ thể
 

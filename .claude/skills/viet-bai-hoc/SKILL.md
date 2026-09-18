@@ -19,7 +19,7 @@ List the planned numbered sections (title of each, key points, planned code samp
 
 ## Step 3: Write using the 6-part template
 
-Follow the exact order defined in CLAUDE.md (frontmatter, H1, opening hint "Sau buổi này bạn sẽ:", numbered sections, "Lỗi thường gặp" table, "Bài tập về nhà (45-60 phút)" with the "Checklist trước khi nộp:" line).
+Follow the exact order defined in CLAUDE.md (frontmatter, H1, opening hint "Sau buổi này bạn sẽ:", numbered sections, "Lỗi thường gặp" table, "Bài tập về nhà (45-60 phút)" with the "Checklist trước khi nộp:" task list).
 
 Content requirements:
 

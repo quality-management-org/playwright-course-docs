@@ -100,7 +100,7 @@ getUsers();
 Với URL đúng, kết quả không thay đổi so với mục 2. Với URL sai, terminal in ra dòng `Gọi API thất bại:` kèm thông tin lỗi, và chương trình kết thúc bình thường thay vì dừng đột ngột.
 
 {% hint style="success" %}
-Từ bài tập buổi này trở đi, mọi hàm gọi API đều cần có try/catch. Đây là một trong các tiêu chí trainer review khi chấm bài.
+Nếu buổi học chưa kịp đi qua mục này, bạn có thể đọc trước để tham khảo. Bài tập buổi này chỉ bắt buộc dùng `if / else` với `response.ok`, phần try/catch là không bắt buộc và sẽ được ôn lại ở buổi sau. Từ sau buổi đó, mọi hàm gọi API đều cần có try/catch và đây là một tiêu chí trainer review khi chấm bài.
 {% endhint %}
 
 ## 4. Git là gì
@@ -133,20 +133,17 @@ Lớp dùng chung một repo GitHub. Bài tập được nộp bằng cách đư
 1. Dùng File Explorer hoặc Finder, di chuyển nguyên folder `playwright-course` (kể cả `node_modules/`) vào folder `students/<your-name>/` trong repo lớp vừa tải về. Sau bước này, project chỉ còn một bản duy nhất nằm trong repo lớp.
 2. Trong VS Code, chọn File > Open Folder và mở đúng folder `playwright-course` bên trong repo. Từ Buổi 2 trở đi, luôn mở project theo cách này.
 
-Cấu trúc repo lớp sau khi di chuyển:
+Cấu trúc project sau khi di chuyển:
 
 ```
-<repo-name>/
-└── students/
-    └── linh/
-        └── playwright-course/
-            ├── node_modules/
-            ├── lesson-01/
-            ├── lesson-02/
-            ├── .gitignore
-            ├── package.json
-            ├── package-lock.json
-            └── tsconfig.json
+playwright-course/
+├── node_modules/
+├── lesson-01/
+├── lesson-02/
+├── .gitignore
+├── package.json
+├── package-lock.json
+└── tsconfig.json
 ```
 
 {% hint style="info" %}
@@ -192,16 +189,26 @@ Kiểm tra trước khi commit bằng `git status`: danh sách file chỉ gồm 
 
 ## 6. Tạo Pull Request trên GitHub
 
-1. Mở repo lớp trên GitHub. Banner màu vàng gợi ý nhánh vừa push xuất hiện ở đầu trang, bấm **Compare & pull request**.
+1. Mở repo lớp trên GitHub, chọn tab **Pull requests** ở thanh menu phía trên.
 
-   <!-- TODO(image): Trang repo lớp trên GitHub ngay sau khi push: banner màu vàng "linh/lesson-2 had recent pushes" ở đầu trang, nút Compare & pull request được khoanh. -->
+   ![Tab Pull requests trên thanh menu của repo lớp](../.gitbook/assets/buoi-02-github-pull-requests-tab.png)
 
-2. Đặt tiêu đề rõ ràng, ví dụ: `[Linh] Lesson 2 - Async/Await`.
-3. Bấm **Create pull request**.
+2. Bấm nút **New pull request** ở góc phải.
+3. Ở hàng chọn nhánh, giữ `base: main` và mở danh sách `compare:` để chọn nhánh của bạn, ví dụ `linh/lesson-2`. Phần dưới trang hiển thị các commit và file thay đổi để bạn kiểm tra lại trước khi tạo PR.
+4. Bấm **Create pull request**. GitHub chuyển sang form nhập nội dung.
 
-   <!-- TODO(image): Form tạo Pull Request trên GitHub: base là main, compare là linh/lesson-2, ô tiêu đề điền "[Linh] Lesson 2 - Async/Await", nút Create pull request được khoanh. -->
+   ![Màn hình Comparing changes với ô base, ô compare và nút Create pull request](../.gitbook/assets/buoi-02-github-comparing-changes.png)
 
-4. Chờ trainer review. Nếu có comment, sửa code rồi push lại lên đúng nhánh đó, PR tự cập nhật.
+5. Đặt tiêu đề rõ ràng, ví dụ: `[Linh] Lesson 2 - Async/Await`.
+6. Bấm **Create pull request** lần nữa để hoàn tất.
+
+   <!-- TODO(image): Form tạo Pull Request: base là main, compare là linh/lesson-2, ô tiêu đề điền "[Linh] Lesson 2 - Async/Await", nút Create pull request được khoanh. -->
+
+7. Chờ trainer review. Nếu có comment, sửa code rồi push lại lên đúng nhánh đó, PR tự cập nhật.
+
+{% hint style="info" %}
+Ngay sau khi push, GitHub có thể hiện banner màu vàng kèm nút **Compare & pull request** ở đầu trang repo. Bấm nút đó là lối tắt, chuyển thẳng tới bước 4. Banner chỉ xuất hiện trong ít phút, nếu không thấy thì dùng tab **Pull requests** theo các bước trên.
+{% endhint %}
 
 ## 7. Lỗi thường gặp
 
@@ -211,12 +218,62 @@ Kiểm tra trước khi commit bằng `git status`: danh sách file chỉ gồm 
 | Lỗi "await is only valid in async functions" | Dùng `await` ngoài hàm async                   | Thêm `async` vào khai báo hàm                                                 |
 | Push bị từ chối (rejected)                   | Đang đứng ở nhánh `main`                       | Kiểm tra nhánh bằng `git branch`, tạo nhánh riêng rồi push lại                |
 | Lỗi "Authentication failed" khi push         | Dùng mật khẩu tài khoản thay vì token          | Tạo Personal Access Token và dùng token ở ô password                          |
-| Không thấy banner tạo PR                     | Banner chỉ hiện trong ít phút sau khi push     | Vào tab Pull requests > New pull request > chọn nhánh của bạn                 |
+| Không tìm thấy nhánh của mình trong ô `compare` | Nhánh chưa được push lên GitHub                | Chạy lại `git push -u origin your-name/lesson-2`, tải lại trang rồi mở lại danh sách nhánh |
 | `git status` liệt kê hàng nghìn file trong `node_modules/` | Thiếu file `.gitignore` trong `playwright-course` | Tạo `.gitignore` theo mục 2 của Buổi 1, chạy `git rm -r --cached node_modules` rồi `git add .` lại |
 
 ## 8. Bài tập về nhà (45-60 phút)
 
-1. Tạo file `lesson-02/homework-lesson-02.ts`. Viết hàm `getProducts()` gọi API `https://fakestoreapi.com/products`, log ra tổng số sản phẩm và tên sản phẩm đầu tiên (field `title`), có try/catch đầy đủ. Chạy bằng `npx tsx lesson-02/homework-lesson-02.ts`.
-2. Đưa project `playwright-course` (gồm `lesson-01` và `lesson-02`) vào repo lớp theo mục 5, tạo Pull Request trên nhánh `your-name/lesson-2`.
+### Bài 1: gọi API và kiểm tra kết quả trả về
 
-**Checklist trước khi nộp:** code chạy không lỗi · có try/catch · tên biến đúng convention · đúng quy ước tên nhánh `your-name/lesson-2` · PR có tiêu đề rõ ràng.
+Tạo file `lesson-02/homework-lesson-02.ts`, viết hàm `getProducts()`:
+
+* Gọi API `https://fakestoreapi.com/products`
+* Kiểm tra `response.ok`, nếu là `false` thì log thông báo lỗi kèm `response.status` rồi dừng hàm
+* Nếu thành công, log tổng số sản phẩm và tên sản phẩm đầu tiên (field `title`)
+
+Chạy bằng `npx tsx lesson-02/homework-lesson-02.ts`.
+
+Để kiểm tra nhánh lỗi, đổi tạm URL thành `https://fakestoreapi.com/product` (thiếu chữ `s`). Server trả về status 404, `response.ok` là `false`, và hàm phải log thông báo lỗi thay vì đọc dữ liệu.
+
+{% hint style="info" %}
+`response.ok` là một thuộc tính có sẵn của `response`, kiểu `boolean`, viết không kèm dấu ngoặc. Giá trị là `true` khi status nằm trong khoảng 200-299 và `false` với các status còn lại.
+{% endhint %}
+
+### Bài 2: ôn lại vòng lặp và destructuring của Buổi 1
+
+Tạo file `lesson-01/practice-lesson-01.ts`, viết hàm `countLoginResults()`:
+
+```typescript
+function countLoginResults(
+  accounts: { username: string; canLogin: boolean }[]
+): { passed: number; failed: number } {
+  // duyệt array bằng for...of, đếm và trả về object gồm 2 field
+}
+```
+
+* Duyệt array bằng vòng lặp `for...of`
+* Đếm số tài khoản có `canLogin` là `true` và số tài khoản có `canLogin` là `false`
+* Trả về một object gồm hai field `passed` và `failed`
+* Chạy thử với array `accounts` ở mục 8 của Buổi 1, dùng destructuring để lấy hai giá trị ra hai biến rồi log theo dạng `"Passed: 2, Failed: 2"`
+
+Hàm này không gọi API nên chạy được ngay, không cần `async/await`.
+
+### Bài 3: nộp bài qua Pull Request
+
+Đưa project `playwright-course` (gồm `lesson-01` và `lesson-02`) vào repo lớp theo mục 5, tạo Pull Request trên nhánh `your-name/lesson-2` theo mục 6.
+
+### Bài 4 (không bắt buộc): try/catch
+
+Nếu bạn đã đọc mục 3, bọc thêm phần gọi API của bài 1 trong `try/catch`. Phần này sẽ được ôn lại ở buổi sau, chưa tính vào tiêu chí chấm bài.
+
+**Checklist trước khi nộp:**
+
+* [ ] Cả hai file chạy được bằng `npx tsx`
+* [ ] Bài 1 kiểm tra `response.ok` bằng `if / else`
+* [ ] Bài 1 chạy đúng cả khi URL sai (log lỗi, không crash)
+* [ ] Bài 2 dùng `for...of` và destructuring
+* [ ] Mọi tham số và giá trị trả về đều có khai báo kiểu
+* [ ] Không dùng `any`
+* [ ] Tên hàm và biến đúng camelCase
+* [ ] Đúng quy ước tên nhánh `your-name/lesson-2`
+* [ ] PR có tiêu đề rõ ràng

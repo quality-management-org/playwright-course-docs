@@ -31,7 +31,7 @@ Published via GitBook Git Sync: pushing to `main` goes live to students within a
 3. Opening `{% hint style="info" %}` starting with "Sau buoi nay ban se:" listing outcomes.
 4. Numbered sections `## 1.`, `## 2.`: theory with runnable code samples and tables.
 5. "Loi thuong gap" section: 3-column table Trieu chung / Nguyen nhan / Cach xu ly, at least 3 rows.
-6. Final section "Bai tap ve nha (45-60 phut)": numbered tasks, submission via Pull Request on branch `your-name/lesson-X`, ending with a "Checklist truoc khi nop:" line, items separated by "·".
+6. Final section "Bai tap ve nha (45-60 phut)": numbered tasks, submission via Pull Request on branch `your-name/lesson-X`, ending with a "Checklist truoc khi nop:" block written as a Markdown task list (one `* [ ] ` item per line, blank line after the heading).
 
 GitBook blocks: hint info for notes, success for tips, warning for warnings/anti-patterns. Command or line-by-line code explanations use 2-column tables (Lenh / Y nghia).
 
