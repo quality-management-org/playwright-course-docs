@@ -175,6 +175,9 @@ git push -u origin linh/lesson-2
 | `git commit -m "..."`              | Lưu một mốc thay đổi kèm mô tả ngắn bằng tiếng Anh                                          |
 | `git push -u origin linh/lesson-2` | Đẩy nhánh lên GitHub. Cờ `-u` liên kết nhánh trên máy với nhánh trên GitHub cho các lần sau |
 
+![So sánh luồng Git với quy trình mua sắm: add vào giỏ, commit là thanh toán, push là giao hàng](../.gitbook/assets/buoi-02-git-flow-shopping-analogy.png)
+
+
 Kiểm tra trước khi commit bằng `git status`: danh sách file chỉ gồm các file trong `playwright-course/`, không có file nào thuộc `node_modules/`.
 
 {% hint style="info" %}
@@ -221,7 +224,7 @@ Ngay sau khi push, GitHub có thể hiện banner màu vàng kèm nút **Compare
 | Không tìm thấy nhánh của mình trong ô `compare` | Nhánh chưa được push lên GitHub                | Chạy lại `git push -u origin your-name/lesson-2`, tải lại trang rồi mở lại danh sách nhánh |
 | `git status` liệt kê hàng nghìn file trong `node_modules/` | Thiếu file `.gitignore` trong `playwright-course` | Tạo `.gitignore` theo mục 2 của Buổi 1, chạy `git rm -r --cached node_modules` rồi `git add .` lại |
 
-## 8. Bài tập về nhà (45-60 phút)
+## 8. Bài tập về nhà
 
 ### Bài 1: gọi API và kiểm tra kết quả trả về
 
