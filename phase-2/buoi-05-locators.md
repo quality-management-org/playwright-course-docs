@@ -13,6 +13,7 @@ icon: crosshairs
 * Phân biệt thẻ đúng chuẩn với thẻ "giả" và biết cách xử lý khi gặp thẻ "giả".
 * Nắm thứ tự ưu tiên khi chọn locator và lý do nên tránh XPath phụ thuộc cấu trúc.
 * Kết hợp chaining và filter để trỏ chính xác một phần tử trong danh sách.
+
 {% endhint %}
 
 ## 1. Locator là gì và vì sao quan trọng
