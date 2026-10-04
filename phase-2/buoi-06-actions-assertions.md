@@ -2,6 +2,7 @@
 description: >-
   Thao tác với mọi loại phần tử, viết assertion kiểm tra kết quả và hiểu cơ chế
   auto-wait giúp vĩnh biệt sleep().
+icon: hand-pointer
 ---
 
 # Buổi 6 · Actions, Assertions & Auto-wait

@@ -2,6 +2,7 @@
 description: >-
   Tổ chức test theo chuẩn công nghiệp: mỗi trang web là một class, sửa UI chỉ
   cần sửa đúng một chỗ.
+icon: sitemap
 ---
 
 # Buổi 7 · Page Object Model: Khái niệm & Xây dựng

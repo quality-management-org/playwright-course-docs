@@ -1,3 +1,8 @@
+---
+description: "Cài Playwright vào project, viết và chạy test đầu tiên trên Saucedemo, đọc HTML report và dùng Codegen để sinh code test."
+icon: play
+---
+
 # Buổi 4 · Cài đặt Playwright & Test đầu tiên
 
 {% hint style="info" %}

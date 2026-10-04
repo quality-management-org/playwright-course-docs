@@ -2,6 +2,7 @@
 description: >-
   Refactor toàn bộ test sang POM và học cách review code như một automation
   engineer thực thụ.
+icon: clipboard-check
 ---
 
 # Buổi 8 · Hoàn thiện POM & Code Review
