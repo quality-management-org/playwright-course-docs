@@ -33,7 +33,7 @@ Cài đầy đủ các công cụ sau trước khi bắt đầu:
 3. **Playwright Test for VSCode**: dùng từ Buổi 4.
 
 ## 2. Tạo project cho khóa học
-
+ 
 Toàn bộ khóa học sử dụng một project duy nhất tên `playwright-course`. Trong Phase 1, bài của mỗi buổi nằm trong một folder con (`lesson-01`, `lesson-02`, `lesson-03`). Từ Buổi 4, Playwright được cài thêm vào chính project này. Cách tổ chức này tương tự project thực tế: thư viện được cài đặt tại gốc project và dùng chung cho toàn bộ file bên trong.
 
 ### Bước 1: tạo folder project và mở bằng VS Code
