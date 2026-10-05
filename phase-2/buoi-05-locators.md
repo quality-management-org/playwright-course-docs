@@ -24,13 +24,9 @@ Nguyên tắc chung: **chọn locator theo cách người dùng nhìn trang web*
 
 Để áp dụng nguyên tắc này, bạn cần đọc được HTML ở mức cơ bản. Các mục 2 đến 6 trình bày phần nền tảng đó trước khi đi vào cú pháp locator của Playwright ở mục 7.
 
-{% hint style="info" %}
-Ví dụ trong buổi này dùng trang thực hành [Toolshop](https://practicesoftwaretesting.com) (practicesoftwaretesting.com), một cửa hàng dụng cụ mô phỏng dành cho việc học kiểm thử. Tài khoản khách hàng dùng chung: `customer@practicesoftwaretesting.com` / `welcome01`. Không đổi mật khẩu hay thông tin của tài khoản này, vì cả lớp cùng sử dụng.
-{% endhint %}
-
 ## 2. Cấu tạo của một thẻ (tag)
 
-Mỗi trang web là một tài liệu HTML, gồm nhiều **phần tử (element)**. Mỗi phần tử được viết bằng một **thẻ (tag)**. Ví dụ nút "Add to cart" trên trang chi tiết sản phẩm của Toolshop (đã rút gọn):
+Mỗi trang web là một tài liệu HTML, gồm nhiều **phần tử (element)**. Mỗi phần tử được viết bằng một **thẻ (tag)**. Ví dụ nút "Add to cart" trên trang chi tiết sản phẩm của [Toolshop](https://practicesoftwaretesting.com), trang thực hành dùng trong buổi này (đã rút gọn):
 
 ```html
 <button id="btn-add-to-cart" class="btn btn-success" data-test="add-to-cart">Add to cart</button>
@@ -128,14 +124,16 @@ HTML định nghĩa sẵn các thẻ cho từng loại phần tử. Trình duy�
 
 Ngoài role, mỗi phần tử còn có một **accessible name**: cái tên mà công cụ đọc màn hình (dành cho người khiếm thị) đọc lên. Trình duyệt tính tên này theo quy tắc sau:
 
-| Phần tử                                  | Accessible name lấy từ                              | Ví dụ trên Toolshop                                                     |
-| ---------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------- |
-| `<button>`, `<a>`, heading               | Nội dung chữ bên trong thẻ                          | `<button>Add to cart</button>` có tên "Add to cart"                     |
-| `<input type="submit">`                  | Thuộc tính `value`                                  | `<input type="submit" value="Send">` có tên "Send"                      |
-| Ô nhập liệu                              | Thẻ `<label>` gắn bằng `for`                        | `<label for="email">Email address *</label>` cho ô có `id="email"`      |
-| Ô nhập liệu                              | Thẻ `<label>` bọc ngoài ô nhập                      | `<label><input type="checkbox"> Hammer </label>` có tên "Hammer"        |
-| `<img>`                                  | Thuộc tính `alt`                                    | `<img alt="Combination Pliers">` có tên "Combination Pliers"            |
-| Mọi phần tử                              | Thuộc tính `aria-label`, nếu có (ưu tiên cao nhất)  | Nút so sánh chỉ có icon, `aria-label="Compare"` cho nút tên "Compare"   |
+| Phần tử                      | Accessible name lấy từ                    | Ví dụ trên Toolshop                    |
+| ---------------------------- | ----------------------------------------- | -------------------------------------- |
+| `<button>`, `<a>`, heading   | Nội dung chữ bên trong thẻ                | Nút "Add to cart"                      |
+| `<input type="submit">`      | Thuộc tính `value`                        | Nút "Send" ở trang Contact             |
+| Ô nhập liệu                  | Thẻ `<label>` gắn bằng thuộc tính `for`   | Ô "Email address" ở trang đăng nhập    |
+| Ô nhập liệu                  | Thẻ `<label>` bọc ngoài ô nhập            | Checkbox "Hammer" ở bộ lọc danh mục    |
+| `<img>`                      | Thuộc tính `alt`                          | Ảnh sản phẩm "Combination Pliers"      |
+| Mọi phần tử                  | `aria-label`, nếu có (ưu tiên cao nhất)   | Nút "Compare" chỉ có icon              |
+
+HTML tương ứng của các ví dụ trên được trình bày ở mục 6.
 
 Cặp role và accessible name chính là thông tin `getByRole()` sử dụng: `page.getByRole("button", { name: "Add to cart" })` nghĩa là "phần tử có role `button` và tên `Add to cart`". Vì role và tên phản ánh đúng cách người dùng nhận biết phần tử, locator dạng này ít bị ảnh hưởng khi dev đổi class hay cấu trúc thẻ.
 
@@ -172,7 +170,7 @@ Các dạng thẻ "giả" thường gặp:
 **Tiêu đề "giả".** Chữ "Learn & Explore" ở footer trang chủ được in hoa, đậm, trông như tiêu đề, nhưng HTML thực tế là:
 
 ```html
-<div class="ptt-explore-heading text-uppercase text-muted fw-semibold">Learn &amp; Explore</div>
+<div class="ptt-explore-heading text-uppercase text-muted fw-semibold">Learn & Explore</div>
 ```
 
 **Role đi theo thẻ, không đi theo giao diện.** Mục "Categories" trên menu trông giống các link "Home", "Contact" bên cạnh, nhưng là một nút bấm (bấm vào để mở danh sách danh mục):
@@ -224,19 +222,60 @@ Quy trình chọn locator cho một phần tử bất kỳ:
 3. Xác định accessible name: nội dung chữ, `value`, `<label>`, `alt` hay `aria-label`.
 4. Nếu có role và tên rõ ràng, dùng `getByRole()`. Nếu không, xét lần lượt các thông tin còn lại theo thứ tự ở mục 7.
 
-Bảng sau áp dụng quy trình trên cho một số phần tử thật trên Toolshop:
+Các ví dụ sau áp dụng quy trình trên cho phần tử thật trên Toolshop. Mỗi ví dụ gồm HTML rút gọn (dòng comment) và locator tương ứng.
 
-| HTML (rút gọn)                                                                  | Thông tin dùng được                          | Locator                                                   |
-| ------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------------- |
-| `<input type="submit" value="Login">`                                           | Role `button`, tên "Login"                   | `page.getByRole("button", { name: "Login" })`             |
-| `<label for="email">Email address *</label>` và `<input id="email">`            | Có `<label>` gắn bằng `for`                  | `page.getByLabel("Email address")`                        |
-| `<label><input type="checkbox"> Hammer </label>`                                | Role `checkbox`, tên "Hammer" từ label bọc ngoài | `page.getByRole("checkbox", { name: "Hammer" })`      |
-| `<select aria-label="sort" data-test="sort">`                                   | Role `combobox`, tên "sort" từ `aria-label`  | `page.getByRole("combobox", { name: "sort" })`            |
-| `<div class="ptt-explore-heading">Learn &amp; Explore</div>`                    | Thẻ "giả", không có role, có chữ             | `page.getByText("Learn & Explore")`                       |
-| `<span data-test="product-price">$14.15</span>`                                 | Không có role, có `data-test`                | `page.getByTestId("product-price")` (cần cấu hình, mục 7) |
-| `<button aria-label="Compare">` (lặp lại 9 lần trên trang)                      | Role `button`, tên trùng nhau                | Cần chaining và filter, xem mục 9                         |
+**Ví dụ 1: nút Login.** Thẻ `<input type="submit">` có role `button`, tên lấy từ `value`.
 
-Dòng cuối cho thấy role và tên chưa đủ khi trang có nhiều phần tử giống nhau. Playwright sẽ báo lỗi "strict mode violation" nếu locator trỏ trúng nhiều phần tử trong khi thao tác chỉ áp dụng cho một phần tử. Mục 9 trình bày cách xử lý.
+```typescript
+// <input type="submit" value="Login">
+page.getByRole("button", { name: "Login" });
+```
+
+**Ví dụ 2: ô Email address.** Ô nhập có `<label>` gắn bằng `for`, nên dùng `getByLabel()`.
+
+```typescript
+// <label for="email">Email address *</label>
+// <input id="email" type="email" placeholder="Your email">
+page.getByLabel("Email address");
+```
+
+**Ví dụ 3: checkbox Hammer.** Role `checkbox`, tên "Hammer" lấy từ thẻ `<label>` bọc ngoài.
+
+```typescript
+// <label><input type="checkbox"> Hammer </label>
+page.getByRole("checkbox", { name: "Hammer" });
+```
+
+**Ví dụ 4: dropdown sắp xếp.** Role `combobox`, tên "sort" lấy từ `aria-label`.
+
+```typescript
+// <select aria-label="sort" data-test="sort">...</select>
+page.getByRole("combobox", { name: "sort" });
+```
+
+**Ví dụ 5: chữ "Learn & Explore" ở footer.** Thẻ "giả", không có role, nhưng có chữ hiển thị.
+
+```typescript
+// <div class="ptt-explore-heading">Learn & Explore</div>
+page.getByText("Learn & Explore");
+```
+
+**Ví dụ 6: giá sản phẩm.** Thẻ `<span>` không có role, nhưng có thuộc tính `data-test`. Cần cấu hình `testIdAttribute` (mục 7).
+
+```typescript
+// <span data-test="product-price">$14.15</span>
+page.getByTestId("product-price");
+```
+
+**Ví dụ 7: nút Compare.** Role `button`, tên "Compare", nhưng lặp lại 9 lần trên trang (mỗi sản phẩm một nút).
+
+```typescript
+// <button aria-label="Compare">...</button>  (x9)
+// Locator sau trúng cả 9 nút, cần chaining và filter (mục 9)
+page.getByRole("button", { name: "Compare" });
+```
+
+Ví dụ 7 cho thấy role và tên chưa đủ khi trang có nhiều phần tử giống nhau. Playwright sẽ báo lỗi "strict mode violation" nếu locator trỏ trúng nhiều phần tử trong khi thao tác chỉ áp dụng cho một phần tử. Mục 9 trình bày cách xử lý.
 
 Áp dụng trên trang đăng nhập của Toolshop:
 
@@ -411,10 +450,6 @@ Tạo file `tests/homework-lesson-05.spec.ts`. Viết locator cho **ít nhất 1
 5. Tên biến đặt bằng tiếng Anh, theo camelCase (ví dụ `searchInput`, `subjectDropdown`).
 
 Chạy bằng `npx playwright test tests/homework-lesson-05.spec.ts`.
-
-{% hint style="info" %}
-Không cần bấm gửi form Contact. Bài tập chỉ yêu cầu tìm đúng phần tử và kiểm tra phần tử hiển thị.
-{% endhint %}
 
 ### Bài 3: nộp bài qua Pull Request
 
