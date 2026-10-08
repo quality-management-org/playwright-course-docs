@@ -451,17 +451,79 @@ Tạo file `tests/homework-lesson-05.spec.ts`. Viết locator cho **ít nhất 1
 
 Chạy bằng `npx playwright test tests/homework-lesson-05.spec.ts`.
 
-### Bài 3: nộp bài qua Pull Request
+### Bài 3: locator Playwright và XPath
+
+Tạo file `tests/homework-lesson-05-xpath.spec.ts`. Với mỗi phần tử trong hai bảng dưới đây, viết 2 locator: một bằng hàm của Playwright, một bằng XPath dùng đúng kỹ thuật được yêu cầu. Cả hai locator phải pass cùng một assertion.
+
+
+{% hint style="warning" %}
+Bài này dùng XPath để luyện đọc quan hệ cha, con, anh em giữa các thẻ (mục 2). Trong test thực tế vẫn chọn locator theo thứ tự ưu tiên ở mục 7 (xem lý do ở mục 8).
+{% endhint %}
+
+**Phần A: trang chủ** (trang 1, chưa lọc, chưa sắp xếp)
+
+| #   | Phần tử                                                             | Kỹ thuật XPath                          |
+| --- | ------------------------------------------------------------------- | --------------------------------------- |
+| A1  | Giá của sản phẩm có tên đúng bằng "Pliers"                          | `parent::` và `following-sibling::`     |
+| A2  | Các mục con của danh mục "Hand Tools" ở bộ lọc (đếm số lượng)       | `following-sibling::` và `child::`      |
+| A3  | Nút "X" (xóa ô tìm kiếm), bắt đầu từ nút "Search"                   | `preceding-sibling::`                   |
+| A4  | Tiêu đề đứng ngay trước tiêu đề "Sustainability:"                   | `preceding-sibling::` và `[1]`          |
+| A5  | Tất cả nút "Compare" (đếm số lượng)                                 | `contains()` với thuộc tính `class`     |
+| A6  | Tất cả thẻ sản phẩm (đếm số lượng)                                  | `starts-with()` với thuộc tính `href`   |
+| A7  | Tên các sản phẩm có chữ "Hammer"                                    | `contains()` với `text()`               |
+| A8  | Tên các sản phẩm có chữ "Hammer" nhưng **không** có chữ "Claw"      | `and` và `not(contains())`              |
+| A9  | Tên các sản phẩm **không** có chữ "Pliers"                          | `not(contains())`                       |
+| A10 | Tên 2 sản phẩm "Pliers" và "Hammer" (đúng tên, lấy cùng lúc)        | `or`                                    |
+| A11 | Tên sản phẩm đang hết hàng                                          | `and` với điều kiện có phần tử con      |
+
+**Phần B: trang chi tiết "Combination Pliers"** (bấm vào thẻ sản phẩm từ trang chủ)
+
+| #   | Phần tử                                                  | Kỹ thuật XPath          |
+| --- | -------------------------------------------------------- | ----------------------- |
+| B1  | Giá trị thông số "Material"                              | `following-sibling::`   |
+| B2  | Nút giảm số lượng, bắt đầu từ ô số lượng                 | `preceding-sibling::`   |
+| B3  | Tên các sản phẩm trong khu vực "Related products"        | `following::`           |
+| B4  | Đơn giá, bắt đầu từ nút "Add to cart"                    | `preceding::`           |
+| B5  | Các dòng của bảng Specifications (đếm số lượng)          | `child::`               |
+| B6  | Giá có cả ký hiệu `$`, bắt đầu từ phần tử đơn giá        | `parent::`              |
+
+Chạy bằng `npx playwright test tests/homework-lesson-05-xpath.spec.ts`.
+
+### Bài 4: lấy toàn bộ tên sản phẩm vào mảng
+
+Tạo file `tests/homework-lesson-05-array.spec.ts`. Bài này dùng lại các hàm mảng đã học ở Buổi 3.
+
+1. Vào trang chủ, lấy tên **9 sản phẩm ở trang 1**, lưu vào mảng `firstPageNames: string[]`. Tên không còn khoảng trắng thừa. In mảng ra console.
+2. Kiểm tra mảng có 9 phần tử và có tên "Thor Hammer".
+3. Đi qua **tất cả các trang** (các nút số trang 1, 2, 3 ở cuối danh sách), gộp tên sản phẩm của mọi trang vào **một** mảng `allProductNames: string[]`.
+4. Với `allProductNames`, kiểm tra và in ra:
+   * Tổng số sản phẩm
+   * Danh sách sản phẩm là búa (tên có chữ "hammer", không phân biệt chữ hoa, chữ thường) và số lượng
+
+{% hint style="success" %}
+**Gợi ý:**
+
+* `await locator.allTextContents()` trả về mảng `string[]` chứa chữ của mọi phần tử khớp với locator.
+* Hàm này **không tự chờ** phần tử xuất hiện. Chờ bằng `expect(...)` trước khi gọi, kể cả sau mỗi lần chuyển trang.
+* Các hàm cần dùng: `map`, `trim`, `push` (kết hợp `...`), `filter`, `toLowerCase`, `includes`.
+{% endhint %}
+
+Chạy bằng `npx playwright test tests/homework-lesson-05-array.spec.ts`.
+
+### Bài 5: nộp bài qua Pull Request
 
 Commit và tạo Pull Request trên nhánh `your-name/lesson-5` (ví dụ `linh/lesson-5`) theo quy trình ở mục 5 và mục 6 của Buổi 2.
 
 **Checklist trước khi nộp:**
 
-* [ ] Tất cả test pass khi chạy `npx playwright test tests/homework-lesson-05.spec.ts`
+* [ ] Tất cả test pass khi chạy `npx playwright test tests/homework-lesson-05.spec.ts tests/homework-lesson-05-xpath.spec.ts tests/homework-lesson-05-array.spec.ts`
 * [ ] Có comment phân tích HTML cho 3 phần tử của Bài 1
-* [ ] Không có XPath nào trong file
+* [ ] Không có XPath nào trong file của Bài 2
 * [ ] Có đủ 5 loại locator theo yêu cầu, gồm ít nhất một chỗ dùng `.filter()` hoặc chaining
 * [ ] Có ít nhất một phần tử thẻ "giả" hoặc thiếu tên, kèm comment giải thích
 * [ ] Mỗi locator có comment giải thích lý do chọn
+* [ ] Bài 3: mỗi phần tử có đủ 2 locator (Playwright và XPath) cùng pass một assertion, XPath dùng đúng kỹ thuật được yêu cầu
+* [ ] Bài 3: không dùng ID tự sinh, XPath tuyệt đối, chỉ số vị trí, `.nth()` hay Copy XPath
+* [ ] Bài 4: có chờ bằng `expect(...)` trước mỗi lần gọi `allTextContents()`
 * [ ] Tên test mô tả đúng hành vi được kiểm tra
 * [ ] Đúng quy ước tên nhánh `your-name/lesson-5`
