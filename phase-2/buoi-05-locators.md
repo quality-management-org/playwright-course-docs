@@ -13,6 +13,7 @@ icon: crosshairs
 * Phân biệt thẻ đúng chuẩn với thẻ "giả" và biết cách xử lý khi gặp thẻ "giả".
 * Nắm thứ tự ưu tiên khi chọn locator và lý do nên tránh XPath phụ thuộc cấu trúc.
 * Kết hợp chaining và filter để trỏ chính xác một phần tử trong danh sách.
+
 {% endhint %}
 
 ## 1. Locator là gì và vì sao quan trọng
@@ -23,13 +24,9 @@ Nguyên tắc chung: **chọn locator theo cách người dùng nhìn trang web*
 
 Để áp dụng nguyên tắc này, bạn cần đọc được HTML ở mức cơ bản. Các mục 2 đến 6 trình bày phần nền tảng đó trước khi đi vào cú pháp locator của Playwright ở mục 7.
 
-{% hint style="info" %}
-Ví dụ trong buổi này dùng trang thực hành [Toolshop](https://practicesoftwaretesting.com) (practicesoftwaretesting.com), một cửa hàng dụng cụ mô phỏng dành cho việc học kiểm thử. Tài khoản khách hàng dùng chung: `customer@practicesoftwaretesting.com` / `welcome01`. Không đổi mật khẩu hay thông tin của tài khoản này, vì cả lớp cùng sử dụng.
-{% endhint %}
-
 ## 2. Cấu tạo của một thẻ (tag)
 
-Mỗi trang web là một tài liệu HTML, gồm nhiều **phần tử (element)**. Mỗi phần tử được viết bằng một **thẻ (tag)**. Ví dụ nút "Add to cart" trên trang chi tiết sản phẩm của Toolshop (đã rút gọn):
+Mỗi trang web là một tài liệu HTML, gồm nhiều **phần tử (element)**. Mỗi phần tử được viết bằng một **thẻ (tag)**. Ví dụ nút "Add to cart" trên trang chi tiết sản phẩm của [Toolshop](https://practicesoftwaretesting.com), trang thực hành dùng trong buổi này (đã rút gọn):
 
 ```html
 <button id="btn-add-to-cart" class="btn btn-success" data-test="add-to-cart">Add to cart</button>
@@ -127,14 +124,16 @@ HTML định nghĩa sẵn các thẻ cho từng loại phần tử. Trình duy�
 
 Ngoài role, mỗi phần tử còn có một **accessible name**: cái tên mà công cụ đọc màn hình (dành cho người khiếm thị) đọc lên. Trình duyệt tính tên này theo quy tắc sau:
 
-| Phần tử                                  | Accessible name lấy từ                              | Ví dụ trên Toolshop                                                     |
-| ---------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------- |
-| `<button>`, `<a>`, heading               | Nội dung chữ bên trong thẻ                          | `<button>Add to cart</button>` có tên "Add to cart"                     |
-| `<input type="submit">`                  | Thuộc tính `value`                                  | `<input type="submit" value="Send">` có tên "Send"                      |
-| Ô nhập liệu                              | Thẻ `<label>` gắn bằng `for`                        | `<label for="email">Email address *</label>` cho ô có `id="email"`      |
-| Ô nhập liệu                              | Thẻ `<label>` bọc ngoài ô nhập                      | `<label><input type="checkbox"> Hammer </label>` có tên "Hammer"        |
-| `<img>`                                  | Thuộc tính `alt`                                    | `<img alt="Combination Pliers">` có tên "Combination Pliers"            |
-| Mọi phần tử                              | Thuộc tính `aria-label`, nếu có (ưu tiên cao nhất)  | Nút so sánh chỉ có icon, `aria-label="Compare"` cho nút tên "Compare"   |
+| Phần tử                      | Accessible name lấy từ                    | Ví dụ trên Toolshop                    |
+| ---------------------------- | ----------------------------------------- | -------------------------------------- |
+| `<button>`, `<a>`, heading   | Nội dung chữ bên trong thẻ                | Nút "Add to cart"                      |
+| `<input type="submit">`      | Thuộc tính `value`                        | Nút "Send" ở trang Contact             |
+| Ô nhập liệu                  | Thẻ `<label>` gắn bằng thuộc tính `for`   | Ô "Email address" ở trang đăng nhập    |
+| Ô nhập liệu                  | Thẻ `<label>` bọc ngoài ô nhập            | Checkbox "Hammer" ở bộ lọc danh mục    |
+| `<img>`                      | Thuộc tính `alt`                          | Ảnh sản phẩm "Combination Pliers"      |
+| Mọi phần tử                  | `aria-label`, nếu có (ưu tiên cao nhất)   | Nút "Compare" chỉ có icon              |
+
+HTML tương ứng của các ví dụ trên được trình bày ở mục 6.
 
 Cặp role và accessible name chính là thông tin `getByRole()` sử dụng: `page.getByRole("button", { name: "Add to cart" })` nghĩa là "phần tử có role `button` và tên `Add to cart`". Vì role và tên phản ánh đúng cách người dùng nhận biết phần tử, locator dạng này ít bị ảnh hưởng khi dev đổi class hay cấu trúc thẻ.
 
@@ -171,7 +170,7 @@ Các dạng thẻ "giả" thường gặp:
 **Tiêu đề "giả".** Chữ "Learn & Explore" ở footer trang chủ được in hoa, đậm, trông như tiêu đề, nhưng HTML thực tế là:
 
 ```html
-<div class="ptt-explore-heading text-uppercase text-muted fw-semibold">Learn &amp; Explore</div>
+<div class="ptt-explore-heading text-uppercase text-muted fw-semibold">Learn & Explore</div>
 ```
 
 **Role đi theo thẻ, không đi theo giao diện.** Mục "Categories" trên menu trông giống các link "Home", "Contact" bên cạnh, nhưng là một nút bấm (bấm vào để mở danh sách danh mục):
@@ -223,19 +222,60 @@ Quy trình chọn locator cho một phần tử bất kỳ:
 3. Xác định accessible name: nội dung chữ, `value`, `<label>`, `alt` hay `aria-label`.
 4. Nếu có role và tên rõ ràng, dùng `getByRole()`. Nếu không, xét lần lượt các thông tin còn lại theo thứ tự ở mục 7.
 
-Bảng sau áp dụng quy trình trên cho một số phần tử thật trên Toolshop:
+Các ví dụ sau áp dụng quy trình trên cho phần tử thật trên Toolshop. Mỗi ví dụ gồm HTML rút gọn (dòng comment) và locator tương ứng.
 
-| HTML (rút gọn)                                                                  | Thông tin dùng được                          | Locator                                                   |
-| ------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------------- |
-| `<input type="submit" value="Login">`                                           | Role `button`, tên "Login"                   | `page.getByRole("button", { name: "Login" })`             |
-| `<label for="email">Email address *</label>` và `<input id="email">`            | Có `<label>` gắn bằng `for`                  | `page.getByLabel("Email address")`                        |
-| `<label><input type="checkbox"> Hammer </label>`                                | Role `checkbox`, tên "Hammer" từ label bọc ngoài | `page.getByRole("checkbox", { name: "Hammer" })`      |
-| `<select aria-label="sort" data-test="sort">`                                   | Role `combobox`, tên "sort" từ `aria-label`  | `page.getByRole("combobox", { name: "sort" })`            |
-| `<div class="ptt-explore-heading">Learn &amp; Explore</div>`                    | Thẻ "giả", không có role, có chữ             | `page.getByText("Learn & Explore")`                       |
-| `<span data-test="product-price">$14.15</span>`                                 | Không có role, có `data-test`                | `page.getByTestId("product-price")` (cần cấu hình, mục 7) |
-| `<button aria-label="Compare">` (lặp lại 9 lần trên trang)                      | Role `button`, tên trùng nhau                | Cần chaining và filter, xem mục 9                         |
+**Ví dụ 1: nút Login.** Thẻ `<input type="submit">` có role `button`, tên lấy từ `value`.
 
-Dòng cuối cho thấy role và tên chưa đủ khi trang có nhiều phần tử giống nhau. Playwright sẽ báo lỗi "strict mode violation" nếu locator trỏ trúng nhiều phần tử trong khi thao tác chỉ áp dụng cho một phần tử. Mục 9 trình bày cách xử lý.
+```typescript
+// <input type="submit" value="Login">
+page.getByRole("button", { name: "Login" });
+```
+
+**Ví dụ 2: ô Email address.** Ô nhập có `<label>` gắn bằng `for`, nên dùng `getByLabel()`.
+
+```typescript
+// <label for="email">Email address *</label>
+// <input id="email" type="email" placeholder="Your email">
+page.getByLabel("Email address");
+```
+
+**Ví dụ 3: checkbox Hammer.** Role `checkbox`, tên "Hammer" lấy từ thẻ `<label>` bọc ngoài.
+
+```typescript
+// <label><input type="checkbox"> Hammer </label>
+page.getByRole("checkbox", { name: "Hammer" });
+```
+
+**Ví dụ 4: dropdown sắp xếp.** Role `combobox`, tên "sort" lấy từ `aria-label`.
+
+```typescript
+// <select aria-label="sort" data-test="sort">...</select>
+page.getByRole("combobox", { name: "sort" });
+```
+
+**Ví dụ 5: chữ "Learn & Explore" ở footer.** Thẻ "giả", không có role, nhưng có chữ hiển thị.
+
+```typescript
+// <div class="ptt-explore-heading">Learn & Explore</div>
+page.getByText("Learn & Explore");
+```
+
+**Ví dụ 6: giá sản phẩm.** Thẻ `<span>` không có role, nhưng có thuộc tính `data-test`. Cần cấu hình `testIdAttribute` (mục 7).
+
+```typescript
+// <span data-test="product-price">$14.15</span>
+page.getByTestId("product-price");
+```
+
+**Ví dụ 7: nút Compare.** Role `button`, tên "Compare", nhưng lặp lại 9 lần trên trang (mỗi sản phẩm một nút).
+
+```typescript
+// <button aria-label="Compare">...</button>  (x9)
+// Locator sau trúng cả 9 nút, cần chaining và filter (mục 9)
+page.getByRole("button", { name: "Compare" });
+```
+
+Ví dụ 7 cho thấy role và tên chưa đủ khi trang có nhiều phần tử giống nhau. Playwright sẽ báo lỗi "strict mode violation" nếu locator trỏ trúng nhiều phần tử trong khi thao tác chỉ áp dụng cho một phần tử. Mục 9 trình bày cách xử lý.
 
 Áp dụng trên trang đăng nhập của Toolshop:
 
@@ -411,21 +451,79 @@ Tạo file `tests/homework-lesson-05.spec.ts`. Viết locator cho **ít nhất 1
 
 Chạy bằng `npx playwright test tests/homework-lesson-05.spec.ts`.
 
-{% hint style="info" %}
-Không cần bấm gửi form Contact. Bài tập chỉ yêu cầu tìm đúng phần tử và kiểm tra phần tử hiển thị.
+### Bài 3: locator Playwright và XPath
+
+Tạo file `tests/homework-lesson-05-xpath.spec.ts`. Với mỗi phần tử trong hai bảng dưới đây, viết 2 locator: một bằng hàm của Playwright, một bằng XPath dùng đúng kỹ thuật được yêu cầu. Cả hai locator phải pass cùng một assertion.
+
+
+{% hint style="warning" %}
+Bài này dùng XPath để luyện đọc quan hệ cha, con, anh em giữa các thẻ (mục 2). Trong test thực tế vẫn chọn locator theo thứ tự ưu tiên ở mục 7 (xem lý do ở mục 8).
 {% endhint %}
 
-### Bài 3: nộp bài qua Pull Request
+**Phần A: trang chủ** (trang 1, chưa lọc, chưa sắp xếp)
+
+| #   | Phần tử                                                             | Kỹ thuật XPath                          |
+| --- | ------------------------------------------------------------------- | --------------------------------------- |
+| A1  | Giá của sản phẩm có tên đúng bằng "Pliers"                          | `parent::` và `following-sibling::`     |
+| A2  | Các mục con của danh mục "Hand Tools" ở bộ lọc (đếm số lượng)       | `following-sibling::` và `child::`      |
+| A3  | Nút "X" (xóa ô tìm kiếm), bắt đầu từ nút "Search"                   | `preceding-sibling::`                   |
+| A4  | Tiêu đề đứng ngay trước tiêu đề "Sustainability:"                   | `preceding-sibling::` và `[1]`          |
+| A5  | Tất cả nút "Compare" (đếm số lượng)                                 | `contains()` với thuộc tính `class`     |
+| A6  | Tất cả thẻ sản phẩm (đếm số lượng)                                  | `starts-with()` với thuộc tính `href`   |
+| A7  | Tên các sản phẩm có chữ "Hammer"                                    | `contains()` với `text()`               |
+| A8  | Tên các sản phẩm có chữ "Hammer" nhưng **không** có chữ "Claw"      | `and` và `not(contains())`              |
+| A9  | Tên các sản phẩm **không** có chữ "Pliers"                          | `not(contains())`                       |
+| A10 | Tên 2 sản phẩm "Pliers" và "Hammer" (đúng tên, lấy cùng lúc)        | `or`                                    |
+| A11 | Tên sản phẩm đang hết hàng                                          | `and` với điều kiện có phần tử con      |
+
+**Phần B: trang chi tiết "Combination Pliers"** (bấm vào thẻ sản phẩm từ trang chủ)
+
+| #   | Phần tử                                                  | Kỹ thuật XPath          |
+| --- | -------------------------------------------------------- | ----------------------- |
+| B1  | Giá trị thông số "Material"                              | `following-sibling::`   |
+| B2  | Nút giảm số lượng, bắt đầu từ ô số lượng                 | `preceding-sibling::`   |
+| B3  | Tên các sản phẩm trong khu vực "Related products"        | `following::`           |
+| B4  | Đơn giá, bắt đầu từ nút "Add to cart"                    | `preceding::`           |
+| B5  | Các dòng của bảng Specifications (đếm số lượng)          | `child::`               |
+| B6  | Giá có cả ký hiệu `$`, bắt đầu từ phần tử đơn giá        | `parent::`              |
+
+Chạy bằng `npx playwright test tests/homework-lesson-05-xpath.spec.ts`.
+
+### Bài 4: lấy toàn bộ tên sản phẩm vào mảng
+
+Tạo file `tests/homework-lesson-05-array.spec.ts`. Bài này dùng lại các hàm mảng đã học ở Buổi 3.
+
+1. Vào trang chủ, lấy tên **9 sản phẩm ở trang 1**, lưu vào mảng `firstPageNames: string[]`. Tên không còn khoảng trắng thừa. In mảng ra console.
+2. Kiểm tra mảng có 9 phần tử và có tên "Thor Hammer".
+3. Đi qua **tất cả các trang** (các nút số trang 1, 2, 3 ở cuối danh sách), gộp tên sản phẩm của mọi trang vào **một** mảng `allProductNames: string[]`.
+4. Với `allProductNames`, kiểm tra và in ra:
+   * Tổng số sản phẩm
+   * Danh sách sản phẩm là búa (tên có chữ "hammer", không phân biệt chữ hoa, chữ thường) và số lượng
+
+{% hint style="success" %}
+**Gợi ý:**
+
+* `await locator.allTextContents()` trả về mảng `string[]` chứa chữ của mọi phần tử khớp với locator.
+* Hàm này **không tự chờ** phần tử xuất hiện. Chờ bằng `expect(...)` trước khi gọi, kể cả sau mỗi lần chuyển trang.
+* Các hàm cần dùng: `map`, `trim`, `push` (kết hợp `...`), `filter`, `toLowerCase`, `includes`.
+{% endhint %}
+
+Chạy bằng `npx playwright test tests/homework-lesson-05-array.spec.ts`.
+
+### Bài 5: nộp bài qua Pull Request
 
 Commit và tạo Pull Request trên nhánh `your-name/lesson-5` (ví dụ `linh/lesson-5`) theo quy trình ở mục 5 và mục 6 của Buổi 2.
 
 **Checklist trước khi nộp:**
 
-* [ ] Tất cả test pass khi chạy `npx playwright test tests/homework-lesson-05.spec.ts`
+* [ ] Tất cả test pass khi chạy `npx playwright test tests/homework-lesson-05.spec.ts tests/homework-lesson-05-xpath.spec.ts tests/homework-lesson-05-array.spec.ts`
 * [ ] Có comment phân tích HTML cho 3 phần tử của Bài 1
-* [ ] Không có XPath nào trong file
+* [ ] Không có XPath nào trong file của Bài 2
 * [ ] Có đủ 5 loại locator theo yêu cầu, gồm ít nhất một chỗ dùng `.filter()` hoặc chaining
 * [ ] Có ít nhất một phần tử thẻ "giả" hoặc thiếu tên, kèm comment giải thích
 * [ ] Mỗi locator có comment giải thích lý do chọn
+* [ ] Bài 3: mỗi phần tử có đủ 2 locator (Playwright và XPath) cùng pass một assertion, XPath dùng đúng kỹ thuật được yêu cầu
+* [ ] Bài 3: không dùng ID tự sinh, XPath tuyệt đối, chỉ số vị trí, `.nth()` hay Copy XPath
+* [ ] Bài 4: có chờ bằng `expect(...)` trước mỗi lần gọi `allTextContents()`
 * [ ] Tên test mô tả đúng hành vi được kiểm tra
 * [ ] Đúng quy ước tên nhánh `your-name/lesson-5`
