@@ -12,7 +12,6 @@
 
 * [Buổi 4 · Cài đặt Playwright & Test đầu tiên](phase-2-playwright-co-ban/buoi-04-playwright-first-test.md)
 * [Buổi 5 · Locators: Chọn phần tử đúng cách](phase-2-playwright-co-ban/buoi-5-locators-chon-phan-tu-dung-cach/README.md)
-  * [buoi 06 actions assertions](phase-2-playwright-co-ban/buoi-5-locators-chon-phan-tu-dung-cach/buoi-06-actions-assertions.md)
 * [Buổi 6 · Actions, Assertions & Auto-wait](phase-2-playwright-co-ban/buoi-6-actions-assertions-and-auto-wait.md)
 * [Buổi 7 · Page Object Model: Khái niệm & Xây dựng](phase-2-playwright-co-ban/buoi-07-page-object-model.md)
 * [Buổi 8 · Hoàn thiện POM & Code Review](phase-2-playwright-co-ban/buoi-08-pom-code-review.md)

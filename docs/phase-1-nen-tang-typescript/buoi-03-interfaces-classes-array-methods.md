@@ -29,6 +29,22 @@ Với tester, interface đặc biệt hữu ích khi làm việc với test data
 
 ## 2. Type alias và Union type
 
+Type alias (từ khóa `type`) đặt tên cho một kiểu dữ liệu. Type alias mô tả được object giống interface ở mục 1, chỉ khác cú pháp: có dấu `=` trước dấu ngoặc nhọn.
+
+```typescript
+// Type alias mô tả object: tương đương một interface
+type LoginAccount = {
+  username: string;
+  password: string;
+  role?: string; // field optional, viết giống interface
+};
+
+const account: LoginAccount = { username: "standard_user", password: "secret_sauce" };
+// const missing: LoginAccount = { username: "standard_user" }; // LỖI: thiếu password
+```
+
+Type alias còn khai báo được union type, điều mà interface không làm được:
+
 ```typescript
 // Union type: giá trị chỉ được phép là một trong các lựa chọn
 type PaymentMethod = "cash" | "card" | "momo";
@@ -38,7 +54,7 @@ const payment: PaymentMethod = "card"; // OK
 ```
 
 {% hint style="info" %}
-**Quy ước của lớp:** dùng `interface` để mô tả object, dùng `type` cho union type và các kiểu dạng lựa chọn. Cả hai cách đều xuất hiện trong các project thực tế.
+**Quy ước của lớp:** dùng `type` cho cả object và union type, để chỉ cần nhớ một cú pháp. Interface vẫn cần đọc hiểu được vì xuất hiện nhiều trong các project thực tế và trong tài liệu của Playwright.
 {% endhint %}
 
 ## 3. Class
