@@ -10,11 +10,16 @@ Published via GitBook Git Sync: pushing to `main` goes live to students within a
 
 ## Repo structure (hard rules)
 
-- `README.md`: homepage with a card grid (`<table data-view="cards">`) linking to lessons. Adding a lesson requires adding its card.
-- `SUMMARY.md`: sidebar table of contents. GitBook ONLY renders pages listed here. Any add/remove/rename of a .md file must update SUMMARY.md.
-- `.gitbook.yaml`: sync config, do not modify.
+The published GitBook space is the `docs/` folder (configured by `gitbook-docs.yaml`). Edit lessons ONLY inside `docs/`. The root-level `phase-1/`, `phase-2/`, `phase-3/`, `README.md` and `SUMMARY.md` are an older copy that students do not see; do not edit them.
+
+- `docs/README.md`: homepage with a card grid (`<table data-view="cards">`) linking to lessons. Adding a lesson requires adding its card.
+- `docs/SUMMARY.md`: sidebar table of contents. GitBook ONLY renders pages listed here. Any add/remove/rename of a .md file must update it.
+- Lesson folders: `docs/phase-1-nen-tang-typescript/`, `docs/phase-2-playwright-co-ban/`, `docs/phase-3-nang-cao/`. Filenames are kebab-case ASCII, and some were renamed by GitBook (e.g. Buoi 5 is `buoi-5-locators-chon-phan-tu-dung-cach/README.md`, Buoi 6 is `buoi-6-actions-assertions-and-auto-wait.md`). Always check the actual path in `docs/SUMMARY.md`.
+- Cross-lesson links are relative to the file inside `docs/` (e.g. `../phase-1-nen-tang-typescript/buoi-01-setup-typescript.md`). Content copied from the root copy keeps root paths, which GitBook turns into `/broken/pages/...`: fix them before pushing.
+- Edits made in the GitBook editor arrive as `GITBOOK-N` commits: pull before editing.
+- `.gitbook.yaml`, `gitbook-docs.yaml`: sync config, do not modify.
 - `course-outline.md`: the 15-session outline (internal reference, written in Vietnamese). Keep it out of SUMMARY.md.
-- `phase-N/buoi-XX-short-name.md`: one file per session. Filenames are kebab-case ASCII. Display titles (H1 and SUMMARY link text) are Vietnamese with full diacritics.
+- Display titles (H1 and SUMMARY link text) are Vietnamese with full diacritics.
 - Never rename existing lesson .md files: it breaks GitBook URLs already shared with students.
 
 ## Writing style (most important rules)

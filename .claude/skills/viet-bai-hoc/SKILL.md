@@ -11,7 +11,7 @@ Follow the steps in order. Do not skip any. All lesson content is written in Vie
 
 1. Read `course-outline.md` and locate the requested session. If it is not in the outline, stop and ask the user.
 2. Read one recently finished lesson (prefer same phase) as the reference for voice and depth.
-3. Determine the filename: `phase-N/buoi-XX-short-name.md`, kebab-case ASCII.
+3. Determine the filename: `docs/<phase-folder>/buoi-XX-short-name.md`, kebab-case ASCII, in the phase folder used by `docs/SUMMARY.md` (e.g. `docs/phase-3-nang-cao/`).
 
 ## Step 2: Present an outline before writing
 
@@ -30,8 +30,8 @@ Content requirements:
 
 ## Step 4: Update structure
 
-1. Add the SUMMARY.md entry in the correct phase group with the Vietnamese diacritics title.
-2. Add the matching card to the `<table data-view="cards">` grid in README.md.
+1. Add the `docs/SUMMARY.md` entry in the correct phase group with the Vietnamese diacritics title.
+2. Add the matching card to the `<table data-view="cards">` grid in `docs/README.md`.
 
 ## Step 5: Self-check and hand over
 

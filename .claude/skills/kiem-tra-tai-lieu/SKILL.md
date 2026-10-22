@@ -14,13 +14,13 @@ Read the specified file and grade each criterion. Report as a table: Criterion /
 1. Complete 6-part template in order: frontmatter (description + icon), H1 "Buổi X · ...", opening hint "Sau buổi này bạn sẽ:", numbered sections, "Lỗi thường gặp" (3-column table), "Bài tập về nhà (45-60 phút)" with "Checklist trước khi nộp:".
 2. Style: no em dash "—"; no exclamations, colloquial language, or emoji in body text; neutral "bạn" address; content in Vietnamese.
 3. Code samples: valid TypeScript/Playwright; locators prefer getByRole/getByLabel/getByPlaceholder/getByText; no `waitForTimeout`, no XPath (except labeled anti-patterns); English identifiers and example filenames; branch names `your-name/lesson-X`; Vietnamese comments and test descriptions.
-4. Cross-references: every "đã học ở Buổi X" / "Buổi Y sẽ trình bày" matches `course-outline.md`.
-5. Structure: the file has a SUMMARY.md entry and a README.md card.
+4. Cross-references: every "đã học ở Buổi X" / "Buổi Y sẽ trình bày" matches `course-outline.md`. Every relative `.md` link resolves to an existing file inside `docs/`, and no link contains `/broken/pages/`.
+5. Structure: the file has a `docs/SUMMARY.md` entry and a `docs/README.md` card.
 6. Images: list every remaining `<!-- TODO(image): ... -->` placeholder with its line number and description, so the trainer knows which screenshots are still missing. A lesson with open placeholders is not ready to announce as final.
 
 ## Mode 2: Repo-wide structure sync
 
-Compare three sources: actual .md files under `phase-*/`, entries in `SUMMARY.md`, cards in `README.md`. Report three kinds of drift:
+Compare three sources: actual .md files under `docs/phase-*/`, entries in `docs/SUMMARY.md`, cards in `docs/README.md`. The root-level `phase-*/`, `SUMMARY.md` and `README.md` are an unpublished old copy: ignore them. Report three kinds of drift:
 
 1. Files missing from SUMMARY.md (page invisible on GitBook).
 2. SUMMARY.md entries pointing to nonexistent files.
