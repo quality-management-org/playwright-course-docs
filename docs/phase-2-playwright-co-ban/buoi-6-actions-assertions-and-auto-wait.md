@@ -12,7 +12,7 @@
 
 ## 1. Actions: bộ thao tác của Playwright
 
-Một test gồm chuỗi **thao tác** (actions) và các điểm **kiểm tra** (assertions, trình bày ở mục 2). Phần lớn action được gọi trên locator (đã học ở [Buổi 5](/broken/pages/208e865b83fc20a6ff12b16f098284bcdaa5684f)). Mọi action đều trả về Promise nên luôn cần `await` (Promise đã học ở [Buổi 2](/broken/pages/97ff429e37405fc99b98191a3173a615574ade83), mục 2).
+Một test gồm chuỗi **thao tác** (actions) và các điểm **kiểm tra** (assertions, trình bày ở mục 2). Phần lớn action được gọi trên locator (đã học ở [Buổi 5](/broken/pages/f9bf0f9c47362d51b19c6f6187543c541385ff9d)). Mọi action đều trả về Promise nên luôn cần `await` (Promise đã học ở [Buổi 2](/broken/pages/ced23eb7a0e0401354fb0e90f45905f1c7d75844), mục 2).
 
 Trước khi thực hiện action, Playwright tự chờ phần tử đáp ứng các điều kiện dưới đây, gọi là **actionability checks**. Nếu hết thời gian chờ mà phần tử vẫn chưa đạt, test fail kèm thông báo điều kiện nào chưa thỏa mãn.
 
@@ -76,9 +76,9 @@ Dropdown có hai dạng, mỗi dạng dùng một cách thao tác riêng:
 | Dạng            | Cấu tạo                                                                                                                                                                                                                          | Action                                     |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | Native dropdown | Thẻ `<select>` do HTML định nghĩa sẵn, option đang chọn do trình duyệt quản lý                                                                                                                                                   | `selectOption()`                           |
-| Custom dropdown | Do UI library (Bootstrap, Material UI, Ant Design...) dựng từ `<button>`, `<div>`, `<ul>`/`<li>`, trạng thái do JavaScript quản lý. [Buổi 5](/broken/pages/208e865b83fc20a6ff12b16f098284bcdaa5684f), mục 5 gọi đây là thẻ "giả" | `click()` mở danh sách, `click()` chọn mục |
+| Custom dropdown | Do UI library (Bootstrap, Material UI, Ant Design...) dựng từ `<button>`, `<div>`, `<ul>`/`<li>`, trạng thái do JavaScript quản lý. [Buổi 5](/broken/pages/f9bf0f9c47362d51b19c6f6187543c541385ff9d), mục 5 gọi đây là thẻ "giả" | `click()` mở danh sách, `click()` chọn mục |
 
-`selectOption()` chỉ hoạt động với thẻ `<select>`, kể cả khi custom dropdown có role `combobox` hoặc `listbox`. Để xác định dạng dropdown, xem tên thẻ ở tab Elements của DevTools ([Buổi 5](/broken/pages/208e865b83fc20a6ff12b16f098284bcdaa5684f), mục 2).
+`selectOption()` chỉ hoạt động với thẻ `<select>`, kể cả khi custom dropdown có role `combobox` hoặc `listbox`. Để xác định dạng dropdown, xem tên thẻ ở tab Elements của DevTools ([Buổi 5](/broken/pages/f9bf0f9c47362d51b19c6f6187543c541385ff9d), mục 2).
 
 #### Native dropdown: `selectOption()`
 
@@ -98,7 +98,7 @@ Dropdown "Sort" ở trang chủ và dropdown "Subject" ở trang Contact của T
 
 * Theo `value`: `selectOption("price,asc")`.
 * Theo chữ hiển thị: `selectOption({ label: "Price (Low - High)" })`.
-* Theo vị trí (bắt đầu từ 0): `selectOption({ index: 3 })`. Hạn chế dùng cách này: khi dev thêm hoặc đổi thứ tự option, test chọn sai option mà không báo lỗi (cùng lý do tránh XPath phụ thuộc cấu trúc ở [Buổi 5](/broken/pages/208e865b83fc20a6ff12b16f098284bcdaa5684f), mục 8).
+* Theo vị trí (bắt đầu từ 0): `selectOption({ index: 3 })`. Hạn chế dùng cách này: khi dev thêm hoặc đổi thứ tự option, test chọn sai option mà không báo lỗi (cùng lý do tránh XPath phụ thuộc cấu trúc ở [Buổi 5](/broken/pages/f9bf0f9c47362d51b19c6f6187543c541385ff9d), mục 8).
 * Chọn nhiều option cùng lúc, chỉ dùng được với `<select multiple>`: truyền mảng, ví dụ `selectOption(["red", "green"])`. Các option không có trong mảng sẽ bị bỏ chọn.
 
 ```typescript
@@ -215,7 +215,7 @@ test("chọn radio Impressive", async ({ page }) => {
 
 #### Custom checkbox: `check()` hoặc `click()`
 
-Cách thao tác phụ thuộc vào việc dev có khai báo thuộc tính ARIA hay không. ARIA là nhóm thuộc tính `role` và `aria-*` (ví dụ `aria-label` đã gặp ở [Buổi 5](/broken/pages/208e865b83fc20a6ff12b16f098284bcdaa5684f), mục 4), mô tả vai trò và trạng thái của phần tử. Role và trạng thái hiển thị ở tab Accessibility của DevTools.
+Cách thao tác phụ thuộc vào việc dev có khai báo thuộc tính ARIA hay không. ARIA là nhóm thuộc tính `role` và `aria-*` (ví dụ `aria-label` đã gặp ở [Buổi 5](/broken/pages/f9bf0f9c47362d51b19c6f6187543c541385ff9d), mục 4), mô tả vai trò và trạng thái của phần tử. Role và trạng thái hiển thị ở tab Accessibility của DevTools.
 
 **Có ARIA (`role="checkbox"` kèm `aria-checked`): dùng `check()`, `uncheck()`.** Cây thư mục ở trang [DemoQA Check Box](https://demoqa.com/checkbox) dựng checkbox bằng thẻ `<span>`:
 
@@ -401,7 +401,7 @@ test("bấm OK trên hộp thoại confirm", async ({ page }) => {
 });
 ```
 
-Tham số thứ hai của `page.once()` là một arrow function ([Buổi 1](/broken/pages/7399048e23962a5bce4c972526965512c4a86475), mục 7), Playwright gọi hàm này khi hộp thoại xuất hiện. Các hàm của đối tượng `dialog`:
+Tham số thứ hai của `page.once()` là một arrow function ([Buổi 1](/broken/pages/ac6fcda284787b9989b5a96b76653e7d2f42860d), mục 7), Playwright gọi hàm này khi hộp thoại xuất hiện. Các hàm của đối tượng `dialog`:
 
 * `dialog.accept()`: bấm OK. Với prompt, truyền thêm chữ cần nhập: `dialog.accept("Playwright")`.
 * `dialog.dismiss()`: bấm Cancel.
@@ -434,7 +434,7 @@ test("mở link GitHub ở tab mới", async ({ page }) => {
 });
 ```
 
-Thứ tự ba dòng giữa là bắt buộc. Nếu viết `await page.waitForEvent("popup")` sau khi click, tab mới có thể đã mở xong trước khi bắt đầu chờ, và test bị treo đến hết thời gian chờ. Dòng đầu tạo Promise (khái niệm Promise đã học ở [Buổi 2](/broken/pages/97ff429e37405fc99b98191a3173a615574ade83), mục 2) và bắt đầu lắng nghe sự kiện, dòng thứ ba mới `await` để lấy tab mới. Đối tượng `githubPage` dùng được mọi hàm như `page`.
+Thứ tự ba dòng giữa là bắt buộc. Nếu viết `await page.waitForEvent("popup")` sau khi click, tab mới có thể đã mở xong trước khi bắt đầu chờ, và test bị treo đến hết thời gian chờ. Dòng đầu tạo Promise (khái niệm Promise đã học ở [Buổi 2](/broken/pages/ced23eb7a0e0401354fb0e90f45905f1c7d75844), mục 2) và bắt đầu lắng nghe sự kiện, dòng thứ ba mới `await` để lấy tab mới. Đối tượng `githubPage` dùng được mọi hàm như `page`.
 
 #### Modal HTML: locator như phần tử bình thường
 
@@ -495,7 +495,7 @@ Có thể đặt timeout riêng cho action theo bảng dưới đây (đơn vị
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Một action               | `await page.getByRole("button", { name: "Login" }).click({ timeout: 10000 });`                                                                                   |
 | Một lần chuyển trang     | `await page.goto("https://practicesoftwaretesting.com/", { timeout: 15000 });`                                                                                   |
-| Mọi action trong project | `use: { actionTimeout: 10000, navigationTimeout: 15000 }` trong `playwright.config.ts` ([Buổi 9](/broken/pages/f638211daa07f3ca9e1477f3669d7838f93f09c9), mục 2) |
+| Mọi action trong project | `use: { actionTimeout: 10000, navigationTimeout: 15000 }` trong `playwright.config.ts` ([Buổi 9](/broken/pages/9102400fdd54cb98525827580a06f5aaaebe6373), mục 2) |
 
 **Tham khảo:** [Timeouts](https://playwright.dev/docs/test-timeouts)
 
@@ -533,7 +533,7 @@ expect(cartCount).toBe("1");
 await expect(page.locator("[data-test='cart-quantity']")).toHaveText("1");
 ```
 
-Assertion trên giá trị dùng cho dữ liệu không nằm trên trang, ví dụ nội dung hộp thoại (mục 1.8), status code của response (mục 4.4), dữ liệu API trả về ở [Buổi 11](/broken/pages/394f143f8898effa1355b6510d628701b4ada9fd).
+Assertion trên giá trị dùng cho dữ liệu không nằm trên trang, ví dụ nội dung hộp thoại (mục 1.8), status code của response (mục 4.4), dữ liệu API trả về ở [Buổi 11](/broken/pages/8ec7b7b8cf47baee1517a4bc8f8ed04cfac44024).
 
 ### 2.2 Các assertion thường dùng
 
@@ -554,7 +554,7 @@ Assertion trên giá trị dùng cho dữ liệu không nằm trên trang, ví d
 
 Với phần tử có nội dung `Combination Pliers $14.15`: `toHaveText("Combination Pliers")` fail vì thiếu phần giá, `toContainText("Combination Pliers")` pass. Dùng `toHaveText()` khi biết chính xác toàn bộ nội dung (số lượng trong giỏ, thông báo lỗi), `toContainText()` khi phần tử có thêm nội dung không cần kiểm tra.
 
-Các assertion nhận chữ (`toHaveText`, `toContainText`, `toHaveValue`, `toHaveURL`, `toHaveClass`...) chấp nhận cả chuỗi và regex. Regex như `/account/` nghĩa là "có chứa `account`", đã gặp ở [Buổi 4](/broken/pages/eef4f963ce40477ff93fe952ed1738492859f54f), mục 3.
+Các assertion nhận chữ (`toHaveText`, `toContainText`, `toHaveValue`, `toHaveURL`, `toHaveClass`...) chấp nhận cả chuỗi và regex. Regex như `/account/` nghĩa là "có chứa `account`", đã gặp ở [Buổi 4](/broken/pages/07b02dcbd23ca91afe021ca92a475a75e9b43212), mục 3.
 
 **Assertion trên giá trị:**
 
@@ -603,7 +603,7 @@ Web-first assertion mặc định chờ tối đa 5 giây. Assertion trên giá 
 | Phạm vi                     | Cách đặt                                                                                                                            |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Một assertion               | `await expect(page.getByText("Product added to shopping cart.")).toBeVisible({ timeout: 10000 });`                                  |
-| Mọi assertion trong project | `expect: { timeout: 10000 }` trong `playwright.config.ts` ([Buổi 9](/broken/pages/f638211daa07f3ca9e1477f3669d7838f93f09c9), mục 2) |
+| Mọi assertion trong project | `expect: { timeout: 10000 }` trong `playwright.config.ts` ([Buổi 9](/broken/pages/9102400fdd54cb98525827580a06f5aaaebe6373), mục 2) |
 
 **Tham khảo:** [Assertions](https://playwright.dev/docs/test-assertions), [Generic assertions](https://playwright.dev/docs/api/class-genericassertions), [Timeouts](https://playwright.dev/docs/test-timeouts)
 
@@ -694,7 +694,7 @@ Auto-wait xử lý được phần lớn trường hợp. Một số tình huố
 
 #### `locator.waitFor()`: chờ trước hàm không có auto-wait
 
-Các hàm đọc dữ liệu như `allTextContents()`, `count()` trả kết quả ngay tại thời điểm gọi, không chờ phần tử xuất hiện. Nếu danh sách chưa tải xong, kết quả là mảng rỗng hoặc số 0 (lưu ý đã gặp ở Bài 4, bài tập về nhà của [Buổi 5](/broken/pages/208e865b83fc20a6ff12b16f098284bcdaa5684f)):
+Các hàm đọc dữ liệu như `allTextContents()`, `count()` trả kết quả ngay tại thời điểm gọi, không chờ phần tử xuất hiện. Nếu danh sách chưa tải xong, kết quả là mảng rỗng hoặc số 0 (lưu ý đã gặp ở Bài 4, bài tập về nhà của [Buổi 5](/broken/pages/f9bf0f9c47362d51b19c6f6187543c541385ff9d)):
 
 ```typescript
 test("lấy tên các sản phẩm ở trang chủ", async ({ page }) => {
@@ -730,7 +730,7 @@ test("sắp xếp sản phẩm gọi API thành công", async ({ page }) => {
 });
 ```
 
-Giống sự kiện `popup` ở mục 1.8, Promise phải được tạo **trước** action. Nếu tạo sau, response có thể đã về trước khi bắt đầu chờ và test bị treo đến hết thời gian chờ. `waitForRequest()` dùng theo cùng cách. [Buổi 12](/broken/pages/21f171bc174cf52e087ba24047822cfaff913a38) trình bày chi tiết cách làm việc với request và response của trang.
+Giống sự kiện `popup` ở mục 1.8, Promise phải được tạo **trước** action. Nếu tạo sau, response có thể đã về trước khi bắt đầu chờ và test bị treo đến hết thời gian chờ. `waitForRequest()` dùng theo cùng cách. [Buổi 12](/broken/pages/cc8891fff55e324e8a78d306a2d166ece019608b) trình bày chi tiết cách làm việc với request và response của trang.
 
 #### `page.waitForURL()` và `page.waitForLoadState()`
 
@@ -758,11 +758,69 @@ await page.waitForURL(/account/);
 
 ## 5. Bài tập về nhà
 
-Toàn bộ bài tập làm trên [Toolshop](https://practicesoftwaretesting.com/) với tài khoản `customer@practicesoftwaretesting.com` / `welcome01`.
+Toàn bộ bài tập làm trên [Toolshop](https://practicesoftwaretesting.com/) với tài khoản `customer@practicesoftwaretesting.com` / `welcome01`. Bài 1 và Bài 2 ôn tập kiến thức từ Buổi 1 đến Buổi 5 trên [trang đăng nhập](https://practicesoftwaretesting.com/auth/login).
 
-### Bài 1: test checkout flow
+### Bài 1: kiểm tra đăng nhập với nhiều bộ dữ liệu
 
-Tạo file `tests/homework-lesson-06.spec.ts`, viết một test cho toàn bộ luồng đặt hàng:
+Bài này ôn tập kiến thức của:
+
+* [Buổi 1 · Setup môi trường & TypeScript cơ bản](/broken/pages/ac6fcda284787b9989b5a96b76653e7d2f42860d)
+* [Buổi 3 · Interfaces, Classes, npm & Array methods](/broken/pages/ca5dde37702a14f14bdfb690c383b4fac089f2e0)
+
+{% hint style="warning" %}
+Tài khoản khách hàng của Toolshop bị khóa sau 3 lần đăng nhập sai password, và tài khoản bị khóa thì cả lớp không dùng được nữa. Không nhập password sai cho `customer@practicesoftwaretesting.com`. Với trường hợp sai thông tin đăng nhập, dùng một email chưa đăng ký, ví dụ `not-registered@practicesoftwaretesting.com`.
+{% endhint %}
+
+1. Viết một hàm đăng nhập (mở trang, điền email và password, bấm "Login"), tham số password có giá trị mặc định là `"welcome01"`.
+2. Khai báo một `type` ([Buổi 3](/broken/pages/ca5dde37702a14f14bdfb690c383b4fac089f2e0), mục 2) mô tả một bộ dữ liệu đăng nhập: email, password (tùy chọn) và kết quả mong đợi.
+3.  Khai báo một mảng có kiểu là `type` ở bước 2, gồm ít nhất 6 bộ dữ liệu:
+
+    | # | Dữ liệu                                               | Expected Result                        |
+    | - | ----------------------------------------------------- | -------------------------------------- |
+    | 1 | Email để trống, password đúng                         | Thông báo thiếu email                  |
+    | 2 | Email sai định dạng (không có `@`), password đúng     | Thông báo email sai định dạng          |
+    | 3 | Email đúng, password để trống                         | Thông báo thiếu password               |
+    | 4 | Email đúng, password có 2 ký tự                       | Thông báo độ dài password không hợp lệ |
+    | 5 | Email chưa đăng ký, password `welcome01`              | Thông báo sai email hoặc password      |
+    | 6 | `customer@practicesoftwaretesting.com`, password đúng | Chuyển sang trang tài khoản            |
+4. Viết một test dùng `for...of` duyệt mảng và destructuring để lấy các field, kiểm tra kết quả của từng bộ dữ liệu khớp với cột "Expected Result".
+
+{% hint style="info" %}
+Trong bài này, nếu một bộ dữ liệu fail thì test dừng ngay và các bộ dữ liệu phía sau không chạy. [Buổi 10](/broken/pages/b22fb96c40f9928d1b3730d887aaf914b525a9dc) trình bày parameterized test, cách viết để mỗi bộ dữ liệu là một test riêng trong report.
+{% endhint %}
+
+### Bài 2: kiểm tra giao diện và trạng thái của form đăng nhập
+
+Bài này ôn tập kiến thức của:
+
+* [Buổi 1 · Setup môi trường & TypeScript cơ bản](/broken/pages/ac6fcda284787b9989b5a96b76653e7d2f42860d)
+* [Buổi 3 · Interfaces, Classes, npm & Array methods](/broken/pages/ca5dde37702a14f14bdfb690c383b4fac089f2e0)
+* [Buổi 5 · Locators: Chọn phần tử đúng cách](/broken/pages/f9bf0f9c47362d51b19c6f6187543c541385ff9d)
+
+Viết 3 test:
+
+1. **Giao diện trang đăng nhập:** các phần tử sau hiển thị
+   * Tiêu đề "Login"
+   * Ô Email, có `type="email"` và placeholder "Your email"
+   * Ô Password
+   * Nút "Login"
+   * Link "Register your account"
+   * Link "Forgot your Password?"
+2. **Trạng thái lỗi khi bỏ trống:**
+   * Bấm "Login" khi chưa nhập gì: thông báo lỗi của Email và của Password hiển thị
+   * Ô Email có `aria-invalid="true"`
+   * Điền email hợp lệ: thông báo lỗi của Email biến mất
+   * Ô Email chuyển thành `aria-invalid="false"`
+   * Thông báo lỗi của Password vẫn còn
+3. **Điều hướng từ trang đăng nhập:**
+   * Link "Register your account" chuyển đúng trang
+   * Link "Forgot your Password?" chuyển đúng trang
+   * Dùng `type` mô tả link (tên link, URL mong đợi)
+   * Dùng `for...of` để duyệt danh sách link
+
+### Bài 3: test checkout flow
+
+Viết một test cho toàn bộ luồng đặt hàng:
 
 1. Đăng nhập, thêm 2 sản phẩm khác nhau vào giỏ, mở giỏ hàng (biểu tượng giỏ trên thanh menu). Kiểm tra giỏ hàng có đủ 2 sản phẩm, đúng tên.
 2. Ở trang giỏ hàng, kiểm tra tổng tiền bằng `toContainText()` với giá trị trong ô Total.
@@ -772,30 +830,8 @@ Tạo file `tests/homework-lesson-06.spec.ts`, viết một test cho toàn bộ 
 
 Yêu cầu kỹ thuật:
 
-* Locator theo thứ tự ưu tiên ở [Buổi 5](/broken/pages/208e865b83fc20a6ff12b16f098284bcdaa5684f), mục 7. Không dùng XPath.
+* Locator theo thứ tự ưu tiên ở [Buổi 5](/broken/pages/f9bf0f9c47362d51b19c6f6187543c541385ff9d), mục 7. Không dùng XPath.
 * Không có `page.waitForTimeout()`.
 * Có assertion neo sau mỗi bước chuyển trang (mục 2.3).
 * Có ít nhất một chỗ dùng `expect.soft()` hợp lý (mục 3).
 * Tên biến tiếng Anh, camelCase (ví dụ `cartTotal`, `paymentMethodDropdown`).
-
-{% hint style="success" %}
-**Gợi ý:**
-
-* Đoạn code đăng nhập Toolshop đã có ở [Buổi 5](/broken/pages/208e865b83fc20a6ff12b16f098284bcdaa5684f), mục 6.
-* Gặp dropdown hoặc checkbox chưa rõ loại, mở DevTools để xác định là native element hay custom component trước khi chọn action (mục 1.2 và 1.4).
-* Chạy với `--headed` để quan sát từng bước, `--debug` khi cần đi từng dòng ([Buổi 4](/broken/pages/eef4f963ce40477ff93fe952ed1738492859f54f), mục 4).
-{% endhint %}
-
-Chạy bằng `npx playwright test tests/homework-lesson-06.spec.ts`.
-
-Commit (ví dụ `lesson 6: checkout flow homework`) và tạo Pull Request trên nhánh `your-name/lesson-6` (ví dụ `linh/lesson-6`) theo quy trình ở [Buổi 2](/broken/pages/97ff429e37405fc99b98191a3173a615574ade83), mục 5 và mục 6.
-
-**Checklist trước khi nộp:**
-
-* [ ] Test pass ổn định khi chạy 3 lần liên tiếp
-* [ ] Không có `page.waitForTimeout()`
-* [ ] Mỗi bước chuyển trang có assertion neo
-* [ ] Có ít nhất một chỗ dùng `expect.soft()` và lý do dùng hợp lý
-* [ ] Không có XPath, không dùng `{ force: true }`
-* [ ] Tên test mô tả đúng hành vi được kiểm tra
-* [ ] Đúng quy ước tên nhánh `your-name/lesson-6`
