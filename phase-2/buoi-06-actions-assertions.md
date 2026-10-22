@@ -773,11 +773,55 @@ await page.waitForURL(/account/);
 
 ## 5. Bài tập về nhà
 
-Toàn bộ bài tập làm trên [Toolshop](https://practicesoftwaretesting.com/) với tài khoản `customer@practicesoftwaretesting.com` / `welcome01`.
+Toàn bộ bài tập làm trên [Toolshop](https://practicesoftwaretesting.com/) với tài khoản `customer@practicesoftwaretesting.com` / `welcome01`. Bài 1 và Bài 2 ôn tập kiến thức từ Buổi 1 đến Buổi 5 trên [trang đăng nhập](https://practicesoftwaretesting.com/auth/login).
 
-### Bài 1: test checkout flow
+### Bài 1: kiểm tra đăng nhập với nhiều bộ dữ liệu
 
-Tạo file `tests/homework-lesson-06.spec.ts`, viết một test cho toàn bộ luồng đặt hàng:
+Bài này ôn tập kiến thức của:
+
+* [Buổi 1 · Setup môi trường & TypeScript cơ bản](../phase-1/buoi-01-setup-typescript.md)
+* [Buổi 3 · Interfaces, Classes, npm & Array methods](../phase-1/buoi-03-interfaces-classes-array-methods.md)
+
+{% hint style="warning" %}
+Tài khoản khách hàng của Toolshop bị khóa sau 3 lần đăng nhập sai password, và tài khoản bị khóa thì cả lớp không dùng được nữa. Không nhập password sai cho `customer@practicesoftwaretesting.com`. Với trường hợp sai thông tin đăng nhập, dùng một email chưa đăng ký, ví dụ `not-registered@practicesoftwaretesting.com`.
+{% endhint %}
+
+1. Viết một hàm đăng nhập (mở trang, điền email và password, bấm "Login"), tham số password có giá trị mặc định là `"welcome01"`.
+2. Khai báo một `type` ([Buổi 3](../phase-1/buoi-03-interfaces-classes-array-methods.md), mục 2) mô tả một bộ dữ liệu đăng nhập: email, password (tùy chọn) và kết quả mong đợi.
+3. Khai báo một mảng có kiểu là `type` ở bước 2, gồm ít nhất 6 bộ dữ liệu:
+
+   | #   | Dữ liệu                                               | Expected Result                        |
+   | --- | ----------------------------------------------------- | -------------------------------------- |
+   | 1   | Email để trống, password đúng                         | Thông báo thiếu email                  |
+   | 2   | Email sai định dạng (không có `@`), password đúng     | Thông báo email sai định dạng          |
+   | 3   | Email đúng, password để trống                         | Thông báo thiếu password               |
+   | 4   | Email đúng, password có 2 ký tự                       | Thông báo độ dài password không hợp lệ |
+   | 5   | Email chưa đăng ký, password `welcome01`              | Thông báo sai email hoặc password      |
+   | 6   | `customer@practicesoftwaretesting.com`, password đúng | Chuyển sang trang tài khoản            |
+
+4. Viết một test dùng `for...of` duyệt mảng và destructuring để lấy các field, kiểm tra kết quả của từng bộ dữ liệu khớp với cột "Expected Result".
+
+{% hint style="info" %}
+Trong bài này, nếu một bộ dữ liệu fail thì test dừng ngay và các bộ dữ liệu phía sau không chạy. [Buổi 10](../phase-3/buoi-10-test-suite-organization.md) trình bày parameterized test, cách viết để mỗi bộ dữ liệu là một test riêng trong report.
+{% endhint %}
+
+### Bài 2: kiểm tra giao diện và trạng thái của form đăng nhập
+
+Bài này ôn tập kiến thức của:
+
+* [Buổi 1 · Setup môi trường & TypeScript cơ bản](../phase-1/buoi-01-setup-typescript.md)
+* [Buổi 3 · Interfaces, Classes, npm & Array methods](../phase-1/buoi-03-interfaces-classes-array-methods.md)
+* [Buổi 5 · Locators: Chọn phần tử đúng cách](buoi-05-locators.md)
+
+Viết 3 test:
+
+1. **Giao diện trang đăng nhập:** tiêu đề "Login", ô Email, ô Password, nút "Login", link "Register your account", link "Forgot your Password?" đều hiển thị. Ô Email có `type="email"` và placeholder "Your email".
+2. **Trạng thái lỗi khi bỏ trống:** bấm "Login" khi chưa nhập gì, hai thông báo lỗi của Email và Password hiển thị, ô Email có `aria-invalid="true"`. Sau khi điền email hợp lệ, lỗi của Email biến mất, `aria-invalid` chuyển thành `"false"`, lỗi của Password vẫn còn.
+3. **Điều hướng từ trang đăng nhập:** dùng `type` cho link (tên link, URL mong đợi) và `for...of` để kiểm tra 2 link "Register your account" và "Forgot your Password?" chuyển đúng trang.
+
+### Bài 3: test checkout flow
+
+Viết một test cho toàn bộ luồng đặt hàng:
 
 1. Đăng nhập, thêm 2 sản phẩm khác nhau vào giỏ, mở giỏ hàng (biểu tượng giỏ trên thanh menu). Kiểm tra giỏ hàng có đủ 2 sản phẩm, đúng tên.
 2. Ở trang giỏ hàng, kiểm tra tổng tiền bằng `toContainText()` với giá trị trong ô Total.
@@ -793,24 +837,20 @@ Yêu cầu kỹ thuật:
 * Có ít nhất một chỗ dùng `expect.soft()` hợp lý (mục 3).
 * Tên biến tiếng Anh, camelCase (ví dụ `cartTotal`, `paymentMethodDropdown`).
 
-{% hint style="success" %}
-**Gợi ý:**
+### Bài 4: nộp bài qua Pull Request
 
-* Đoạn code đăng nhập Toolshop đã có ở [Buổi 5](buoi-05-locators.md), mục 6.
-* Gặp dropdown hoặc checkbox chưa rõ loại, mở DevTools để xác định là native element hay custom component trước khi chọn action (mục 1.2 và 1.4).
-* Chạy với `--headed` để quan sát từng bước, `--debug` khi cần đi từng dòng ([Buổi 4](buoi-04-playwright-first-test.md), mục 4).
-{% endhint %}
-
-Chạy bằng `npx playwright test tests/homework-lesson-06.spec.ts`.
-
-Commit (ví dụ `lesson 6: checkout flow homework`) và tạo Pull Request trên nhánh `your-name/lesson-6` (ví dụ `linh/lesson-6`) theo quy trình ở [Buổi 2](../phase-1/buoi-02-git-async-await.md), mục 5 và mục 6.
+Commit (ví dụ `lesson 6: homework`) và tạo Pull Request trên nhánh `your-name/lesson-6` (ví dụ `linh/lesson-6`) theo quy trình ở [Buổi 2](../phase-1/buoi-02-git-async-await.md), mục 5 và mục 6.
 
 **Checklist trước khi nộp:**
 
-* [ ] Test pass ổn định khi chạy 3 lần liên tiếp
-* [ ] Không có `page.waitForTimeout()`
-* [ ] Mỗi bước chuyển trang có assertion neo
-* [ ] Có ít nhất một chỗ dùng `expect.soft()` và lý do dùng hợp lý
-* [ ] Không có XPath, không dùng `{ force: true }`
-* [ ] Tên test mô tả đúng hành vi được kiểm tra
+* [ ] Tất cả test của bài tập Buổi 6 đều pass
+* [ ] Bài 1: hàm đăng nhập có tham số password với giá trị mặc định
+* [ ] Bài 1: có `type` cho bộ dữ liệu đăng nhập, ít nhất 6 bộ dữ liệu
+* [ ] Bài 1: không có bộ dữ liệu nào nhập password sai cho tài khoản `customer@practicesoftwaretesting.com`
+* [ ] Bài 2: có kiểm tra `aria-invalid` trước và sau khi điền email hợp lệ
+* [ ] Bài 3: test pass ổn định khi chạy 3 lần liên tiếp
+* [ ] Bài 3: mỗi bước chuyển trang có assertion neo
+* [ ] Bài 3: có ít nhất một chỗ dùng `expect.soft()`, với lý do hợp lý
+* [ ] Không có `page.waitForTimeout()`, XPath, `{ force: true }`
+* [ ] Tên biến tiếng Anh, camelCase. Tên test mô tả đúng hành vi được kiểm tra
 * [ ] Đúng quy ước tên nhánh `your-name/lesson-6`
