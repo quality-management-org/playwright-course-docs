@@ -815,9 +815,24 @@ Bài này ôn tập kiến thức của:
 
 Viết 3 test:
 
-1. **Giao diện trang đăng nhập:** tiêu đề "Login", ô Email, ô Password, nút "Login", link "Register your account", link "Forgot your Password?" đều hiển thị. Ô Email có `type="email"` và placeholder "Your email".
-2. **Trạng thái lỗi khi bỏ trống:** bấm "Login" khi chưa nhập gì, hai thông báo lỗi của Email và Password hiển thị, ô Email có `aria-invalid="true"`. Sau khi điền email hợp lệ, lỗi của Email biến mất, `aria-invalid` chuyển thành `"false"`, lỗi của Password vẫn còn.
-3. **Điều hướng từ trang đăng nhập:** dùng `type` cho link (tên link, URL mong đợi) và `for...of` để kiểm tra 2 link "Register your account" và "Forgot your Password?" chuyển đúng trang.
+1. **Giao diện trang đăng nhập:** các phần tử sau hiển thị
+   * Tiêu đề "Login"
+   * Ô Email, có `type="email"` và placeholder "Your email"
+   * Ô Password
+   * Nút "Login"
+   * Link "Register your account"
+   * Link "Forgot your Password?"
+2. **Trạng thái lỗi khi bỏ trống:**
+   * Bấm "Login" khi chưa nhập gì: thông báo lỗi của Email và của Password hiển thị
+   * Ô Email có `aria-invalid="true"`
+   * Điền email hợp lệ: thông báo lỗi của Email biến mất
+   * Ô Email chuyển thành `aria-invalid="false"`
+   * Thông báo lỗi của Password vẫn còn
+3. **Điều hướng từ trang đăng nhập:**
+   * Link "Register your account" chuyển đúng trang
+   * Link "Forgot your Password?" chuyển đúng trang
+   * Dùng `type` mô tả link (tên link, URL mong đợi)
+   * Dùng `for...of` để duyệt danh sách link
 
 ### Bài 3: test checkout flow
 
@@ -836,21 +851,3 @@ Yêu cầu kỹ thuật:
 * Có assertion neo sau mỗi bước chuyển trang (mục 2.3).
 * Có ít nhất một chỗ dùng `expect.soft()` hợp lý (mục 3).
 * Tên biến tiếng Anh, camelCase (ví dụ `cartTotal`, `paymentMethodDropdown`).
-
-### Bài 4: nộp bài qua Pull Request
-
-Commit (ví dụ `lesson 6: homework`) và tạo Pull Request trên nhánh `your-name/lesson-6` (ví dụ `linh/lesson-6`) theo quy trình ở [Buổi 2](../phase-1/buoi-02-git-async-await.md), mục 5 và mục 6.
-
-**Checklist trước khi nộp:**
-
-* [ ] Tất cả test của bài tập Buổi 6 đều pass
-* [ ] Bài 1: hàm đăng nhập có tham số password với giá trị mặc định
-* [ ] Bài 1: có `type` cho bộ dữ liệu đăng nhập, ít nhất 6 bộ dữ liệu
-* [ ] Bài 1: không có bộ dữ liệu nào nhập password sai cho tài khoản `customer@practicesoftwaretesting.com`
-* [ ] Bài 2: có kiểm tra `aria-invalid` trước và sau khi điền email hợp lệ
-* [ ] Bài 3: test pass ổn định khi chạy 3 lần liên tiếp
-* [ ] Bài 3: mỗi bước chuyển trang có assertion neo
-* [ ] Bài 3: có ít nhất một chỗ dùng `expect.soft()`, với lý do hợp lý
-* [ ] Không có `page.waitForTimeout()`, XPath, `{ force: true }`
-* [ ] Tên biến tiếng Anh, camelCase. Tên test mô tả đúng hành vi được kiểm tra
-* [ ] Đúng quy ước tên nhánh `your-name/lesson-6`
