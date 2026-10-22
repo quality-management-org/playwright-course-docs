@@ -1,3 +1,8 @@
+---
+description: "Đọc hiểu cấu trúc HTML của phần tử web và chọn locator bền vững với getByRole, getByLabel, getByText, chaining và filter."
+icon: crosshairs
+---
+
 # Buổi 5 · Locators: Chọn phần tử đúng cách
 
 {% hint style="info" %}
@@ -69,6 +74,8 @@ Thẻ `<a>` là thẻ cha của toàn bộ thẻ sản phẩm. Thẻ `<h5>` ch�
 
 Mở [Toolshop](https://practicesoftwaretesting.com/) bằng Chrome, chuột phải vào tên một sản phẩm, chọn **Inspect**. Cửa sổ DevTools mở ra, tab **Elements** hiển thị cây DOM và tô sáng thẻ tương ứng với phần tử vừa chọn.
 
+<!-- TODO(image): Chrome DevTools mở tab Elements trên trang chủ practicesoftwaretesting.com, sau khi chuột phải vào tên sản phẩm "Combination Pliers" và chọn Inspect. Khoanh đỏ dòng <h5 data-test="product-name" class="card-title"> Combination Pliers </h5> đang được tô sáng trong cây DOM và khoanh tên sản phẩm tương ứng trên trang. -->
+
 ## 3. Thuộc tính quan trọng
 
 Không phải thuộc tính nào cũng phù hợp để viết locator. Bảng sau liệt kê các thuộc tính thường gặp trên Toolshop và mức độ ổn định của chúng:
@@ -130,6 +137,8 @@ HTML tương ứng của các ví dụ trên được trình bày ở mục 6.
 Cặp role và accessible name chính là thông tin `getByRole()` sử dụng: `page.getByRole("button", { name: "Add to cart" })` nghĩa là "phần tử có role `button` và tên `Add to cart`". Vì role và tên phản ánh đúng cách người dùng nhận biết phần tử, locator dạng này ít bị ảnh hưởng khi dev đổi class hay cấu trúc thẻ.
 
 Để xem role và tên của một phần tử trong Chrome: mở DevTools, chọn phần tử ở tab Elements, sau đó mở tab **Accessibility** ở khung bên phải.
+
+<!-- TODO(image): Chrome DevTools trên trang https://practicesoftwaretesting.com/auth/login, tab Elements đang chọn nút Login (<input type="submit" data-test="login-submit">), khung bên phải mở tab Accessibility. Khoanh đỏ hai dòng Name: "Login" và Role: button trong mục Computed Properties. -->
 
 ## 5. Thẻ đúng chuẩn và thẻ "giả"
 

@@ -175,6 +175,8 @@ git push -u origin linh/lesson-2
 | `git commit -m "..."`              | Lưu một mốc thay đổi kèm mô tả ngắn bằng tiếng Anh                                          |
 | `git push -u origin linh/lesson-2` | Đẩy nhánh lên GitHub. Cờ `-u` liên kết nhánh trên máy với nhánh trên GitHub cho các lần sau |
 
+![So sánh luồng Git với quy trình mua sắm: add vào giỏ, commit là thanh toán, push là giao hàng](../.gitbook/assets/buoi-02-git-flow-shopping-analogy.png)
+
 Kiểm tra trước khi commit bằng `git status`: danh sách file chỉ gồm các file trong `playwright-course/`, không có file nào thuộc `node_modules/`.
 
 {% hint style="info" %}

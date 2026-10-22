@@ -1,3 +1,8 @@
+---
+description: "Thao tác với các loại phần tử trên trang, viết assertion kiểm tra kết quả và hiểu cơ chế auto-wait thay thế cho thời gian chờ cố định."
+icon: hand-pointer
+---
+
 # Buổi 6 · Actions, Assertions & Auto-wait
 
 {% hint style="info" %}
@@ -132,6 +137,8 @@ Nút chọn ngôn ngữ (biểu tượng quả địa cầu, chữ "EN") trên m
 </ul>
 ```
 
+<!-- TODO(image): trang chủ https://practicesoftwaretesting.com, menu trên cùng sau khi click nút chọn ngôn ngữ (biểu tượng quả địa cầu, chữ "EN"), danh sách ngôn ngữ (DE, EN...) đang mở. Khoanh đỏ nút "EN" và danh sách ngôn ngữ, đánh dấu mục "DE". -->
+
 Gọi `selectOption()` trên nút này sẽ nhận lỗi `Element is not a <select> element`. Thao tác đúng gồm hai lần `click()`: mở menu, sau đó chọn `menuitem`:
 
 ```typescript
@@ -222,6 +229,8 @@ Cách thao tác phụ thuộc vào việc dev có khai báo thuộc tính ARIA h
 ```html
 <span class="rc-tree-checkbox" role="checkbox" aria-checked="false" aria-label="Select Home"></span>
 ```
+
+<!-- TODO(image): Chrome DevTools trên trang https://demoqa.com/checkbox, tab Elements đang chọn thẻ <span class="rc-tree-checkbox" role="checkbox"> của thư mục Home, khung bên phải mở tab Accessibility. Khoanh đỏ các dòng Name: "Select Home", Role: checkbox và Checked: false trong mục Computed Properties. -->
 
 ```typescript
 test("tick thư mục Home trong cây thư mục", async ({ page }) => {
@@ -353,6 +362,8 @@ Thẻ `<iframe>` nhúng một trang web khác vào bên trong trang hiện tại
 <!-- Nội dung của /sample.html: <h1 id="sampleHeading">This is a sample page</h1> -->
 ```
 
+<!-- TODO(image): Chrome DevTools tab Elements trên trang https://demoqa.com/frames, thẻ <iframe id="frame1"> đang được mở rộng, bên dưới là nút #document chứa <html> riêng và thẻ <h1 id="sampleHeading">. Khoanh đỏ dòng #document để thể hiện iframe là một tài liệu HTML riêng. -->
+
 ```typescript
 test("đọc tiêu đề bên trong iframe", async ({ page }) => {
   await page.goto("https://demoqa.com/frames");
@@ -385,6 +396,8 @@ Sau `contentFrame()`, mọi hàm locator (`getByRole`, `getByLabel`, `locator`..
 #### Hộp thoại JavaScript: sự kiện `dialog`
 
 Mặc định Playwright **tự động bấm Cancel** (dismiss) mọi hộp thoại. Muốn bấm OK, nhập dữ liệu vào prompt, hoặc kiểm tra nội dung hộp thoại, hãy đăng ký xử lý sự kiện `dialog` **trước** khi thực hiện action làm hộp thoại xuất hiện:
+
+<!-- TODO(image): trang https://the-internet.herokuapp.com/javascript_alerts sau khi click nút "Click for JS Confirm", hộp thoại confirm của Chrome đang mở với nội dung "I am a JS Confirm" và hai nút OK, Cancel. Khoanh đỏ hộp thoại để học viên nhận diện hộp thoại do trình duyệt hiển thị. -->
 
 ```typescript
 test("bấm OK trên hộp thoại confirm", async ({ page }) => {
@@ -439,6 +452,8 @@ Thứ tự ba dòng giữa là bắt buộc. Nếu viết `await page.waitForEve
 #### Modal HTML: locator như phần tử bình thường
 
 Modal HTML là một phần của trang, nên tìm và thao tác bằng locator như mọi phần tử khác. Trang The Internet hiển thị một modal quảng cáo khi vừa mở:
+
+<!-- TODO(image): trang https://the-internet.herokuapp.com/entry_ad ngay sau khi tải, modal "This is a modal window" đang hiển thị đè lên trang, bên cạnh mở Chrome DevTools tab Elements đang chọn thẻ <div id="modal">. Khoanh đỏ modal trên trang và dòng <div id="modal"> trong DevTools để thể hiện modal là thẻ HTML của trang. -->
 
 ```typescript
 test("đóng modal quảng cáo", async ({ page }) => {

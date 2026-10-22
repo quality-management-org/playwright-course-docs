@@ -106,6 +106,8 @@ test("sách thêm qua API hiển thị trên trang profile", async ({ page, requ
 
 Chạy `npx playwright test tests/profile.spec.ts --project=chromium`. Test mất khoảng 5 giây, trong đó ba lời gọi API chiếm chưa đến một giây.
 
+<!-- TODO(image): Trang https://demoqa.com/profile sau khi login bằng user vừa tạo qua API: phần trên hiện username (ví dụ student_1757300000000), bảng phía dưới có một dòng sách "Git Pocket Guide" với cột Title, Author, Publisher và icon thùng rác ở cột Action; khoanh username và dòng sách trong bảng. -->
+
 ### Vấn đề của phiên bản này
 
 Test đúng nhưng có ba điểm yếu. Bước Cleanup nằm cuối thân test: nếu một assertion phía trên fail, các dòng sau không chạy và user rác ở lại server. Ba lời gọi API tạo user sẽ lặp lại ở mọi test cần user. Và test dài 30 dòng trong khi phần "Act, Assert" thực sự chỉ có 6 dòng. Mục 3 xử lý cả ba.
@@ -444,6 +446,8 @@ test("hiện sách sau khi server phản hồi chậm", async ({ page }) => {
 ```
 
 Bốn test này chạy ổn định vì không phụ thuộc dữ liệu thật của DemoQA và không cần server thật gặp sự cố. Assertion `toBeVisible` ở test cuối chờ tối đa 5 giây (Buổi 9), đủ cho độ trễ 3 giây của mock.
+
+<!-- TODO(image): Trang https://demoqa.com/books khi API Books bị mock trả về danh sách rỗng: bảng sách trống với dòng chữ "No rows found" ở giữa, ô "Type to search" phía trên vẫn hiển thị; khoanh dòng "No rows found". -->
 
 ### Sửa response thật với route.fetch
 
