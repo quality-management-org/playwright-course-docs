@@ -850,3 +850,12 @@ Yêu cầu kỹ thuật:
 * Có assertion neo sau mỗi bước chuyển trang (mục 2.3).
 * Có ít nhất một chỗ dùng `expect.soft()` hợp lý (mục 3).
 * Tên biến tiếng Anh, camelCase (ví dụ `cartTotal`, `paymentMethodDropdown`).
+
+### Bài 4: kiểm tra chức năng sắp xếp theo giá
+
+Trên [Toolshop](https://practicesoftwaretesting.com/), vào **Categories → Power Tools** và viết test kiểm tra:
+
+1. Chọn **Price (Low - High)**: giá của **tất cả** sản phẩm trên trang tăng dần.
+2. Chọn **Price (High - Low)**: giá của **tất cả** sản phẩm trên trang giảm dần.
+
+Tự viết hàm `isSorted(prices: number[], direction: "asc" | "desc"): boolean` để kiểm tra thứ tự giá.
