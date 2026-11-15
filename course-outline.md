@@ -30,15 +30,15 @@ Actions: click, fill, selectOption, check, hover, dblclick, press, setInputFiles
 Vấn đề lặp code và chi phí bảo trì. Xây LoginPage, InventoryPage. Quy ước: method đặt tên theo hành vi người dùng, assertion nằm trong test, mỗi trang một file.
 
 ### Buổi 8: Hoàn thiện POM & Code Review
-CartPage, CheckoutPage. Quy trình refactor an toàn 3 bước. Checklist code review 8 mục, áp dụng từ buổi này đến hết khóa. Tổng kết anti-patterns.
+BasePage (kế thừa class), CartPage, CheckoutPage. Quy trình refactor an toàn 3 bước. Checklist code review 8 mục, áp dụng từ buổi này đến hết khóa. Tổng kết anti-patterns.
 
 ## Phase 3: Nâng cao (Buổi 9-12)
 
-### Buổi 9: playwright.config.ts, Fixtures & Chạy song song
-Multiple projects (Chromium, Firefox, WebKit, mobile emulation). baseURL, timeout, retries, workers. Screenshot và video khi test fail. beforeAll/Each, afterAll/Each. Custom fixture (ví dụ authenticatedPage tự động login).
+### Buổi 9: playwright.config.ts & Điều khiển việc chạy test
+Multiple projects (Chromium, Firefox, WebKit, mobile emulation). baseURL, timeout, retries, workers, chạy song song và test độc lập. Screenshot và video khi test fail. test.only, test.skip, test.fixme. Tags @smoke @regression @critical, chạy theo tag với --grep.
 
-### Buổi 10: Tổ chức Test Suite
-test.describe, test.skip, test.only, test.fixme. Tags @smoke @regression @critical, chạy theo tag với --grep. Parameterized tests với nhiều bộ dữ liệu.
+### Buổi 10: Hooks, Fixtures & Tổ chức Test Suite
+test.describe. beforeAll/Each, afterAll/Each. Custom fixture (ví dụ authenticatedPage tự động login). Hook hay fixture. Parameterized tests với nhiều bộ dữ liệu.
 
 ### Buổi 11: API Testing với Playwright
 APIRequestContext: get, post, put, delete. Headers, body, Bearer token. Assert status code, response body, JSON fields. Thực hành CRUD trên ReqRes hoặc JSONPlaceholder, không cần mở browser.

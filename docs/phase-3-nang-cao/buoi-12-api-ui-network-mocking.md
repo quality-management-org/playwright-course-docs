@@ -239,7 +239,7 @@ export class ProfilePage {
 
 ### Fixture tạo user và tự dọn
 
-Mở `fixtures/test-fixtures.ts` của Buổi 9 và bổ sung hai fixture. Phần sau `await use(...)` là teardown, Playwright luôn chạy phần này kể cả khi test fail:
+Mở `fixtures/test-fixtures.ts` của Buổi 10 và bổ sung hai fixture. Phần sau `await use(...)` là teardown, Playwright luôn chạy phần này kể cả khi test fail:
 
 ```typescript
 import { test as base, expect, Page } from "@playwright/test";
@@ -257,7 +257,7 @@ type CourseFixtures = {
 };
 
 export const test = base.extend<CourseFixtures>({
-  // ... ba fixture của Buổi 9 giữ nguyên ...
+  // ... ba fixture của Buổi 10 giữ nguyên ...
 
   // Helper API dựng trên fixture request có sẵn
   bookStoreApi: async ({ request }, use) => {

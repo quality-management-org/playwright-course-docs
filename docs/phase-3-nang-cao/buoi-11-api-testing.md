@@ -387,7 +387,7 @@ Không đặt token hoặc API key thật vào config, vì file này được co
 | Vị trí                                | `tests/api/`, mỗi resource một file: `users.spec.ts`, `posts.spec.ts`, `reqres-auth.spec.ts`                       |
 | Nhóm                                  | `describe` theo endpoint hoặc nhóm chức năng: `"GET /users"`, `"CRUD /posts"`, `"Xác thực"`                        |
 | Tên test                              | Kết quả mong đợi, nêu rõ status khi có: `"trả về 404 khi user không tồn tại"`                                       |
-| Tag                                   | Mọi test API có `@api` (Buổi 10), thêm `@smoke` cho endpoint cốt lõi                                                |
+| Tag                                   | Mọi test API có `@api` (Buổi 9), thêm `@smoke` cho endpoint cốt lõi                                                |
 | Mỗi test                              | Ít nhất một assertion về status và một assertion về body                                                          |
 | Trường hợp âm                         | Mỗi endpoint có ít nhất một test cho dữ liệu sai hoặc thiếu quyền                                                 |
 | Độc lập                               | Không dựa vào dữ liệu do test khác tạo; với API lưu thật, tự tạo và tự xóa (Buổi 12)                               |

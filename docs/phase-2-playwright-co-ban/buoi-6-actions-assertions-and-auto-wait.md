@@ -510,7 +510,7 @@ Có thể đặt timeout riêng cho action theo bảng dưới đây (đơn vị
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Một action               | `await page.getByRole("button", { name: "Login" }).click({ timeout: 10000 });`                                                                                   |
 | Một lần chuyển trang     | `await page.goto("https://practicesoftwaretesting.com/", { timeout: 15000 });`                                                                                   |
-| Mọi action trong project | `use: { actionTimeout: 10000, navigationTimeout: 15000 }` trong `playwright.config.ts` ([Buổi 9](../phase-3-nang-cao/buoi-09-config-fixtures-parallel.md), mục 2) |
+| Mọi action trong project | `use: { actionTimeout: 10000, navigationTimeout: 15000 }` trong `playwright.config.ts` ([Buổi 9](../phase-3-nang-cao/buoi-09-config-fixtures-parallel.md)) |
 
 **Tham khảo:** [Timeouts](https://playwright.dev/docs/test-timeouts)
 
@@ -618,7 +618,7 @@ Web-first assertion mặc định chờ tối đa 5 giây. Assertion trên giá 
 | Phạm vi                     | Cách đặt                                                                                                                            |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Một assertion               | `await expect(page.getByText("Product added to shopping cart.")).toBeVisible({ timeout: 10000 });`                                  |
-| Mọi assertion trong project | `expect: { timeout: 10000 }` trong `playwright.config.ts` ([Buổi 9](../phase-3-nang-cao/buoi-09-config-fixtures-parallel.md), mục 2) |
+| Mọi assertion trong project | `expect: { timeout: 10000 }` trong `playwright.config.ts` ([Buổi 9](../phase-3-nang-cao/buoi-09-config-fixtures-parallel.md)) |
 
 **Tham khảo:** [Assertions](https://playwright.dev/docs/test-assertions), [Generic assertions](https://playwright.dev/docs/api/class-genericassertions), [Timeouts](https://playwright.dev/docs/test-timeouts)
 

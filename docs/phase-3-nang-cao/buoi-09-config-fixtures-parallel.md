@@ -1,20 +1,22 @@
 ---
-description: "Cấu hình playwright.config.ts cho nhiều browser, chạy song song, tự chụp screenshot khi test fail, và viết custom fixture để test tự động login."
+description: "Cấu hình playwright.config.ts, chạy test song song, lưu screenshot và video khi test fail, và chọn đúng phạm vi test cần chạy bằng test.only, test.skip, tag và --grep."
 icon: sliders
 ---
 
-# Buổi 9 · playwright.config.ts, Fixtures & Chạy song song
+# Buổi 9 · playwright.config.ts & Điều khiển việc chạy test
 
-{% hint style="info" %}
-**Sau buổi này bạn sẽ:** đọc hiểu và tự chỉnh được `playwright.config.ts`, chạy cùng một bộ test trên Chromium, Firefox, WebKit và màn hình điện thoại, hiểu cách Playwright chạy song song và vì sao test phải độc lập, bật screenshot và video khi test fail, và viết được custom fixture để mọi test bắt đầu từ trạng thái đã login mà không lặp code.
-{% endhint %}
+Khi bộ test lớn dần, cần kiểm soát được cách bộ test chạy: chạy nhanh, đủ thông tin để phân tích khi test fail và chỉ chạy những test cần thiết. Buổi này trình bày các công cụ Playwright cung cấp cho việc đó.
 
-## 1. Đọc hiểu playwright.config.ts
+## 1. Cấu trúc playwright.config.ts
 
-File `playwright.config.ts` được tạo sẵn ở gốc project khi chạy `npm init playwright@latest` ở Buổi 4. Mọi lệnh `npx playwright test` đều đọc file này trước khi chạy. Nội dung hiện tại của bạn tương tự đoạn sau (đã lược bớt comment), trong đó dòng `testIdAttribute` là dòng bạn thêm ở Buổi 5:
+File `playwright.config.ts` được tạo ở thư mục gốc project khi chạy `npm init playwright@latest` ở Buổi 4. Mọi lệnh `npx playwright test` đều đọc file này trước khi chạy test. Sau khi bổ sung `testIdAttribute` ở Buổi 5, phần nạp `.env` ở Buổi 8 và chỉ giữ lại project `chromium` (xem mục tiếp theo), nội dung file tương tự đoạn sau (đã lược bớt comment):
 
 ```typescript
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 export default defineConfig({
   testDir: "./tests",
@@ -24,375 +26,378 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    trace: "on-first-retry",
+    baseURL: process.env.BASE_URL || "https://practicesoftwaretesting.com",
     testIdAttribute: "data-test",
+    trace: "on-first-retry",
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
-    { name: "webkit", use: { ...devices["Desktop Safari"] } },
   ],
 });
 ```
 
-| Thuộc tính            | Ý nghĩa                                                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `defineConfig({...})` | Hàm bọc object cấu hình để VS Code gợi ý tên thuộc tính và báo lỗi khi gõ sai                                            |
-| `testDir`             | Folder chứa file test. Playwright chỉ tìm file `*.spec.ts` trong folder này                                              |
-| `fullyParallel`       | `true`: các test trong cùng một file cũng được chạy song song. Mục 3 giải thích chi tiết                                 |
-| `forbidOnly`          | Khi chạy trên CI, báo lỗi nếu còn sót `test.only` (Buổi 10 trình bày `test.only`)                                        |
-| `retries`             | Số lần chạy lại một test khi fail. Mục 2 giải thích                                                                      |
-| `workers`             | Số process chạy test đồng thời. `undefined` để Playwright tự chọn theo số nhân CPU                                       |
-| `reporter`            | Định dạng báo cáo. `html` là report bạn đã mở bằng `npx playwright show-report` từ Buổi 4                                |
-| `use`                 | Các thiết lập áp dụng cho mọi test: browser, baseURL, screenshot, video... Phần lớn buổi này làm việc với khối này       |
-| `projects`            | Danh sách cấu hình chạy. Mỗi project chạy toàn bộ test một lần với thiết lập riêng. Mục 4 giải thích                     |
+| Thiết lập             | Ý nghĩa                                                                                                         |
+| --------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `defineConfig({...})` | Hàm bọc object cấu hình, giúp VS Code gợi ý tên thiết lập và báo lỗi khi gõ sai                                 |
+| `testDir`             | Folder chứa file test. Playwright chỉ tìm file có tên kết thúc bằng `.spec.ts` hoặc `.test.ts` trong folder này |
+| `fullyParallel`       | `true`: các test trong cùng một file cũng được chạy song song                                           |
+| `forbidOnly`          | Báo lỗi nếu code còn `test.only` khi chạy trên CI                                                       |
+| `retries`             | Số lần chạy lại một test bị fail                                                                        |
+| `workers`             | Số process chạy test đồng thời. `undefined` nghĩa là để Playwright tự chọn theo cấu hình máy            |
+| `reporter`            | Định dạng báo cáo kết quả. `"html"` tạo HTML report, mở bằng `npx playwright show-report` (Buổi 4)              |
+| `use`                 | Thiết lập áp dụng cho mọi test: địa chỉ gốc, thuộc tính test id, screenshot, video, trace...                    |
+| `projects`            | Danh sách cấu hình chạy. Mỗi project chạy toàn bộ test một lần với thiết lập riêng                      |
+| `devices`             | Danh sách cấu hình trình duyệt có sẵn của Playwright. `...` (spread operator) sao chép toàn bộ thuộc tính của `devices["Desktop Chrome"]` vào khối `use` của project |
 
-Biểu thức `process.env.CI ? 2 : 0` đọc biến môi trường tên `CI`, thứ mà các hệ thống tích hợp liên tục (GitHub Actions, GitLab CI...) tự đặt. Khi chạy trên máy cá nhân, biến này không tồn tại nên `retries` bằng 0 và `workers` do Playwright tự chọn. Khóa học không dùng CI, nhưng giữ nguyên các dòng này không gây hại. Buổi 13 trình bày cách đọc biến môi trường từ file `.env`.
+Trong khối `use`, `baseURL` là địa chỉ gốc được ghép với đường dẫn tương đối trong `page.goto("/auth/login")` và `toHaveURL()` (Buổi 8). `testIdAttribute` là thuộc tính mà `getByTestId()` sử dụng (Buổi 5). Tên thiết lập phân biệt chữ hoa và chữ thường: viết `baseUrl` thay cho `baseURL` thì thiết lập không có hiệu lực, và `goto()` với đường dẫn tương đối báo lỗi `Cannot navigate to invalid URL`.
 
-{% hint style="info" %}
-Từ Buổi 4 đến nay, mỗi lần chạy `npx playwright test`, bộ test của bạn thực ra đã chạy ba lần trên ba browser, vì config mặc định có sẵn ba project. Mở lại report gần nhất bằng `npx playwright show-report`: mỗi tên test xuất hiện ba dòng, kèm nhãn chromium, firefox, webkit.
-{% endhint %}
+### Biến môi trường CI
 
-## 2. baseURL, timeout và retries
+**CI** (Continuous Integration) là hệ thống tự động chạy test mỗi khi có code mới được push lên repository, ví dụ GitHub Actions, GitLab CI. Các hệ thống này tự đặt biến môi trường `CI`. Biểu thức `process.env.CI ? 2 : 0` đọc biến môi trường đó (`process.env` đã học ở Buổi 8). Toán tử `!!` chuyển một giá trị bất kỳ thành `true` hoặc `false`.
 
-### baseURL
+| Thiết lập    | Trên máy cá nhân (không có biến `CI`) | Trên CI |
+| ------------ | ------------------------------------- | ------- |
+| `forbidOnly` | `false`                               | `true`  |
+| `retries`    | `0`                                   | `2`     |
+| `workers`    | Playwright tự chọn                    | `1`     |
 
-Hiện tại `LoginPage.goto()` (Buổi 7) ghi cứng địa chỉ `https://www.saucedemo.com`. Khi dự án có môi trường test và môi trường staging với địa chỉ khác nhau, mỗi lần đổi môi trường phải sửa mọi page object. Cách chuẩn là khai báo địa chỉ gốc một lần trong config:
+Khóa học không cấu hình CI, nhưng giữ nguyên các dòng này để project sẵn sàng chạy trên CI.
+
+### Chỉ chạy trên Chromium
+
+Config do `npm init playwright@latest` tạo ra có sẵn ba project: `chromium`, `firefox` và `webkit`. Vì vậy từ Buổi 4 đến nay, mỗi lần chạy `npx playwright test`, bộ test thực tế đã chạy ba lần trên ba trình duyệt. Mở report gần nhất bằng `npx playwright show-report`: mỗi test xuất hiện ba lần với nhãn chromium, firefox và webkit.
+
+Khóa học chỉ chạy test trên Chromium. Mở `playwright.config.ts`, xóa hai dòng project `firefox` và `webkit` trong mảng `projects`, giữ lại project `chromium` như đoạn config ở trên. Chạy lại `npx playwright test`: số test trong dòng `Running ... tests` giảm còn một phần ba, mỗi test chỉ xuất hiện một lần trong report.
+
+### Ghi đè thiết lập khi chạy lệnh
+
+Phần lớn thiết lập trong config có thể ghi đè bằng tham số dòng lệnh. Giá trị trên dòng lệnh chỉ áp dụng cho lần chạy đó và được ưu tiên hơn giá trị trong config.
+
+| Lệnh                                        | Ý nghĩa                                                           |
+| ------------------------------------------- | ----------------------------------------------------------------- |
+| `npx playwright test --workers=1`           | Chạy lần lượt từng test, không song song                          |
+| `npx playwright test --retries=2`           | Chạy lại tối đa 2 lần các test bị fail                            |
+| `npx playwright test --repeat-each=5`       | Chạy mỗi test 5 lần liên tiếp, dùng để tái hiện lỗi không ổn định |
+| `npx playwright test --trace=on`            | Ghi trace cho mọi test trong lần chạy này                 |
+| `npx playwright test tests/cart.spec.ts`    | Chỉ chạy một file test                                            |
+| `npx playwright test tests/cart.spec.ts:12` | Chỉ chạy test được khai báo tại dòng 12 của file                  |
+
+Các tham số kết hợp được với nhau, ví dụ `npx playwright test tests/cart.spec.ts --workers=1 --headed`.
+
+## 2. Timeout và retries
+
+### Các loại timeout
+
+Buổi 6 đã giới thiệu timeout của action và assertion. Bảng sau tổng hợp các loại timeout và vị trí khai báo trong config:
+
+| Thiết lập           | Mặc định             | Phạm vi áp dụng                                                  | Vị trí khai báo            |
+| ------------------- | -------------------- | ---------------------------------------------------------------- | -------------------------- |
+| `timeout`           | 30 giây              | Toàn bộ một test, bao gồm hook và fixture (Buổi 10)               | Cấp cao nhất của config    |
+| `expect.timeout`    | 5 giây               | Mỗi web-first assertion như `toBeVisible()`, `toHaveText()`      | `expect: { timeout: ... }` |
+| `actionTimeout`     | Không giới hạn riêng | Mỗi action như `click()`, `fill()`                               | Khối `use`                 |
+| `navigationTimeout` | Không giới hạn riêng | Mỗi lần chuyển trang như `goto()`, `waitForURL()`                | Khối `use`                 |
+
+Đoạn sau minh họa cú pháp khai báo, đơn vị mili giây. Không cần thêm đoạn này vào config của project:
 
 ```typescript
-use: {
-  baseURL: "https://www.saucedemo.com",
-  trace: "on-first-retry",
-  testIdAttribute: "data-test",
-},
+export default defineConfig({
+  timeout: 30000,
+  expect: { timeout: 5000 },
+  use: {
+    actionTimeout: 10000,
+    navigationTimeout: 15000,
+  },
+});
 ```
 
-Sau đó mọi lời gọi `page.goto()` chỉ cần ghi đường dẫn tương đối. Sửa `pages/login-page.ts`:
+Khi action và chuyển trang không có giới hạn riêng, chúng chỉ bị giới hạn bởi timeout của cả test. Khóa học giữ giá trị mặc định cho các timeout. Khi trang web chậm hơn mức mặc định, tăng giá trị trong config thay vì thêm `{ timeout: ... }` vào từng dòng code.
 
-```typescript
-async goto() {
-  // Playwright ghép baseURL với đường dẫn này thành địa chỉ đầy đủ
-  await this.page.goto("/");
-}
-```
+### Xác định loại timeout từ thông báo lỗi
 
-Assertion `toHaveURL` cũng chấp nhận đường dẫn tương đối: `await expect(page).toHaveURL("/inventory.html")` tương đương với địa chỉ đầy đủ. Các test đang dùng regex như `toHaveURL(/inventory/)` giữ nguyên.
+Dòng đầu tiên của thông báo lỗi cho biết loại timeout đã hết hạn:
 
-### Ba loại timeout
+| Thông báo lỗi                                                            | Loại timeout     | Ý nghĩa                                                                                              |
+| ------------------------------------------------------------------------ | ---------------- | ---------------------------------------------------------------------------------------------------- |
+| `Test timeout of 30000ms exceeded.`                                      | `timeout`        | Cả test vượt quá 30 giây. Dòng tiếp theo, ví dụ `Error: locator.click: ...`, cho biết bước đang chờ |
+| `Error: expect(locator).toBeVisible() failed` kèm dòng `Timeout: 5000ms` | `expect.timeout` | Assertion đã chờ 5 giây nhưng điều kiện vẫn chưa đạt                                                 |
+| `TimeoutError: locator.click: Timeout 10000ms exceeded.`                 | `actionTimeout`  | Action đã chờ hết thời gian cho phép mà phần tử chưa sẵn sàng                                        |
 
-Playwright có ba mốc thời gian chờ độc lập. Xác định đúng loại nào đang hết hạn giúp đọc thông báo lỗi nhanh hơn:
+Bên dưới mỗi lỗi là phần `Call log`, liệt kê những gì Playwright đã chờ, ví dụ `waiting for getByTestId('nav-cart')` và `element is not visible`. Đây là thông tin quan trọng nhất để xác định nguyên nhân.
 
-| Thuộc tính       | Mặc định       | Áp dụng cho                                                            | Vị trí khai báo             |
-| ---------------- | -------------- | ---------------------------------------------------------------------- | --------------------------- |
-| `timeout`        | 30 giây        | Toàn bộ một test, tính cả hook `beforeEach` (mục 6)                    | Cấp cao nhất của config     |
-| `expect.timeout` | 5 giây         | Mỗi assertion có auto-wait như `toBeVisible`, `toHaveText` (Buổi 6)    | `expect: { timeout: 5000 }` |
-| `actionTimeout`  | Không giới hạn | Mỗi action như `click`, `fill`                                         | Trong khối `use`            |
+### Retries
 
-Lỗi `Test timeout of 30000ms exceeded` nghĩa là toàn bộ test vượt quá 30 giây, thường do một action đang chờ phần tử không bao giờ xuất hiện. Lỗi `Timed out 5000ms waiting for expect(locator).toBeVisible()` nghĩa là riêng assertion đó hết 5 giây. Trong khóa học, giữ các giá trị mặc định. Chỉ tăng `timeout` khi test có flow thực sự dài, và tăng trong config thay vì rải `{ timeout: 60000 }` vào từng dòng.
-
-### retries
-
-`retries: 1` yêu cầu Playwright chạy lại một lần những test bị fail. Test fail lần đầu nhưng pass khi chạy lại được report đánh dấu là **flaky** (không ổn định) thay vì passed.
+`retries: 1` yêu cầu Playwright chạy lại một lần các test bị fail. Test fail ở lần chạy đầu nhưng pass khi chạy lại được report đánh dấu là **flaky** (không ổn định), không phải passed.
 
 {% hint style="warning" %}
-Retries không sửa được test. Một test flaky trên máy của bạn sẽ flaky trên máy của cả team. Giữ `retries: 0` khi phát triển để nhìn thấy lỗi ngay, và coi mọi nhãn flaky trong report là một bug cần điều tra. Nguyên nhân phổ biến nhất là thiếu assertion neo trạng thái trước khi thao tác tiếp, đã nói ở Buổi 6 và Buổi 8.
+Retries không sửa được test. Test flaky trên máy của bạn cũng sẽ flaky trên máy của các thành viên khác và trên CI. Giữ `retries: 0` khi viết test để thấy lỗi ngay, và xem mỗi test flaky là một lỗi cần điều tra. Để tái hiện, chạy `npx playwright test --repeat-each=5 --retries=0`. Nguyên nhân phổ biến nhất là thiếu assertion neo trạng thái trước khi thực hiện bước tiếp theo (Buổi 6).
 {% endhint %}
 
-### Ghi đè config từ dòng lệnh
+## 3. Chạy song song
 
-Mọi thuộc tính trên đều ghi đè được ngay khi chạy, không cần sửa file. Các lệnh dùng thường xuyên:
+### Worker
 
-| Lệnh                                       | Ý nghĩa                                                                  |
-| ------------------------------------------ | ------------------------------------------------------------------------ |
-| `npx playwright test --workers=1`          | Chạy tuần tự từng test, dùng khi nghi ngờ test phụ thuộc nhau            |
-| `npx playwright test --retries=2`          | Chạy lại tối đa 2 lần các test fail                                      |
-| `npx playwright test --project=chromium`   | Chỉ chạy project tên `chromium`                                          |
-| `npx playwright test --repeat-each=5`      | Chạy mỗi test 5 lần liên tiếp, dùng để tái hiện test flaky               |
-| `npx playwright test --timeout=60000`      | Đặt timeout cho mỗi test là 60 giây trong lần chạy này                   |
-| `npx playwright test tests/login.spec.ts`  | Chỉ chạy một file                                                        |
-
-## 3. Chạy song song với workers
-
-### Worker là gì
-
-Khi chạy `npx playwright test`, dòng đầu tiên trên terminal cho biết Playwright đang dùng bao nhiêu worker:
+Dòng đầu tiên trên terminal khi chạy `npx playwright test` cho biết số worker được sử dụng:
 
 ```
-Running 12 tests using 4 workers
+Running 18 tests using 4 workers
 ```
 
-Mỗi worker là một process riêng của Node.js, mở browser riêng và lần lượt nhận các test để chạy. Bốn worker nghĩa là bốn test chạy cùng lúc. Mặc định Playwright dùng một nửa số nhân CPU của máy. Với bộ test gồm 12 test, mỗi test 5 giây, chạy tuần tự mất 60 giây, chạy với 4 worker mất khoảng 15 giây.
+Mỗi **worker** là một process Node.js riêng, có trình duyệt riêng và lần lượt nhận test để chạy. 4 worker nghĩa là tối đa 4 test chạy cùng lúc. Mặc định, Playwright sử dụng số worker bằng một nửa số nhân CPU logic (logical core) của máy, làm tròn xuống và luôn có ít nhất 1 worker. Ví dụ, bộ test gồm 12 test, mỗi test chạy 5 giây: chạy lần lượt mất khoảng 60 giây, chạy với 4 worker mất khoảng 15 giây.
 
-Thiết lập `fullyParallel` quyết định đơn vị được chia cho worker:
-
-| `fullyParallel`          | Cách chia                                                                         | Kết quả                                         |
-| ------------------------ | --------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `false`                  | Mỗi file test là một đơn vị. Các test trong cùng file chạy tuần tự theo thứ tự viết | Ít song song hơn, thứ tự trong file được giữ    |
-| `true` (config mặc định) | Mỗi test là một đơn vị, worker nào rảnh nhận test tiếp theo                       | Song song tối đa, thứ tự chạy không đảm bảo     |
-
-### Mỗi test có một browser context riêng
-
-Dù chạy song song hay tuần tự, Playwright tạo cho mỗi test một browser context mới: tương đương một cửa sổ ẩn danh riêng với cookie, localStorage và session trống. Test A login xong, test B vẫn bắt đầu ở trạng thái chưa login. Đây là lý do kỹ thuật đằng sau mục "Mỗi test có chạy độc lập không?" trong checklist code review của Buổi 8.
-
-Đoạn sau là anti-pattern minh họa cho test phụ thuộc nhau:
-
-```typescript
-// Anti-pattern: test thứ hai trông đợi giỏ hàng do test thứ nhất để lại
-test("thêm sản phẩm vào giỏ", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-  await loginPage.login("standard_user", "secret_sauce");
-  await new InventoryPage(page).addProductToCart("Sauce Labs Backpack");
-});
-
-test("giỏ hàng có đúng 1 sản phẩm", async ({ page }) => {
-  // page ở đây là context mới: chưa login, giỏ hàng trống
-  await page.goto("/cart.html");
-  await expect(page.locator(".cart_item")).toHaveCount(1); // luôn fail
-});
-```
-
-Với `fullyParallel: true`, hai test này còn có thể chạy trên hai worker khác nhau, thứ tự không đảm bảo. Cách sửa đúng là mỗi test tự chuẩn bị trạng thái của mình: login, thêm sản phẩm, rồi mới kiểm tra. Mục 7 cho thấy cách làm việc này gọn bằng fixture.
-
-{% hint style="success" %}
-Cách kiểm tra nhanh bộ test có phụ thuộc nhau không: chạy `npx playwright test --workers=1` rồi chạy lại với `--workers=4`. Hai lần cho kết quả khác nhau là dấu hiệu có test đang dựa vào test khác.
-{% endhint %}
-
-## 4. Multiple projects: đa browser và mobile emulation
-
-Mỗi phần tử trong mảng `projects` là một cấu hình chạy riêng, có tên và khối `use` riêng. Playwright chạy toàn bộ test một lần cho mỗi project. Thêm project giả lập điện thoại vào config:
-
-```typescript
-projects: [
-  { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-  { name: "firefox", use: { ...devices["Desktop Firefox"] } },
-  { name: "webkit", use: { ...devices["Desktop Safari"] } },
-  { name: "mobile-chrome", use: { ...devices["Pixel 5"] } },
-],
-```
-
-`devices` là danh sách thiết bị có sẵn của Playwright. `devices["Pixel 5"]` là một object gồm kích thước màn hình, tỉ lệ pixel, user agent và cờ cảm ứng của điện thoại Pixel 5. Dấu `...` (spread) sao chép toàn bộ thuộc tính của object đó vào khối `use`. Các tên thiết bị khác dùng được ngay: `"iPhone 13"`, `"iPad Pro 11"`, `"Galaxy S9+"`.
-
-Sau khi thêm project, số lượt chạy trong report nhân bốn: 12 test thành 48 lượt chạy. Lệnh `--project` giới hạn phạm vi:
+Để biết máy có bao nhiêu nhân CPU logic, chạy lệnh sau trong terminal của VS Code:
 
 ```bash
-# Chỉ chạy trên điện thoại
-npx playwright test --project=mobile-chrome
-
-# Chạy trên hai project, cờ này lặp lại được
-npx playwright test --project=chromium --project=firefox
-
-# Xem browser giả lập điện thoại hoạt động
-npx playwright test --project=mobile-chrome --headed
+node -e "console.log(require('os').cpus().length)"
 ```
 
-Firefox và WebKit cần được tải về máy. Nếu ở Buổi 4 bạn đã trả lời Yes cho câu hỏi "Install Playwright browsers", cả ba đã có sẵn. Nếu chưa, chạy `npx playwright install`.
+Ví dụ, lệnh in ra `8` thì Playwright chạy với 4 worker.
 
-<!-- TODO(image): HTML report sau khi chạy npx playwright test với 4 project: danh sách test cho thấy cùng một tên test "login thành công với tài khoản hợp lệ" lặp lại 4 dòng với nhãn chromium, firefox, webkit, mobile-chrome; khoanh các nhãn project ở đầu mỗi dòng và bộ lọc project ở phía trên danh sách. -->
+Thiết lập `fullyParallel` quyết định cách chia test cho các worker:
 
-{% hint style="info" %}
-Khi đang viết test, chạy `--project=chromium` để có phản hồi nhanh. Chạy đủ mọi project trước khi tạo PR. Lỗi chỉ xảy ra trên một browser (ví dụ WebKit xử lý khác một kiểu input) là loại lỗi có giá trị nhất mà việc chạy đa browser mang lại.
+| `fullyParallel`          | Cách chia                                                                                | Kết quả                                              |
+| ------------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `false`                  | Mỗi file test là một đơn vị. Các test trong cùng file chạy lần lượt theo thứ tự khai báo | Mức độ song song thấp hơn, giữ thứ tự trong file     |
+| `true` (config mặc định) | Mỗi test là một đơn vị. Worker nào rảnh nhận test tiếp theo                              | Mức độ song song cao nhất, thứ tự chạy không cố định |
+
+<!-- TODO(image): sơ đồ so sánh cách chia 5 test cho 2 worker, trục ngang là thời gian. Bên trái "fullyParallel: false": file A (test A1, A2, A3) giao trọn cho Worker 1 chạy lần lượt A1, A2, A3; file B (test B1, B2) giao cho Worker 2 chạy B1, B2 rồi rảnh. Bên phải "fullyParallel: true": 5 test xếp thành hàng chờ, Worker 1 chạy A1, A3, B2 và Worker 2 chạy A2, B1, tổng thời gian ngắn hơn. Tô cùng màu các test thuộc cùng một file. -->
+
+### Mỗi test có browser context riêng
+
+Dù chạy song song hay lần lượt, Playwright tạo cho mỗi test một **browser context** mới. Browser context tương đương một cửa sổ ẩn danh riêng: cookie, localStorage và sessionStorage đều trống khi test bắt đầu. Trên Toolshop, token đăng nhập được lưu trong localStorage và giỏ hàng được lưu trong sessionStorage. Do đó test A đăng nhập và thêm sản phẩm vào giỏ, test B vẫn bắt đầu ở trạng thái chưa đăng nhập, giỏ hàng trống.
+
+Ví dụ sau là anti-pattern: test thứ hai dựa vào giỏ hàng do test thứ nhất tạo ra.
+
+```typescript
+// Anti-pattern: test thứ hai phụ thuộc vào kết quả của test thứ nhất
+test("thêm sản phẩm vào giỏ", async ({ page }) => {
+  const homePage = new HomePage(page);
+  const productPage = new ProductPage(page);
+
+  await homePage.goto();
+  await homePage.openProduct("Combination Pliers");
+  await productPage.addToCart();
+
+  await expect(productPage.cartQuantity).toHaveText("1");
+});
+
+test("biểu tượng giỏ hàng hiển thị số lượng 1", async ({ page }) => {
+  const homePage = new HomePage(page);
+
+  await homePage.goto();
+
+  // page thuộc một browser context mới, giỏ hàng trống: assertion luôn fail
+  await expect(homePage.cartQuantity).toHaveText("1");
+});
+```
+
+Với `fullyParallel: true`, hai test này còn có thể chạy trên hai worker khác nhau, theo thứ tự bất kỳ. Cách viết đúng: mỗi test tự chuẩn bị toàn bộ trạng thái cần thiết, trong ví dụ trên là tự thêm sản phẩm vào giỏ rồi mới kiểm tra. Buổi 10 trình bày cách chuẩn bị trạng thái dùng chung mà không lặp code.
+
+### Trạng thái trên trình duyệt và dữ liệu trên server
+
+Browser context chỉ cách ly trạng thái lưu trên trình duyệt. Dữ liệu lưu trên server không được cách ly.
+
+| Loại trạng thái             | Ví dụ trên Toolshop                                                    | Cách ly giữa các test                                                              |
+| --------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Trạng thái trên trình duyệt | Token đăng nhập, giỏ hàng                                              | Có, tự động, mỗi test một browser context                                          |
+| Dữ liệu trên server         | Danh sách sản phẩm yêu thích, hóa đơn, thông tin profile của tài khoản | Không. Mọi test, mọi worker và mọi người dùng chung tài khoản đều thấy cùng dữ liệu |
+
+<!-- TODO(image): sơ đồ cách ly trạng thái. Bên trái là 2 khối Worker 1 và Worker 2, mỗi worker có một Browser; bên trong mỗi Browser có 2 khối browser context (Test 1, Test 2 ở Worker 1; Test 3, Test 4 ở Worker 2), mỗi context ghi "cookie, localStorage, sessionStorage riêng". Bên phải là một khối Server Toolshop ghi "tài khoản customer@practicesoftwaretesting.com: yêu thích, hóa đơn, profile". Mũi tên từ cả 4 context cùng trỏ vào Server. Chú thích: đường viền context = được cách ly, khối Server = dùng chung. -->
+
+Tài khoản `customer@practicesoftwaretesting.com` được dùng chung bởi mọi test trong bộ test và bởi cả lớp. Vì vậy không viết assertion phụ thuộc vào số lượng chính xác của dữ liệu tài khoản, ví dụ "danh sách yêu thích có đúng 2 sản phẩm": dữ liệu này có thể bị test khác hoặc người khác thay đổi bất kỳ lúc nào. Buổi 12 trình bày cách tạo dữ liệu riêng cho từng test qua API.
+
+{% hint style="success" %}
+Một test độc lập phải pass trong cả ba trường hợp: chạy riêng lẻ (ví dụ `npx playwright test tests/cart.spec.ts:12`), chạy cùng toàn bộ bộ test, và chạy với số worker bất kỳ. Test chỉ pass khi chạy cùng các test khác là dấu hiệu test đang phụ thuộc vào test khác.
 {% endhint %}
 
-## 5. Screenshot, video và trace khi test fail
+## 4. Screenshot, video và trace
 
-Khi test fail trên máy của người khác hoặc trong lần chạy ban đêm, dòng lỗi trên terminal thường không đủ để biết trang web khi đó trông thế nào. Ba thiết lập trong khối `use` giải quyết việc này:
+Khi test fail trên máy của người khác hoặc trên CI, thông báo lỗi trên terminal thường không đủ để biết giao diện tại thời điểm đó. Ba thiết lập trong khối `use` ghi lại thông tin này:
 
 ```typescript
 use: {
-  baseURL: "https://www.saucedemo.com",
+  baseURL: process.env.BASE_URL || "https://practicesoftwaretesting.com",
   testIdAttribute: "data-test",
+  trace: "on-first-retry",
   screenshot: "only-on-failure",
   video: "retain-on-failure",
-  trace: "on-first-retry",
 },
 ```
 
-| Thuộc tính   | Giá trị nên dùng      | Các giá trị khác                                | Kết quả                                                                   |
-| ------------ | --------------------- | ----------------------------------------------- | ------------------------------------------------------------------------- |
-| `screenshot` | `"only-on-failure"`   | `"off"` (mặc định), `"on"`                      | Ảnh chụp màn hình tại thời điểm test fail                                 |
-| `video`      | `"retain-on-failure"` | `"off"` (mặc định), `"on"`, `"on-first-retry"`  | Video toàn bộ test, chỉ giữ lại file của test fail                        |
-| `trace`      | `"on-first-retry"`    | `"off"`, `"on"`, `"retain-on-failure"`          | Bản ghi chi tiết từng action, DOM và network, mở bằng Trace Viewer        |
+| Thiết lập    | Giá trị sử dụng       | Các giá trị khác                               | Kết quả                                                              |
+| ------------ | --------------------- | ---------------------------------------------- | -------------------------------------------------------------------- |
+| `screenshot` | `"only-on-failure"`   | `"off"` (mặc định), `"on"`                     | Ảnh chụp màn hình tại thời điểm test kết thúc, chỉ lưu khi test fail |
+| `video`      | `"retain-on-failure"` | `"off"` (mặc định), `"on"`, `"on-first-retry"` | Video toàn bộ quá trình chạy test, chỉ giữ lại video của test fail   |
+| `trace`      | `"on-first-retry"`    | `"off"`, `"on"`, `"retain-on-failure"`         | Bản ghi chi tiết từng action, DOM và network, mở bằng Trace Viewer   |
 
-Các file được lưu trong `test-results/`, mỗi test fail một folder con, và gắn vào report dưới mục Attachments của test đó. Folder `test-results/` và `playwright-report/` đã nằm trong `.gitignore` từ Buổi 4. Kiểm tra lại bằng `git status` trước khi commit để chắc chắn không có file ảnh hoặc video nào được đưa lên PR.
+Với mỗi test fail, Playwright tạo một folder con trong `test-results/`, chứa ảnh `test-failed-1.png` và video `video.webm`. Các file này cũng được gắn vào HTML report, trong trang chi tiết của test, ở phần Screenshots và Videos.
 
-Thử ngay tại lớp: sửa tạm password trong một test login thành `"wrong_password"`, chạy `npx playwright test --project=chromium tests/login.spec.ts`, mở `npx playwright show-report`, bấm vào test fail và xem ảnh chụp cùng video. Sửa lại password sau khi xem xong.
+<!-- TODO(image): trang chi tiết một test fail trong HTML report của Playwright: phần Errors ở trên với thông báo lỗi, bên dưới là phần Screenshots có ảnh trang Toolshop tại thời điểm test fail và phần Videos có trình phát video. Khoanh đỏ phần Screenshots và Videos. -->
 
-<!-- TODO(image): Trang chi tiết một test fail trong HTML report: phần Errors ở trên, phần Attachments ở dưới gồm mục "screenshot" có ảnh trang login Saucedemo báo lỗi "Epic sadface" và mục "video"; khoanh khối Attachments. -->
+Folder `test-results/` và `playwright-report/` đã có trong `.gitignore` từ Buổi 4. Kiểm tra bằng `git status` trước khi commit để đảm bảo không có ảnh hoặc video nào được đưa vào Pull Request.
 
-Giá trị `"on"` cho screenshot và video làm mỗi lần chạy chậm hơn và tốn dung lượng, chỉ bật khi cần điều tra một lỗi cụ thể. Trace là công cụ mạnh nhất trong ba loại, Buổi 13 trình bày chi tiết cách đọc Trace Viewer.
+Giá trị `"on"` cho screenshot và video làm mỗi lần chạy chậm hơn và tốn dung lượng, chỉ sử dụng khi cần điều tra một lỗi cụ thể.
 
-## 6. Hooks: beforeEach, afterEach, beforeAll, afterAll
+{% hint style="info" %}
+`trace: "on-first-retry"` chỉ ghi trace khi test được chạy lại. Trên máy cá nhân `retries` bằng 0, nên trace không được ghi. Khi cần trace để phân tích một test, chạy lại test đó với `--trace=on`. Buổi 13 trình bày cách đọc trace bằng Trace Viewer.
+{% endhint %}
 
-Nhìn lại các file test của Buổi 8: hầu hết test đều bắt đầu bằng ba dòng tạo `LoginPage`, gọi `goto()` và `login()`. Playwright cung cấp hook để gom các bước lặp lại này vào một chỗ trong file:
+## 5. Chọn test để chạy: only, skip, fixme
 
-```typescript
-import { test, expect } from "@playwright/test";
-import { LoginPage } from "../pages/login-page";
-import { InventoryPage } from "../pages/inventory-page";
+Tham số dòng lệnh chọn test theo file hoặc theo dòng. Playwright cung cấp thêm các lệnh đặt trực tiếp trong code để giới hạn hoặc bỏ qua test:
 
-test.beforeEach(async ({ page }) => {
-  // Chạy trước MỖI test trong file này, trên cùng page mà test sẽ dùng
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-  await loginPage.login("standard_user", "secret_sauce");
-});
+| Lệnh                           | Tác dụng                                                             | Trường hợp sử dụng                                                       |
+| ------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `test.only(...)`               | Chỉ chạy các test có `.only`, trong toàn bộ lần chạy                  | Đang sửa một test, cần kết quả nhanh                                     |
+| `test.skip(...)`               | Bỏ qua test, report đánh dấu skipped                                 | Test chưa chạy được vì lý do bên ngoài test, ví dụ tính năng đang tạm tắt |
+| `test.fixme(...)`              | Bỏ qua test, đánh dấu test cần sửa                                   | Test fail do lỗi của chính test, chưa sửa trong Pull Request hiện tại    |
 
-test("thêm một sản phẩm làm badge giỏ hàng hiện số 1", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.addProductToCart("Sauce Labs Backpack");
-  await expect(inventoryPage.cartBadge).toHaveText("1");
-});
-
-test("thêm hai sản phẩm làm badge giỏ hàng hiện số 2", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.addProductToCart("Sauce Labs Backpack");
-  await inventoryPage.addProductToCart("Sauce Labs Bike Light");
-  await expect(inventoryPage.cartBadge).toHaveText("2");
-});
-```
-
-`page` trong `beforeEach` và `page` trong test là cùng một object: hook login xong, test nhận đúng trang inventory đã login. Bốn hook có sẵn:
-
-| Hook              | Thời điểm chạy                                                | Fixture dùng được                  |
-| ----------------- | ------------------------------------------------------------- | ---------------------------------- |
-| `test.beforeEach` | Trước mỗi test trong file                                     | `page` và mọi fixture cấp test     |
-| `test.afterEach`  | Sau mỗi test trong file, kể cả khi test fail                  | `page` và mọi fixture cấp test     |
-| `test.beforeAll`  | Một lần trước toàn bộ test trong file, trên mỗi worker        | Chỉ `browser`, không có `page`     |
-| `test.afterAll`   | Một lần sau toàn bộ test trong file, trên mỗi worker          | Chỉ `browser`, không có `page`     |
-
-Thứ tự chạy với một file có hai test:
-
-```
-beforeAll
-  beforeEach → test 1 → afterEach
-  beforeEach → test 2 → afterEach
-afterAll
-```
-
-`afterEach` nhận thêm tham số thứ hai `testInfo` chứa thông tin về test vừa chạy. Ví dụ ghi lại URL cuối cùng của các test không pass để dễ điều tra:
+### test.only
 
 ```typescript
-test.afterEach(async ({ page }, testInfo) => {
-  // Chỉ log khi test không pass
-  if (testInfo.status !== "passed") {
-    console.log(`Test "${testInfo.title}" kết thúc tại ${page.url()}`);
-  }
+test.only("đăng nhập thành công", async ({ page }) => {
+  // Các bước của test
+});
+```
+
+Khi bất kỳ file nào trong project có `.only`, Playwright chỉ chạy các test có `.only` và bỏ qua mọi test khác, trong mọi file. Chạy `npx playwright test`, terminal báo `Running 1 test using 1 worker`. Các test bị loại không xuất hiện trong kết quả và không được tính là skipped.
+
+Vì vậy `.only` chỉ dùng tạm trên máy của bạn trong lúc sửa test. Một file được commit khi còn `.only` khiến người khác chạy bộ test chỉ thấy một test pass, các test còn lại không chạy và không có cảnh báo nào. Thiết lập `forbidOnly: !!process.env.CI` ngăn lỗi này trên CI: Playwright báo lỗi và dừng ngay khi phát hiện `.only`. Để chạy một test mà không cần sửa code, dùng số dòng: `npx playwright test tests/login.spec.ts:12`.
+
+### test.skip
+
+Giả sử chức năng lọc sản phẩm theo thương hiệu của trang web đang bị tạm tắt. Test của chức năng này được giữ lại trong code nhưng tạm thời không chạy:
+
+```typescript
+test.skip("lọc sản phẩm theo thương hiệu", async ({ page }) => {
+  // Chức năng lọc theo thương hiệu đang tạm tắt, bỏ skip khi chức năng được bật lại
 });
 ```
 
 {% hint style="warning" %}
-**Không dùng `beforeAll` để login một lần rồi dùng chung cho mọi test.** `beforeAll` không có `page`, và với 4 worker nó chạy 4 lần chứ không phải một lần. Cố tạo `page` thủ công trong `beforeAll` rồi chia sẻ cho các test là cách phổ biến nhất làm bộ test fail khi chạy song song. `beforeAll` chỉ phù hợp cho việc chuẩn bị không đụng đến trang web, ví dụ tạo dữ liệu qua API (Buổi 12).
+Không dùng `test.skip` để che một test đang fail mà chưa rõ nguyên nhân. Test fail do lỗi của chính test thì dùng `test.fixme` và sửa trong Pull Request tiếp theo.
 {% endhint %}
 
-Hạn chế của hook: `beforeEach` chỉ có tác dụng trong file khai báo nó. Project có `cart.spec.ts`, `checkout.spec.ts`, `inventory.spec.ts` đều cần login thì đoạn `beforeEach` phải được chép sang ba file. Mục 7 giải quyết vấn đề này.
-
-## 7. Custom fixture với test.extend
-
-### Fixture là gì
-
-Từ Buổi 4, mỗi test đều nhận `page` qua cú pháp destructuring `async ({ page })` đã học ở Buổi 1. `page` là một fixture: thứ Playwright chuẩn bị sẵn trước test (mở browser context, mở tab mới) và dọn dẹp sau test (đóng context). Playwright cho phép tự định nghĩa fixture của riêng project bằng `test.extend`, và fixture định nghĩa một lần dùng được ở mọi file test.
-
-### Tạo file fixture
-
-Tạo folder `fixtures/` ngang hàng với `tests/` và `pages/`, rồi tạo file `fixtures/test-fixtures.ts`:
+### test.fixme
 
 ```typescript
-import { test as base, expect, Page } from "@playwright/test";
-import { LoginPage } from "../pages/login-page";
-import { InventoryPage } from "../pages/inventory-page";
-
-// Khai báo tên và kiểu của từng fixture mới, tương tự type alias ở Buổi 3
-type CourseFixtures = {
-  authenticatedPage: Page;
-  inventoryPage: InventoryPage;
-};
-
-export const test = base.extend<CourseFixtures>({
-  // Fixture 1: page đã login sẵn bằng tài khoản standard_user
-  authenticatedPage: async ({ page }, use) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login("standard_user", "secret_sauce");
-    // Chờ chuyển sang trang inventory rồi mới trao page cho test
-    await page.waitForURL(/inventory/);
-
-    await use(page);
-    // Code sau use() chạy khi test kết thúc; Saucedemo không cần dọn dẹp gì thêm
-  },
-
-  // Fixture 2: InventoryPage dựng sẵn trên page đã login
-  inventoryPage: async ({ authenticatedPage }, use) => {
-    await use(new InventoryPage(authenticatedPage));
-  },
-});
-
-export { expect };
-```
-
-| Phần                                              | Ý nghĩa                                                                                                                                                  |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `import { test as base }`                         | Đổi tên `test` gốc thành `base`, để tên `test` dành cho phiên bản mở rộng sắp tạo                                                                        |
-| `type CourseFixtures`                             | Cho TypeScript biết tên và kiểu của từng fixture, nhờ đó VS Code gợi ý `inventoryPage` khi gõ trong test                                                 |
-| `base.extend<CourseFixtures>({...})`              | Tạo `test` mới có thêm các fixture liệt kê trong object                                                                                                  |
-| `async ({ page }, use)`                           | Hàm định nghĩa fixture: nhận các fixture khác mà nó cần (ở đây là `page` có sẵn của Playwright) và hàm `use`                                             |
-| `await use(page)`                                 | Mốc chia đôi fixture: code trước `use` là setup, giá trị truyền vào `use` là thứ test nhận được, code sau `use` là teardown                              |
-| `inventoryPage: async ({ authenticatedPage }, use)` | Fixture được phép dùng fixture khác. `inventoryPage` yêu cầu `authenticatedPage`, nên test chỉ cần khai báo `inventoryPage` là tự động được login       |
-| `export { expect }`                               | Xuất lại `expect` để file test import mọi thứ từ một chỗ                                                                                                 |
-
-### Dùng fixture trong test
-
-File test import `test` và `expect` từ file fixture thay vì từ `@playwright/test`, sau đó khai báo fixture cần dùng trong destructuring:
-
-```typescript
-import { test, expect } from "../fixtures/test-fixtures";
-
-test("thêm một sản phẩm làm badge giỏ hàng hiện số 1", async ({ inventoryPage }) => {
-  await inventoryPage.addProductToCart("Sauce Labs Backpack");
-  await expect(inventoryPage.cartBadge).toHaveText("1");
-});
-
-test("mở giỏ hàng chuyển sang trang cart", async ({ authenticatedPage, inventoryPage }) => {
-  await inventoryPage.openCart();
-  await expect(authenticatedPage).toHaveURL(/cart/);
+test.fixme("xóa sản phẩm khỏi giỏ cập nhật tổng tiền", async ({ page }) => {
+  // Locator ô Total không còn khớp sau khi trang giỏ hàng thay đổi, sửa trong Pull Request tiếp theo
 });
 ```
 
-So với phiên bản dùng `beforeEach` ở mục 6, test không còn dòng login nào và không còn dòng `new InventoryPage(page)`. Test chỉ khai báo fixture nào thì fixture đó mới chạy: test kiểm tra màn hình login vẫn dùng `page` gốc và không bị login trước.
+Trong report, `skip` và `fixme` đều hiển thị là skipped, nhưng khi đọc code hai lệnh này mang hai ý nghĩa khác nhau: `skip` là "không cần chạy trong điều kiện này", `fixme` là "test có lỗi cần sửa". Cả hai luôn phải kèm lý do, viết bằng comment ngay dòng đầu thân test. Test bị bỏ qua mà không có lý do sẽ nằm mãi trong report mà không ai biết cần làm gì với nó.
 
-{% hint style="warning" %}
-Sau khi có file fixture, mọi file test trong project phải import `test` từ `../fixtures/test-fixtures`. File nào còn import từ `@playwright/test` sẽ báo lỗi `Property 'inventoryPage' does not exist` khi khai báo fixture mới, vì `test` gốc không biết các fixture này.
+{% hint style="success" %}
+Trước khi commit, kiểm tra không còn `test.only` trong code và mọi `test.skip`, `test.fixme` đều có lý do. Tìm nhanh bằng chức năng Search của VS Code (`Ctrl+Shift+F`) với từ khóa `.only(`.
 {% endhint %}
 
-### Hook hay fixture
+## 6. Tag và --grep
 
-| Tiêu chí               | Hook (`beforeEach`)                          | Fixture (`test.extend`)                                          |
-| ---------------------- | -------------------------------------------- | ---------------------------------------------------------------- |
-| Phạm vi                | Một file test                                | Mọi file import file fixture                                     |
-| Test nào bị ảnh hưởng  | Mọi test trong file, kể cả test không cần    | Chỉ test khai báo fixture đó                                     |
-| Kết hợp                | Không kết hợp được                           | Fixture gọi được fixture khác                                    |
-| Nên dùng khi           | Bước chuẩn bị riêng cho một file             | Trạng thái dùng chung toàn project: login, page object, dữ liệu test |
+### Gắn tag
 
-Từ buổi này, quy ước của lớp: trạng thái dùng chung khai báo bằng fixture, hook chỉ dùng cho việc riêng của một file. Buổi 12 mở rộng file fixture với dữ liệu tạo qua API, và Buổi 13 đặt `fixtures/` vào cấu trúc folder chuẩn của framework.
+Khi bộ test có hàng chục test, việc chọn theo file hoặc theo dòng không còn đủ. Ví dụ trước khi tạo Pull Request chỉ cần chạy các luồng chính trong 1-2 phút, còn toàn bộ bộ test chạy trước mỗi lần release. **Tag** là nhãn phân loại gắn vào test, luôn bắt đầu bằng `@`, khai báo trong object tùy chọn đặt giữa tên test và hàm test:
 
-## 8. Lỗi thường gặp
+```typescript
+test("đăng nhập thành công", { tag: ["@smoke", "@critical"] }, async ({ page }) => {
+  // Các bước của test
+});
 
-| Triệu chứng                                                    | Nguyên nhân                                                                 | Cách xử lý                                                                                          |
-| -------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `Cannot navigate to invalid URL` khi gọi `goto("/")`           | Chưa khai báo `baseURL` trong khối `use`, hoặc gõ sai chữ hoa (`baseUrl`)   | Kiểm tra dòng `baseURL` trong config, đúng chính tả với U, R, L viết hoa                            |
-| `Executable doesn't exist` khi chạy project firefox hoặc webkit | Browser chưa được tải về máy                                                | Chạy `npx playwright install`                                                                       |
-| Test pass khi chạy `--workers=1`, fail khi chạy song song      | Test phụ thuộc trạng thái do test khác để lại                               | Mỗi test tự chuẩn bị trạng thái bằng fixture `authenticatedPage`, không dựa vào thứ tự chạy         |
-| `Property 'inventoryPage' does not exist on type`              | File test import `test` từ `@playwright/test` thay vì từ file fixture       | Sửa dòng import thành `from "../fixtures/test-fixtures"`                                            |
-| Lỗi báo `page` không dùng được trong `beforeAll`               | `beforeAll` chạy ở cấp worker, không có fixture cấp test                    | Chuyển sang `beforeEach` hoặc fixture                                                               |
-| Bộ test chạy lâu gấp bốn lần so với Buổi 8                     | Mỗi test chạy lại trên từng project                                         | Khi phát triển dùng `--project=chromium`, chạy đủ project trước khi tạo PR                          |
-| Report đánh dấu test là flaky                                  | Test fail lần đầu và pass khi retry                                         | Chạy `npx playwright test --repeat-each=5 --retries=0` để tái hiện, rồi bổ sung assertion neo trạng thái |
+test("hiển thị lỗi khi đăng nhập bằng email chưa đăng ký", { tag: "@regression" }, async ({ page }) => {
+  // Các bước của test
+});
+```
 
-## 9. Bài tập về nhà (45-60 phút)
+`tag` nhận một chuỗi khi test có một tag, hoặc một mảng khi test có nhiều tag. Tag thiếu ký tự `@` làm Playwright báo lỗi `Tag must start with "@" symbol`. Cú pháp này cần Playwright từ phiên bản 1.42, kiểm tra bằng `npx playwright --version`. Buổi 10 trình bày cách gắn tag cho cả một nhóm test.
 
-1. Cập nhật `playwright.config.ts`: khai báo `baseURL` của Saucedemo, giữ ba project desktop và thêm project `mobile-chrome` dùng `devices["Pixel 5"]`, bật `screenshot: "only-on-failure"` và `video: "retain-on-failure"`. Sửa `LoginPage.goto()` sang đường dẫn `/`.
-2. Tạo `fixtures/test-fixtures.ts` với hai fixture `authenticatedPage` và `inventoryPage` như mục 7. Thêm fixture thứ ba `cartPage` dựng `CartPage` (Buổi 7-8) trên `authenticatedPage`.
-3. Refactor toàn bộ file test hiện có sang import `test` từ file fixture. Xóa mọi đoạn login lặp lại trong test và trong `beforeEach`. Riêng các test kiểm tra màn hình login (login thành công, login sai password) vẫn dùng `page` gốc.
-4. Chạy `npx playwright test` trên toàn bộ project và dán dòng tổng kết của terminal (ví dụ `40 passed (52.1s)`) vào phần mô tả PR.
-5. Push lên repo lớp qua Pull Request, nhánh `your-name/lesson-9`.
+Quy ước tag của khóa học, áp dụng đến hết mini project (Buổi 14):
 
-**Checklist trước khi nộp:** `LoginPage.goto()` dùng đường dẫn tương đối · config có ít nhất 4 project, gồm 1 project mobile · không còn test nào tự gọi `login()` ngoài các test kiểm tra màn hình login · toàn bộ test pass trên mọi project · `test-results/` và `playwright-report/` không xuất hiện trong PR.
+| Tag           | Ý nghĩa                                                                        | Số lượng dự kiến              |
+| ------------- | ------------------------------------------------------------------------------ | ----------------------------- |
+| `@smoke`      | Luồng chính của sản phẩm, cả nhóm chạy xong trong 1-2 phút, chạy trước mỗi PR  | Khoảng 5-10% số test          |
+| `@critical`   | Test fail thì chặn release, ví dụ đăng nhập, thanh toán                        | Ít, thường trùng với `@smoke` |
+| `@regression` | Các test kiểm tra chi tiết, chạy trước release                                 | Phần lớn test còn lại         |
+| `@api`        | Test gọi API, không mở trình duyệt (Buổi 11)                                   | Theo số endpoint              |
+
+### Chạy theo tag với --grep
+
+`--grep` nhận một biểu thức chính quy (regular expression) và chỉ chạy các test có tên đầy đủ khớp với biểu thức đó. Tên đầy đủ gồm tên file, tên test và các tag:
+
+| Lệnh                                                   | Ý nghĩa                                                                |
+| ------------------------------------------------------ | ---------------------------------------------------------------------- |
+| `npx playwright test --grep @smoke`                    | Chỉ chạy test có tag `@smoke`                                          |
+| `npx playwright test --grep-invert @regression`        | Chạy mọi test trừ test có tag `@regression`                            |
+| `npx playwright test --grep "email chưa đăng ký"`      | Chạy test có cụm từ "email chưa đăng ký" trong tên                     |
+| `npx playwright test --grep @smoke --list`             | Liệt kê các test khớp mà không chạy, dùng để kiểm tra tag trước khi chạy |
+
+Trong biểu thức chính quy, ký tự `|` có nghĩa là "hoặc". Lệnh sau chạy test có tag `@smoke` hoặc `@critical`. Biểu thức phải đặt trong dấu ngoặc kép, nếu không terminal hiểu `|` là ký tự nối lệnh (pipe):
+
+```bash
+npx playwright test --grep "@smoke|@critical"
+```
+
+Kết quả của `--list` kết thúc bằng dòng tổng kết, ví dụ:
+
+```
+Total: 12 tests in 3 files
+```
+
+HTML report hiển thị tag dưới dạng nhãn nhỏ cạnh tên test. Bấm vào nhãn để lọc report theo tag đó, hoặc gõ `@smoke` vào ô tìm kiếm phía trên danh sách.
+
+<!-- TODO(image): HTML report sau khi chạy npx playwright test: danh sách test có nhãn tag @smoke, @critical, @regression hiện cạnh tên test; khoanh một nhãn @smoke và ô tìm kiếm phía trên đang chứa "@smoke" làm danh sách chỉ còn các test smoke. -->
+
+{% hint style="info" %}
+Config có thiết lập `grep` để đặt bộ lọc mặc định, ví dụ `grep: /@smoke/`. Khóa học không sử dụng thiết lập này: bộ lọc nằm trong config dễ bị quên, và lệnh `npx playwright test` không còn chạy toàn bộ bộ test như người đọc mong đợi.
+{% endhint %}
+
+## 7. Thực hành tại lớp: phân loại bộ test
+
+Áp dụng tag cho bộ test hiện có của project.
+
+### Các bước thực hiện
+
+1. Liệt kê toàn bộ test bằng `npx playwright test --list`.
+2. Với mỗi test, xác định: test có thuộc luồng chính của Toolshop không, và test fail có làm chặn release không.
+3. Gắn tag theo quy ước tag của khóa học.
+4. Chạy `npx playwright test --grep @smoke --list` để kiểm tra danh sách smoke test.
+5. Chạy `npx playwright test --grep @smoke`, so sánh thời gian chạy với lệnh chạy toàn bộ bộ test.
+
+### Câu hỏi thiết kế
+
+Trả lời các câu hỏi sau trước khi gắn tag:
+
+* Test "form đăng nhập hiển thị đủ ô nhập và nút Login" có cần tag `@smoke` không, khi test "đăng nhập thành công" đã có tag này?
+* Một test có cả `@smoke` và `@regression` có hợp lý không? Trước release, lệnh nào đảm bảo không bỏ sót test nào?
+* Một test fail vì Toolshop đang có lỗi đã được báo cáo, chưa được sửa. Một test khác fail vì locator trong page object viết sai. Mỗi trường hợp nên dùng `test.skip` hay `test.fixme`?
+
+## 8. Tóm tắt
+
+| Nội dung                 | Điểm chính                                                                                                 |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `playwright.config.ts`   | Mọi lệnh `npx playwright test` đọc config trước khi chạy. Tham số dòng lệnh ghi đè config cho lần chạy đó |
+| Timeout                  | Bốn loại: test, assertion, action, chuyển trang. Dòng đầu của thông báo lỗi cho biết loại nào đã hết hạn   |
+| Retries                  | Không sửa được test. Test flaky là lỗi cần điều tra                                                        |
+| Chạy song song           | Mỗi worker là một process riêng. Mỗi test có browser context riêng, dữ liệu trên server không được cách ly |
+| Screenshot, video, trace | Cấu hình trong khối `use`, kết quả nằm trong `test-results/` và HTML report                                |
+| only, skip, fixme        | `.only` có hiệu lực trên toàn bộ lần chạy, không commit. `skip` và `fixme` luôn kèm lý do                  |
+| Tag và `--grep`          | Tag phân loại test theo mức độ quan trọng. `--grep` chọn test theo tag hoặc theo tên                       |
+
+## 9. Bài tập về nhà
+
+Không nhập password sai cho tài khoản chung.
+
+### Bài 1: cập nhật playwright.config.ts
+
+Cập nhật `playwright.config.ts` để bộ test:
+
+* Chỉ chạy trên Chromium.
+* Lưu screenshot và video cho test fail, không lưu cho test pass.
+
+### Bài 2: chạy ổn định
+
+* Mỗi test pass khi chạy riêng lẻ và khi chạy cùng toàn bộ bộ test với `--repeat-each=3`.
+* Với mỗi test fail không ổn định, xác định nguyên nhân bằng screenshot hoặc video và ghi lại nguyên nhân trong mô tả Pull Request.
+
+### Bài 3: phân loại bộ test
+
+* Mọi test có tag theo quy ước tag của khóa học. Lệnh `--grep @smoke` chỉ chạy các luồng chính và hoàn thành nhanh hơn rõ rệt so với toàn bộ bộ test.
+* Project không còn `test.only`. Mọi `test.skip` và `test.fixme` có lý do.

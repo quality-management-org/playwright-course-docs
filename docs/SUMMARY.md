@@ -14,11 +14,11 @@
 * [Buổi 5 · Locators: Chọn phần tử đúng cách](phase-2-playwright-co-ban/buoi-5-locators-chon-phan-tu-dung-cach/README.md)
 * [Buổi 6 · Actions, Assertions & Auto-wait](phase-2-playwright-co-ban/buoi-6-actions-assertions-and-auto-wait.md)
 * [Buổi 7 · Page Object Model: Khái niệm & Xây dựng](phase-2-playwright-co-ban/buoi-07-page-object-model.md)
-* [Buổi 8 · Hoàn thiện POM & Code Review](phase-2-playwright-co-ban/buoi-08-pom-code-review.md)
+* [Buổi 8 · Hoàn thiện Page Object Model](phase-2-playwright-co-ban/buoi-08-pom-code-review.md)
 
 ## Phase 3 · Nâng cao
 
-* [Buổi 9 · playwright.config.ts, Fixtures & Chạy song song](phase-3-nang-cao/buoi-09-config-fixtures-parallel.md)
-* [Buổi 10 · Tổ chức Test Suite](phase-3-nang-cao/buoi-10-test-suite-organization.md)
+* [Buổi 9 · playwright.config.ts & Điều khiển việc chạy test](phase-3-nang-cao/buoi-09-config-fixtures-parallel.md)
+* [Buổi 10 · Hooks, Fixtures & Tổ chức Test Suite](phase-3-nang-cao/buoi-10-test-suite-organization.md)
 * [Buổi 11 · API Testing với Playwright](phase-3-nang-cao/buoi-11-api-testing.md)
 * [Buổi 12 · API + UI kết hợp & Network Mocking](phase-3-nang-cao/buoi-12-api-ui-network-mocking.md)
