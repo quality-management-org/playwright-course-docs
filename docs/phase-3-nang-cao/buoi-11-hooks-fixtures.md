@@ -25,15 +25,6 @@ Một `describe` có thể đặt bên trong một `describe` khác để tạo 
 
 Tên đầy đủ của test là `Cart › Remove product › Cart is empty after removing the only product`.
 
-### Tag và only, skip cho cả nhóm
-
-* Tag khai báo ở `describe` áp dụng cho mọi test bên trong nhóm.
-* Test bên trong nhóm vẫn có thể có thêm tag riêng.
-
-![Tag khai báo ở describe và tag riêng của từng test trong checkout.spec.ts](../.gitbook/assets/buoi-11-describe-tag.png)
-
-Tương tự, `test.describe.only(...)`, `test.describe.skip(...)` và `test.describe.fixme(...)` áp dụng quy tắc của `test.only`, `test.skip`, `test.fixme` cho cả nhóm.
-
 ### Quy ước đặt tên
 
 | Thành phần     | Quy ước                                                                 | Ví dụ                                             |
@@ -41,10 +32,6 @@ Tương tự, `test.describe.only(...)`, `test.describe.skip(...)` và `test.des
 | Tên file       | Một tính năng một file, `<feature>.spec.ts`, tiếng Anh kebab-case       | `checkout.spec.ts`                                |
 | Tên `describe` | Danh từ chỉ tính năng hoặc thao tác, tiếng Anh, viết hoa chữ cái đầu    | `"Checkout"`, `"Remove product"`                  |
 | Tên `test`     | Câu tiếng Anh mô tả kết quả mong đợi, viết hoa chữ cái đầu             | `"Cart is empty after removing the only product"` |
-
-{% hint style="warning" %}
-`test.describe.configure({ mode: "serial" })` buộc các test trong nhóm chạy tuần tự và dừng cả nhóm khi một test fail. Cấu hình này không phải cách để test A chuẩn bị dữ liệu cho test B: mỗi test vẫn phải tự chuẩn bị trạng thái của mình. Khóa học không sử dụng `serial`.
-{% endhint %}
 
 ## 2. Hooks
 
@@ -237,10 +224,6 @@ Quy ước của khóa học:
 * Trạng thái dùng chung toàn project, như đăng nhập và page object, khai báo bằng fixture.
 * Hook chỉ dùng cho bước chuẩn bị riêng của một file hoặc một nhóm, ví dụ bước thêm một sản phẩm vào giỏ của nhóm "Remove product".
 
-{% hint style="info" %}
-Với fixture `authenticatedPage`, mỗi test đăng nhập lại qua giao diện. Với bộ test lớn, Playwright hỗ trợ lưu trạng thái đăng nhập một lần và sử dụng lại cho nhiều test. Nội dung này nằm ngoài phạm vi khóa học, tham khảo tại [Authentication](https://playwright.dev/docs/auth).
-{% endhint %}
-
 ## 4. Thực hành tại lớp: fixture cho checkout
 
 Áp dụng fixture cho file `tests/checkout.spec.ts`.
@@ -312,7 +295,7 @@ Khi mỗi bộ dữ liệu là một object gồm nhiều trường, ví dụ em
 
 | Nội dung           | Điểm chính                                                                                           |
 | ------------------ | ---------------------------------------------------------------------------------------------------- |
-| `test.describe`    | Nhóm test theo tính năng, tên nhóm ghép vào tên test. Tag và `only`, `skip` áp dụng được cho cả nhóm |
+| `test.describe`    | Nhóm test theo tính năng, tên nhóm ghép vào tên test                                                 |
 | Hook               | Chuẩn bị và dọn dẹp cho các test trong một file hoặc một nhóm. `beforeAll` không có `page`           |
 | Fixture            | Chuẩn bị trạng thái dùng chung cho toàn project. Test chỉ nhận fixture mà test khai báo              |
 | Hook hay fixture   | Trạng thái dùng chung dùng fixture, bước chuẩn bị riêng của một nhóm dùng hook                       |
