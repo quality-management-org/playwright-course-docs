@@ -23,7 +23,7 @@ Một `describe` có thể đặt bên trong một `describe` khác để tạo 
 
 ![describe lồng nhau trong cart.spec.ts](../.gitbook/assets/buoi-11-nested-describe.png)
 
-Tên đầy đủ của test là `Giỏ hàng › Xóa sản phẩm › giỏ hàng trống sau khi xóa sản phẩm duy nhất`.
+Tên đầy đủ của test là `Cart › Remove product › cart is empty after removing the only product`.
 
 ### Tag và only, skip cho cả nhóm
 
@@ -38,8 +38,8 @@ Tương tự, `test.describe.only(...)`, `test.describe.skip(...)` và `test.des
 | Thành phần       | Quy ước                                                              | Ví dụ                                               |
 | ---------------- | -------------------------------------------------------------------- | --------------------------------------------------- |
 | Tên file         | Một tính năng một file, `<feature>.spec.ts`, tiếng Anh kebab-case    | `checkout.spec.ts`                                  |
-| Tên `describe`   | Danh từ chỉ tính năng hoặc thao tác, tiếng Việt                      | `"Thanh toán"`, `"Xóa sản phẩm"`                    |
-| Tên `test`       | Câu mô tả kết quả mong đợi, đọc được mà không cần mở code            | `"giỏ hàng trống sau khi xóa sản phẩm duy nhất"`    |
+| Tên `describe`   | Danh từ chỉ tính năng hoặc thao tác, tiếng Anh                       | `"Checkout"`, `"Remove product"`                    |
+| Tên `test`       | Câu tiếng Anh mô tả kết quả mong đợi, đọc được mà không cần mở code  | `"cart is empty after removing the only product"`   |
 
 {% hint style="warning" %}
 `test.describe.configure({ mode: "serial" })` buộc các test trong nhóm chạy tuần tự và dừng cả nhóm khi một test fail. Cấu hình này không phải cách để test A chuẩn bị dữ liệu cho test B: nguyên tắc "mỗi test tự chuẩn bị trạng thái" (Buổi 9) vẫn áp dụng. Khóa học không sử dụng `serial`.
@@ -82,11 +82,11 @@ Hook có hiệu lực trong phạm vi nơi nó được khai báo:
 | Ngoài mọi `describe`       | Mọi test trong file                                |
 | Bên trong một `describe`   | Chỉ các test của nhóm đó, kể cả nhóm con bên trong |
 
-Ví dụ, chỉ các test xóa sản phẩm cần có sẵn sản phẩm trong giỏ. Bước chuẩn bị này đặt trong `beforeEach` của nhóm "Xóa sản phẩm", không ảnh hưởng tới các test khác của nhóm "Giỏ hàng":
+Ví dụ, chỉ các test xóa sản phẩm cần có sẵn sản phẩm trong giỏ. Bước chuẩn bị này đặt trong `beforeEach` của nhóm "Remove product", không ảnh hưởng tới các test khác của nhóm "Cart":
 
 ![beforeEach của nhóm ngoài và nhóm con Xóa sản phẩm](../.gitbook/assets/buoi-11-hook-scope.png)
 
-Với test "giỏ hàng trống sau khi xóa sản phẩm duy nhất", `beforeEach` của nhóm ngoài chạy trước, sau đó đến `beforeEach` của nhóm trong, cuối cùng là test.
+Với test "cart is empty after removing the only product", `beforeEach` của nhóm ngoài chạy trước, sau đó đến `beforeEach` của nhóm trong, cuối cùng là test.
 
 ### Các loại hook
 
@@ -203,7 +203,7 @@ Test thứ nhất khai báo `authenticatedPage` nhưng không sử dụng biến
 | Kết hợp            | Không dùng lại được ở file khác                              | Fixture sử dụng được fixture khác                                        |
 | Trường hợp sử dụng | Bước chuẩn bị chỉ dành cho các test của một file hoặc một nhóm | Trạng thái dùng chung toàn project: đăng nhập, page object, dữ liệu test |
 
-Quy ước của khóa học từ buổi này: trạng thái dùng chung được khai báo bằng fixture, hook chỉ dùng cho bước chuẩn bị riêng của một file hoặc một nhóm. Ví dụ bước "thêm một sản phẩm vào giỏ" của nhóm "Xóa sản phẩm" vẫn phù hợp với `beforeEach`. Buổi 13 đặt `fixtures/` vào cấu trúc folder chuẩn của framework.
+Quy ước của khóa học từ buổi này: trạng thái dùng chung được khai báo bằng fixture, hook chỉ dùng cho bước chuẩn bị riêng của một file hoặc một nhóm. Ví dụ bước "thêm một sản phẩm vào giỏ" của nhóm "Remove product" vẫn phù hợp với `beforeEach`. Buổi 13 đặt `fixtures/` vào cấu trúc folder chuẩn của framework.
 
 {% hint style="info" %}
 Với fixture `authenticatedPage`, mỗi test đăng nhập lại qua giao diện. Với bộ test lớn, Playwright hỗ trợ lưu trạng thái đăng nhập một lần và sử dụng lại cho nhiều test. Nội dung này nằm ngoài phạm vi khóa học, tham khảo tại [Authentication](https://playwright.dev/docs/auth).
@@ -254,7 +254,7 @@ Ba test có cùng vị trí khai báo (dòng 7) nhưng là ba test độc lập:
 
 ### Tên test phải duy nhất
 
-Playwright yêu cầu tên đầy đủ của mỗi test là duy nhất. Nếu tên test trong vòng lặp không chứa dữ liệu, ví dụ `test("hiển thị đúng tên sản phẩm", ...)`, ba vòng lặp sinh ra ba test cùng tên và Playwright báo lỗi `duplicate test title` ngay khi đọc file, trước khi chạy bất kỳ test nào.
+Playwright yêu cầu tên đầy đủ của mỗi test là duy nhất. Nếu tên test trong vòng lặp không chứa dữ liệu, ví dụ `test("shows the correct name", ...)`, ba vòng lặp sinh ra ba test cùng tên và Playwright báo lỗi `duplicate test title` ngay khi đọc file, trước khi chạy bất kỳ test nào.
 
 Khi mỗi bộ dữ liệu là một object gồm nhiều trường, như kiểu dữ liệu đăng nhập ở bài tập Buổi 6, Bài 1, khai báo kiểu cho object bằng `type` hoặc `interface` (Buổi 3) và ghép trường mô tả tình huống vào tên test.
 

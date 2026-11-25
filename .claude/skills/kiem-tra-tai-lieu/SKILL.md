@@ -39,7 +39,8 @@ Applies in full to Buổi 9 onward. Buổi 1-8 still use the older template; for
 ### 3. Code samples
 
 - (all) Valid TypeScript/Playwright. Locators prefer getByRole, getByLabel, getByPlaceholder, getByText. No `waitForTimeout()` and no XPath, except labeled anti-patterns.
-- (all) English identifiers and example filenames (kebab-case), Vietnamese code comments and `test("...")` titles. Branch names `your-name/lesson-X`.
+- (all) English identifiers and example filenames (kebab-case). Branch names `your-name/lesson-X`.
+- Everything inside code is English: comments, `test("...")` and `test.describe("...")` titles, error messages, and `--list` output shown in images. Lesson prose that quotes a test name uses the English name. Applies to Phase 3 now; for Buổi 1-8, report Vietnamese code text as "not yet migrated" rather than Fail.
 - Practice site for Buổi 9 onward: only Toolshop, `https://practicesoftwaretesting.com` and its API `https://api.practicesoftwaretesting.com`. Fail on Saucedemo, DemoQA, The Internet, ReqRes, JSONPlaceholder, FakeStoreAPI.
 - Toolshop data rules: no hard-coded product, category or brand ids (data and ids are regenerated daily; look ids up by name); never a wrong password for the shared account `customer@practicesoftwaretesting.com` (it locks after 3 attempts; negative login cases use an unregistered email); no assertions on exact counts of shared-account data; API requests send `Accept: application/json`.
 - Single browser: config has only the `chromium` project. Fail on extra projects (firefox, webkit, mobile, a separate `api` project) and on `--project` flags.

@@ -245,7 +245,7 @@ Quy ước tag của khóa học, áp dụng đến hết mini project (Buổi 1
 | ------------------------------------------------------ | ---------------------------------------------------------------------- |
 | `npx playwright test --grep @smoke`                    | Chỉ chạy test có tag `@smoke`                                          |
 | `npx playwright test --grep-invert @regression`        | Chạy mọi test trừ test có tag `@regression`                            |
-| `npx playwright test --grep "email chưa đăng ký"`      | Chạy test có cụm từ "email chưa đăng ký" trong tên                     |
+| `npx playwright test --grep "unregistered email"`      | Chạy test có cụm từ "unregistered email" trong tên                     |
 | `npx playwright test --grep @smoke --list`             | Liệt kê các test khớp mà không chạy, dùng để kiểm tra tag trước khi chạy |
 
 Trong biểu thức chính quy, ký tự `|` có nghĩa là "hoặc". Lệnh sau chạy test có tag `@smoke` hoặc `@critical`. Biểu thức phải đặt trong dấu ngoặc kép, nếu không terminal hiểu `|` là ký tự nối lệnh (pipe):
@@ -284,7 +284,7 @@ Config có thiết lập `grep` để đặt bộ lọc mặc định, ví dụ 
 
 Trả lời các câu hỏi sau trước khi gắn tag:
 
-* Test "form đăng nhập hiển thị đủ ô nhập và nút Login" có cần tag `@smoke` không, khi test "đăng nhập thành công" đã có tag này?
+* Test "login form shows the email field, password field and Login button" có cần tag `@smoke` không, khi test "logs in successfully" đã có tag này?
 * Một test có cả `@smoke` và `@regression` có hợp lý không? Trước release, lệnh nào đảm bảo không bỏ sót test nào?
 * Một test fail vì Toolshop đang có lỗi đã được báo cáo, chưa được sửa. Một test khác fail vì locator trong page object viết sai. Mỗi trường hợp nên dùng `test.skip` hay `test.fixme`?
 

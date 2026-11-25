@@ -271,7 +271,7 @@ Context tự tạo thì phải tự đóng bằng `dispose()`; fixture `request`
 | ------------- | ------------------------------------------------------------------------------------------------------------- |
 | Vị trí        | `tests/api/`, mỗi nhóm endpoint một file: `products.spec.ts`, `carts.spec.ts`, `auth.spec.ts`                 |
 | Đầu file      | `test.use` với `baseURL: apiUrl` và header `Accept: application/json`                                         |
-| Tên test      | Method và endpoint, kèm kết quả mong đợi và status khi có: `"GET /products/{id} trả về 404 khi sản phẩm không tồn tại"` |
+| Tên test      | Method và endpoint, kèm kết quả mong đợi và status khi có: `"GET /products/{id} returns 404 for a missing product"` |
 | Tag           | Mọi test API có `@api` theo quy ước tag của khóa học (Buổi 9), thêm `@smoke` cho endpoint cốt lõi              |
 | Mỗi test      | Ít nhất một assertion về status và một assertion về body                                                      |
 | Trường hợp âm | Mỗi endpoint có ít nhất một test cho dữ liệu sai, dữ liệu không tồn tại hoặc thiếu token                      |

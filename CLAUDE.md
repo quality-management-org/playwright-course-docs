@@ -48,7 +48,7 @@ Naming language: all identifiers in example code and commands are English.
 - Variables/functions: camelCase. Classes/interfaces: PascalCase. All English.
 - Git branch names in submission instructions: `your-name/lesson-X` (concrete example: `linh/lesson-2`).
 - Commit messages in examples: short English (e.g. `lesson 2: async await homework`).
-- Exceptions that stay Vietnamese: comments inside code (they explain "why" to beginners) and test description strings in `test("...")`.
+- Everything inside code samples is English, including comments, `test("...")` and `test.describe("...")` titles, and error messages. Phase 3 is converted; Buổi 1-8 still have Vietnamese comments and test titles until they are migrated. Lesson prose that quotes a test name uses the English name.
 
 Sample quality:
 
