@@ -30,7 +30,8 @@ The published GitBook space is the `docs/` folder (configured by `gitbook-docs.y
 - Keep technical terms in English (locator, assertion, fixture...). Prefer precise definitions; everyday analogies only for genuinely difficult concepts, at most once per concept, phrased formally.
 - Lessons are training material, not a reference manual: each concept starts from a concrete problem, code is built step by step, and the result of running it is shown. Text around a code example is 1-2 sentences: what the code does, the link to earlier knowledge, the consequence.
 - Headings are terminology-based noun phrases. No "Dat van de" section.
-- No section-number references ("muc 3", "Buoi 5, muc 12"). Cite other lessons as "Buoi X" only; refer to content inside a lesson by name.
+- No section-number references ("muc 3"). Do not cite other sessions in prose ("da hoc o Buoi 9", "(Buoi 6)", "Buoi 13 trinh bay..."): it reads as spoken style. State the knowledge directly; refer to content inside a lesson by name.
+- When a passage carries several separate points (conditions, consequences, steps, rules), present them as a bullet list or numbered steps instead of one dense paragraph.
 
 ## Standard lesson template (in this order)
 
@@ -54,6 +55,7 @@ Naming language: everything inside code samples is English.
 
 - Folder and file names in examples: English kebab-case (`lesson-01`, `homework-lesson-01.ts`, `login-page.ts`). Not Vietnamese-without-diacritics (`buoi-01`, `baitap-buoi1.ts`).
 - Variables/functions: camelCase. Classes/interfaces: PascalCase.
+- `test.describe("...")` titles start with a capital letter ("Login", "Remove product"); `test("...")` titles are lowercase sentences describing the expected result.
 - Comments, `test("...")` and `test.describe("...")` titles, error messages and `--list` output are English. Lesson prose that quotes a test name uses the English name. Phase 3 is converted; Buoi 1-8 still have Vietnamese comments and test titles until they are migrated.
 - Git branch names in submission instructions: `your-name/lesson-X` (concrete example: `linh/lesson-2`).
 - Commit messages in examples: short English (e.g. `lesson 2: async await homework`).
@@ -79,9 +81,9 @@ Scope: the English naming rule applies to code inside lessons. The repo's own .m
 - Image files go in `docs/.gitbook/assets/`, named `buoi-XX-<short-name>.png` (kebab-case ASCII), inserted as `![mo ta ngan](../.gitbook/assets/buoi-XX-<short-name>.png)` with Vietnamese alt text. Remove the TODO once the image is in place.
 - Quality checks report every remaining `TODO(image)` placeholder in the file.
 
-## Cross-references between sessions
+## Session order
 
-When reusing earlier knowledge, cite the source ("destructuring da hoc o Buoi 1"). When mentioning a concept taught later, add a forward reference ("Buoi 11 trinh bay chi tiet custom fixture"). Session order must match `docs/SUMMARY.md`: Phase 3 is Buoi 9 config, Buoi 10 API testing, Buoi 11 hooks and fixtures.
+Session order must match `docs/SUMMARY.md`: Phase 3 is Buoi 9 config, Buoi 10 API testing, Buoi 11 hooks and fixtures. Lesson prose does not cite other sessions by number (see Writing style); Buoi 9 and Buoi 10 still contain such references until they are revised.
 
 ## Editing workflow
 
