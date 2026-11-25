@@ -11,42 +11,9 @@ Khi số lượng test tăng, code test bắt đầu lặp lại: cùng một b�
 
 ### Cú pháp
 
-`test.describe` nhận một tên nhóm và một hàm chứa các test thuộc nhóm đó:
+`test.describe` nhận một tên nhóm và một hàm chứa các test thuộc nhóm đó. Tên nhóm được ghép vào trước tên test ở mọi nơi Playwright hiển thị test: terminal, HTML report, Trace Viewer. Kiểm tra bằng `--list` (Buổi 9):
 
-{% code title="tests/login.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect } from "@playwright/test";
-import { LoginPage } from "@pages/login-page";
-import { sharedCustomer } from "@utils/env";
-
-test.describe("Đăng nhập", () => {
-  test("đăng nhập thành công với tài khoản hợp lệ", async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login(sharedCustomer.email, sharedCustomer.password);
-    await expect(page).toHaveURL(/\/account/);
-  });
-
-  test("hiển thị lỗi khi đăng nhập bằng email chưa đăng ký", async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login("not-registered@practicesoftwaretesting.com", "welcome01");
-    await expect(loginPage.errorMessage).toBeVisible();
-  });
-});
-```
-{% endcode %}
-
-Tên nhóm được ghép vào trước tên test ở mọi nơi Playwright hiển thị test: terminal, HTML report, Trace Viewer. Kiểm tra bằng `--list` (Buổi 9):
-
-```
-npx playwright test tests/login.spec.ts --list
-
-Listing tests:
-  [chromium] › login.spec.ts:6:3 › Đăng nhập › đăng nhập thành công với tài khoản hợp lệ
-  [chromium] › login.spec.ts:13:3 › Đăng nhập › hiển thị lỗi khi đăng nhập bằng email chưa đăng ký
-Total: 2 tests in 1 file
-```
+![login.spec.ts nhóm hai test bằng test.describe và kết quả của --list](../.gitbook/assets/buoi-11-describe.png)
 
 <!-- TODO(image): HTML report sau khi chạy npx playwright test với các file test đã nhóm bằng test.describe: mỗi dòng hiển thị đường dẫn nhóm trước tên test, ví dụ "Đăng nhập › đăng nhập thành công với tài khoản hợp lệ" và "Giỏ hàng › Xóa sản phẩm › ...". Khoanh đỏ phần tên nhóm ở hai dòng, một dòng có một cấp describe và một dòng có hai cấp. -->
 
@@ -54,17 +21,7 @@ Total: 2 tests in 1 file
 
 Một `describe` có thể đặt bên trong một `describe` khác để tạo nhóm con:
 
-{% code title="tests/cart.spec.ts" %}
-```typescript
-test.describe("Giỏ hàng", () => {
-  test.describe("Xóa sản phẩm", () => {
-    test("giỏ hàng trống sau khi xóa sản phẩm duy nhất", async ({ page }) => {
-      // Các bước của test
-    });
-  });
-});
-```
-{% endcode %}
+![describe lồng nhau trong cart.spec.ts](../.gitbook/assets/buoi-11-nested-describe.png)
 
 Tên đầy đủ của test là `Giỏ hàng › Xóa sản phẩm › giỏ hàng trống sau khi xóa sản phẩm duy nhất`.
 
@@ -72,19 +29,7 @@ Tên đầy đủ của test là `Giỏ hàng › Xóa sản phẩm › giỏ h�
 
 Tag (Buổi 9) khai báo ở `describe` áp dụng cho mọi test bên trong nhóm. Test vẫn có thể có thêm tag riêng:
 
-{% code title="tests/checkout.spec.ts" %}
-```typescript
-test.describe("Thanh toán", { tag: "@regression" }, () => {
-  test("hoàn tất đơn hàng với thông tin hợp lệ", { tag: ["@smoke", "@critical"] }, async ({ page }) => {
-    // Test này có cả ba tag: @regression, @smoke, @critical
-  });
-
-  test("không chuyển sang bước Payment khi thiếu địa chỉ", async ({ page }) => {
-    // Test này chỉ có @regression
-  });
-});
-```
-{% endcode %}
+![Tag khai báo ở describe và tag riêng của từng test trong checkout.spec.ts](../.gitbook/assets/buoi-11-describe-tag.png)
 
 Tương tự, `test.describe.only(...)`, `test.describe.skip(...)` và `test.describe.fixme(...)` áp dụng quy tắc của `only`, `skip`, `fixme` (Buổi 9) cho cả nhóm.
 
@@ -104,63 +49,15 @@ Tương tự, `test.describe.only(...)`, `test.describe.skip(...)` và `test.des
 
 Mọi test trong `cart.spec.ts` và `checkout.spec.ts` bắt đầu bằng cùng một đoạn code đăng nhập:
 
-{% code title="tests/cart.spec.ts" %}
-```typescript
-test("...", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-  await loginPage.login(sharedCustomer.email, sharedCustomer.password);
-  // Các bước của test
-});
-```
-{% endcode %}
+![Đoạn code đăng nhập lặp lại ở đầu mỗi test](../.gitbook/assets/buoi-11-repeated-login.png)
 
 **Hook** là hàm Playwright tự động gọi tại các thời điểm xác định trong quá trình chạy test. Hook `beforeEach` tập trung đoạn đăng nhập này về một vị trí trong file `tests/cart.spec.ts`:
 
-{% code title="tests/cart.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect } from "@playwright/test";
-import { LoginPage } from "@pages/login-page";
-import { HomePage } from "@pages/home-page";
-import { ProductPage } from "@pages/product-page";
-import { sharedCustomer } from "@utils/env";
+![Hook beforeEach đăng nhập trước mỗi test trong nhóm Giỏ hàng](../.gitbook/assets/buoi-11-before-each.png)
 
-test.describe("Giỏ hàng", () => {
-  test.beforeEach(async ({ page }) => {
-    // Chạy trước mỗi test trong nhóm, trên cùng page mà test sẽ nhận
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login(sharedCustomer.email, sharedCustomer.password);
-    // Chờ đăng nhập hoàn tất trước khi test chuyển sang trang khác
-    await page.waitForURL(/\/account/);
-  });
+Hai test trong nhóm không còn đoạn đăng nhập ở đầu thân test:
 
-  test("thêm sản phẩm vào giỏ cập nhật số lượng trên biểu tượng giỏ hàng", async ({ page }) => {
-    const homePage = new HomePage(page);
-    const productPage = new ProductPage(page);
-
-    await homePage.goto();
-    await homePage.openProduct("Combination Pliers");
-    await productPage.addToCart();
-
-    await expect(productPage.cartQuantity).toHaveText("1");
-  });
-
-  test("mở giỏ hàng từ biểu tượng giỏ hàng", async ({ page }) => {
-    const homePage = new HomePage(page);
-    const productPage = new ProductPage(page);
-
-    await homePage.goto();
-    await homePage.openProduct("Combination Pliers");
-    await productPage.addToCart();
-    await expect(productPage.cartQuantity).toHaveText("1");
-    await productPage.openCart();
-
-    await expect(page).toHaveURL(/\/checkout/);
-  });
-});
-```
-{% endcode %}
+![Hai test của nhóm Giỏ hàng sau khi dùng beforeEach](../.gitbook/assets/buoi-11-before-each-tests.png)
 
 `page` trong `beforeEach` và `page` trong test là cùng một object: hook đăng nhập xong, test nhận trang đã đăng nhập.
 
@@ -170,36 +67,9 @@ Dòng `page.waitForURL()` (Buổi 6) là bước chờ cần thiết. `login()` 
 
 Các test giỏ hàng của Buổi 10 cũng bắt đầu bằng cùng hai bước chuẩn bị: gọi `findProductId()` và `createCart()`. Với `beforeEach`, hai bước này chạy tự động trước mỗi test, và giá trị chuẩn bị được lưu vào biến khai báo trong `describe`. Cập nhật `tests/api/carts.spec.ts`:
 
-{% code title="tests/api/carts.spec.ts" %}
-```typescript
-test.describe("Giỏ hàng qua API", { tag: "@api" }, () => {
-  let productId: string;
-  let cartId: string;
+![beforeEach chuẩn bị sản phẩm và giỏ hàng cho các test giỏ hàng qua API](../.gitbook/assets/buoi-11-api-before-each.png)
 
-  test.beforeEach(async ({ request }) => {
-    productId = await findProductId(request, "Combination Pliers");
-    cartId = await createCart(request);
-  });
-
-  test("POST thêm sản phẩm vào giỏ", async ({ request }) => {
-    const response = await request.post(`/carts/${cartId}`, {
-      data: { product_id: productId, quantity: 2 },
-    });
-
-    await expect(response).toBeOK();
-    // Các assertion còn lại giữ nguyên như Buổi 10
-  });
-
-  // Các test còn lại bỏ hai dòng gọi findProductId() và createCart() ở đầu thân test
-});
-```
-{% endcode %}
-
-| Thành phần                         | Ý nghĩa                                                                                                    |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `let productId: string;`           | Khai báo trong `describe` để hook và các test trong nhóm cùng sử dụng. Dùng `let` vì hook gán lại giá trị trước mỗi test |
-| `async ({ request })` trong hook   | Hook nhận fixture giống test. `request` của hook và của test là cùng một object                             |
-| `{ tag: "@api" }` ở `describe`     | Gắn tag cho cả nhóm, các test bên trong không cần khai báo tag riêng                                       |
+Biến `productId` và `cartId` khai báo bằng `let` trong `describe` để hook và các test trong nhóm cùng sử dụng; hook gán giá trị mới trước mỗi test. Hook nhận fixture giống test: `request` của hook và của test là cùng một object. Tag `@api` khai báo ở `describe` áp dụng cho mọi test trong nhóm.
 
 Mỗi test vẫn nhận một giỏ hàng mới, vì `beforeEach` chạy lại trước từng test.
 
@@ -214,25 +84,7 @@ Hook có hiệu lực trong phạm vi nơi nó được khai báo:
 
 Ví dụ, chỉ các test xóa sản phẩm cần có sẵn sản phẩm trong giỏ. Bước chuẩn bị này đặt trong `beforeEach` của nhóm "Xóa sản phẩm", không ảnh hưởng tới các test khác của nhóm "Giỏ hàng":
 
-{% code title="tests/cart.spec.ts" %}
-```typescript
-test.describe("Giỏ hàng", () => {
-  test.beforeEach(async ({ page }) => {
-    // Đăng nhập: áp dụng cho mọi test trong "Giỏ hàng"
-  });
-
-  test.describe("Xóa sản phẩm", () => {
-    test.beforeEach(async ({ page }) => {
-      // Thêm một sản phẩm vào giỏ và mở giỏ hàng: chỉ áp dụng cho nhóm này
-    });
-
-    test("giỏ hàng trống sau khi xóa sản phẩm duy nhất", async ({ page }) => {
-      // Các bước của test
-    });
-  });
-});
-```
-{% endcode %}
+![beforeEach của nhóm ngoài và nhóm con Xóa sản phẩm](../.gitbook/assets/buoi-11-hook-scope.png)
 
 Với test "giỏ hàng trống sau khi xóa sản phẩm duy nhất", `beforeEach` của nhóm ngoài chạy trước, sau đó đến `beforeEach` của nhóm trong, cuối cùng là test.
 
@@ -256,16 +108,7 @@ afterAll
 
 Hook `afterEach` nhận tham số thứ hai `testInfo`, chứa thông tin về test vừa chạy. Ví dụ ghi lại URL cuối cùng của các test không pass:
 
-{% code title="tests/cart.spec.ts" %}
-```typescript
-test.afterEach(async ({ page }, testInfo) => {
-  // Chỉ ghi log khi test không pass, hỗ trợ việc điều tra lỗi
-  if (testInfo.status !== "passed") {
-    console.log(`Test "${testInfo.title}" kết thúc tại ${page.url()}`);
-  }
-});
-```
-{% endcode %}
+![Hook afterEach dùng testInfo để ghi log khi test không pass](../.gitbook/assets/buoi-11-after-each.png)
 
 {% hint style="warning" %}
 **Không dùng `beforeAll` để đăng nhập một lần rồi dùng chung cho mọi test.** `beforeAll` không có `page`, và Playwright báo lỗi `"context" and "page" fixtures are not supported in "beforeAll"` nếu khai báo `page`. Với nhiều worker, `beforeAll` chạy một lần trên mỗi worker, không phải một lần cho cả bộ test. Tự tạo `page` trong `beforeAll` để dùng chung giữa các test làm các test phụ thuộc nhau (Buổi 9). `beforeAll` chỉ phù hợp với việc chuẩn bị không thao tác trên trang web.
@@ -293,25 +136,7 @@ Playwright cho phép định nghĩa fixture riêng cho project bằng `test.exte
 
 Tạo folder `fixtures/` ngang hàng với `tests/` và `pages/`, sau đó tạo file `fixtures/test-fixtures.ts`:
 
-{% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
-```typescript
-import { test as base, expect } from "@playwright/test";
-import { LoginPage } from "@pages/login-page";
-
-// Khai báo tên và kiểu của từng fixture, tương tự type alias ở Buổi 3
-type CourseFixtures = {
-  loginPage: LoginPage;
-};
-
-export const test = base.extend<CourseFixtures>({
-  loginPage: async ({ page }, use) => {
-    await use(new LoginPage(page));
-  },
-});
-
-export { expect };
-```
-{% endcode %}
+![fixtures/test-fixtures.ts với fixture loginPage đầu tiên](../.gitbook/assets/buoi-11-fixture-first.png)
 
 | Thành phần                           | Ý nghĩa                                                                                                     |
 | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
@@ -326,21 +151,7 @@ export { expect };
 
 File test import `test` và `expect` từ file fixture thay vì từ `@playwright/test`, sau đó khai báo fixture cần dùng trong tham số của test:
 
-{% code title="tests/login.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect } from "@fixtures/test-fixtures";
-import { sharedCustomer } from "@utils/env";
-
-test.describe("Đăng nhập", () => {
-  test("đăng nhập thành công với tài khoản hợp lệ", async ({ page, loginPage }) => {
-    await loginPage.goto();
-    await loginPage.login(sharedCustomer.email, sharedCustomer.password);
-
-    await expect(page).toHaveURL(/\/account/);
-  });
-});
-```
-{% endcode %}
+![Test đăng nhập dùng fixture loginPage](../.gitbook/assets/buoi-11-use-fixture.png)
 
 So với cách viết trước, test không còn dòng `const loginPage = new LoginPage(page);` và không cần import `LoginPage`. Playwright chỉ chạy fixture mà test khai báo: test không khai báo `loginPage` thì fixture `loginPage` không được tạo.
 
@@ -348,51 +159,17 @@ So với cách viết trước, test không còn dòng `const loginPage = new Lo
 Sau khi có file fixture, mọi file test phải import `test` từ `@fixtures/test-fixtures`, kể cả các file API test trong `tests/api/`. File còn import từ `@playwright/test` mà khai báo fixture mới sẽ bị VS Code báo lỗi `Property 'loginPage' does not exist on type ...`, và khi chạy, Playwright báo lỗi `Test has unknown parameter "loginPage"`.
 {% endhint %}
 
-<!-- TODO(image): VS Code mở một file test còn dòng import { test, expect } from "@playwright/test" nhưng khai báo async ({ page, loginPage }): chữ loginPage bị gạch chân đỏ, tooltip hiển thị lỗi "Property 'loginPage' does not exist on type ...". Khoanh đỏ dòng import ở đầu file và tooltip lỗi. -->
+![VS Code báo lỗi loginPage khi file test còn import test từ @playwright/test](../.gitbook/assets/buoi-11-fixture-import-error.png)
 
 ### Bước 3: fixture có setup và sử dụng fixture khác
 
 Bổ sung fixture `authenticatedPage`: một `page` đã đăng nhập bằng tài khoản chung. Cập nhật `fixtures/test-fixtures.ts`:
 
-{% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
-```typescript
-import { test as base, expect, Page } from "@playwright/test";
-import { LoginPage } from "@pages/login-page";
-import { sharedCustomer } from "@utils/env";
-
-type CourseFixtures = {
-  loginPage: LoginPage;
-  authenticatedPage: Page;
-};
-
-export const test = base.extend<CourseFixtures>({
-  loginPage: async ({ page }, use) => {
-    await use(new LoginPage(page));
-  },
-
-  authenticatedPage: async ({ page, loginPage }, use) => {
-    await loginPage.goto();
-    await loginPage.login(sharedCustomer.email, sharedCustomer.password);
-    await page.waitForURL(/\/account/);
-
-    await use(page);
-    // Code sau use() chạy khi test kết thúc. Fixture này không cần dọn dẹp
-  },
-});
-
-export { expect };
-```
-{% endcode %}
+![Fixture authenticatedPage dùng page và loginPage để đăng nhập trước khi test chạy](../.gitbook/assets/buoi-11-authenticated-page.png)
 
 `authenticatedPage` khai báo cần hai fixture khác: `page` của Playwright và `loginPage` vừa tạo ở bước 1. Khi một test khai báo `authenticatedPage`, Playwright tự tạo các fixture theo thứ tự phụ thuộc, chạy test, sau đó dọn dẹp theo thứ tự ngược lại:
 
-```
-Setup:     page → loginPage → authenticatedPage
-Test:      chạy với authenticatedPage đã đăng nhập
-Teardown:  authenticatedPage → loginPage → page
-```
-
-<!-- TODO(image): sơ đồ vòng đời fixture theo trục thời gian từ trái sang phải. Ba thanh ngang lồng nhau: thanh ngoài cùng "page" (bắt đầu sớm nhất, kết thúc muộn nhất), thanh giữa "loginPage", thanh trong cùng "authenticatedPage". Mỗi thanh chia ba đoạn: "setup" (code trước use), "use" (test đang chạy), "teardown" (code sau use). Ở giữa, phần giao nhau của cả ba thanh ghi "test chạy". Mũi tên chú thích: thứ tự setup từ ngoài vào trong, thứ tự teardown từ trong ra ngoài. -->
+![Vòng đời của ba fixture page, loginPage, authenticatedPage: setup từ ngoài vào trong, teardown theo thứ tự ngược lại](../.gitbook/assets/buoi-11-fixture-lifecycle.png)
 
 `authenticatedPage` và `page` là cùng một object, khác nhau ở trạng thái: khi test bắt đầu, `authenticatedPage` đã đăng nhập.
 
@@ -400,78 +177,11 @@ Teardown:  authenticatedPage → loginPage → page
 
 Tương tự `loginPage`, khai báo fixture cho các page object còn lại. Nội dung hoàn chỉnh của `fixtures/test-fixtures.ts`:
 
-{% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
-```typescript
-import { test as base, expect, Page } from "@playwright/test";
-import { LoginPage } from "@pages/login-page";
-import { HomePage } from "@pages/home-page";
-import { ProductPage } from "@pages/product-page";
-import { sharedCustomer } from "@utils/env";
-
-type CourseFixtures = {
-  loginPage: LoginPage;
-  authenticatedPage: Page;
-  homePage: HomePage;
-  productPage: ProductPage;
-};
-
-export const test = base.extend<CourseFixtures>({
-  loginPage: async ({ page }, use) => {
-    await use(new LoginPage(page));
-  },
-
-  authenticatedPage: async ({ page, loginPage }, use) => {
-    await loginPage.goto();
-    await loginPage.login(sharedCustomer.email, sharedCustomer.password);
-    await page.waitForURL(/\/account/);
-
-    await use(page);
-  },
-
-  homePage: async ({ page }, use) => {
-    await use(new HomePage(page));
-  },
-
-  productPage: async ({ page }, use) => {
-    await use(new ProductPage(page));
-  },
-});
-
-export { expect };
-```
-{% endcode %}
+![Nội dung hoàn chỉnh của fixtures/test-fixtures.ts](../.gitbook/assets/buoi-11-fixtures-complete.png)
 
 Viết lại `tests/cart.spec.ts` bằng fixture:
 
-{% code title="tests/cart.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect } from "@fixtures/test-fixtures";
-
-test.describe("Giỏ hàng", () => {
-  test("thêm sản phẩm vào giỏ cập nhật số lượng trên biểu tượng giỏ hàng", async ({
-    authenticatedPage,
-    homePage,
-    productPage,
-  }) => {
-    await homePage.goto();
-    await homePage.openProduct("Combination Pliers");
-    await productPage.addToCart();
-
-    await expect(productPage.cartQuantity).toHaveText("1");
-  });
-
-  test("mở giỏ hàng từ biểu tượng giỏ hàng", async ({ authenticatedPage, homePage, productPage }) => {
-    await homePage.goto();
-    await homePage.openProduct("Combination Pliers");
-    await productPage.addToCart();
-    await expect(productPage.cartQuantity).toHaveText("1");
-    await productPage.openCart();
-
-    await expect(authenticatedPage).toHaveURL(/\/checkout/);
-  });
-});
-```
-{% endcode %}
+![cart.spec.ts viết lại bằng fixture](../.gitbook/assets/buoi-11-cart-with-fixtures.png)
 
 Test thứ nhất khai báo `authenticatedPage` nhưng không sử dụng biến này trong thân test. Việc khai báo tương đương mục **điều kiện tiên quyết** "Đã đăng nhập" của một test case thủ công: Playwright đăng nhập trước khi test chạy. Test không khai báo `authenticatedPage` bắt đầu ở trạng thái chưa đăng nhập.
 
@@ -524,20 +234,7 @@ Trả lời các câu hỏi sau trước khi viết code:
 
 Cần kiểm tra trang chi tiết hiển thị đúng tên sản phẩm với ba sản phẩm khác nhau. Cách viết đã dùng ở bài tập Buổi 6, Bài 1 là duyệt mảng dữ liệu bên trong một test:
 
-{% code title="tests/product-detail.spec.ts" %}
-```typescript
-// Anti-pattern: ba bộ dữ liệu trong cùng một test
-test("trang chi tiết hiển thị đúng tên sản phẩm", async ({ homePage, productPage }) => {
-  const productNames = ["Combination Pliers", "Bolt Cutters", "Long Nose Pliers"];
-
-  for (const productName of productNames) {
-    await homePage.goto();
-    await homePage.openProduct(productName);
-    await expect(productPage.productName).toHaveText(productName);
-  }
-});
-```
-{% endcode %}
+![Anti-pattern: duyệt ba bộ dữ liệu trong cùng một test](../.gitbook/assets/buoi-11-loop-anti-pattern.png)
 
 Cách viết này có ba hạn chế:
 
@@ -549,44 +246,9 @@ Cách viết này có ba hạn chế:
 
 ### Vòng lặp sinh ra nhiều test
 
-Đặt vòng lặp bên ngoài `test`, mỗi vòng khai báo một test riêng:
+Đặt vòng lặp bên ngoài `test`, mỗi vòng khai báo một test riêng. Vòng `for` chạy khi Playwright đọc file, trước khi bất kỳ test nào chạy. Tên test là template string (Buổi 1) chứa dữ liệu của chính nó, nên `--list` và report cho biết ngay bộ dữ liệu nào đang chạy:
 
-{% code title="tests/product-detail.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect } from "@fixtures/test-fixtures";
-
-const productNames = ["Combination Pliers", "Bolt Cutters", "Long Nose Pliers"];
-
-test.describe("Trang chi tiết sản phẩm", () => {
-  for (const productName of productNames) {
-    test(`hiển thị đúng tên sản phẩm "${productName}"`, async ({ homePage, productPage }) => {
-      await homePage.goto();
-      await homePage.openProduct(productName);
-
-      await expect(productPage.productName).toHaveText(productName);
-    });
-  }
-});
-```
-{% endcode %}
-
-| Thành phần                         | Ý nghĩa                                                                                                  |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `for (const productName of ...)`   | Chạy khi Playwright đọc file, trước khi bất kỳ test nào chạy. Mỗi vòng lặp khai báo một test             |
-| Template string trong tên test     | Chuỗi đặt trong dấu backtick, chèn giá trị bằng `${...}` (Buổi 1). Tên test chứa dữ liệu của chính nó, report cho biết ngay bộ dữ liệu nào fail |
-| Thân test                          | Giống hệt test thông thường: dùng fixture, page object và assertion như các mục trước                    |
-
-Kiểm tra kết quả bằng `--list`:
-
-```
-npx playwright test tests/product-detail.spec.ts --list
-
-Listing tests:
-  [chromium] › product-detail.spec.ts:7:5 › Trang chi tiết sản phẩm › hiển thị đúng tên sản phẩm "Combination Pliers"
-  [chromium] › product-detail.spec.ts:7:5 › Trang chi tiết sản phẩm › hiển thị đúng tên sản phẩm "Bolt Cutters"
-  [chromium] › product-detail.spec.ts:7:5 › Trang chi tiết sản phẩm › hiển thị đúng tên sản phẩm "Long Nose Pliers"
-Total: 3 tests in 1 file
-```
+![Vòng lặp đặt ngoài test sinh ra ba test riêng, kiểm tra bằng --list](../.gitbook/assets/buoi-11-parameterized.png)
 
 Ba test có cùng vị trí khai báo (dòng 7) nhưng là ba test độc lập: chạy song song trên các worker khác nhau, mỗi test có browser context riêng và một dòng riêng trong report. Một test cụ thể chạy riêng được bằng `--grep "Bolt Cutters"` (Buổi 9).
 

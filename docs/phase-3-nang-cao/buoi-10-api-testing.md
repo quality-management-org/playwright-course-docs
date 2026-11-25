@@ -61,152 +61,61 @@ Test pass trong khoảng một giây, và không có cửa sổ browser nào đ�
 
 ### Khai báo địa chỉ API trong .env
 
-Test đầu tiên ghi địa chỉ API đầy đủ. Khi file có hàng chục lời gọi, địa chỉ này lặp lại ở mọi dòng. `baseURL` trong config không dùng được cho API test, vì đang trỏ tới giao diện `https://practicesoftwaretesting.com`, còn API nằm ở `https://api.practicesoftwaretesting.com`.
+Test đầu tiên ghi địa chỉ API đầy đủ, và khi file có hàng chục lời gọi, địa chỉ này lặp lại ở mọi dòng. `baseURL` trong config không dùng được cho API test, vì đang trỏ tới giao diện `https://practicesoftwaretesting.com`, còn API nằm ở `https://api.practicesoftwaretesting.com`.
 
-Địa chỉ API là thông tin cấu hình môi trường, cùng loại với `BASE_URL`, nên đặt trong `.env` theo cách đã làm ở Buổi 8. Bổ sung một dòng vào cả `.env` và `.env.example`:
+Địa chỉ API là thông tin cấu hình môi trường, cùng loại với `BASE_URL`, nên đặt trong `.env` như đã làm ở Buổi 8. Bổ sung dòng `API_URL` vào cả `.env` và `.env.example`:
 
-{% code title=".env" %}
-```
-API_URL=https://api.practicesoftwaretesting.com
-```
-{% endcode %}
+![File .env với dòng API_URL mới](../.gitbook/assets/buoi-10-env-file.png)
 
-Bổ sung vào cuối `utils/env.ts`, dùng lại hàm `getEnv` của Buổi 8:
+Sau đó đọc biến này trong `utils/env.ts` bằng hàm `getEnv` của Buổi 8:
 
-{% code title="utils/env.ts" %}
-```typescript
-export const apiUrl = getEnv("API_URL");
-```
-{% endcode %}
+![utils/env.ts với hằng số apiUrl mới ở cuối file](../.gitbook/assets/buoi-10-env-api-url.png)
 
 ### Ghi đè thiết lập cho một file bằng test.use
 
-`test.use({...})` đặt ở đầu file test ghi đè các thiết lập trong khối `use` của config, chỉ cho các test trong file đó. Cập nhật `tests/api/products.spec.ts`:
+`test.use({...})` đặt ở đầu file test ghi đè các thiết lập trong khối `use` của config, chỉ cho các test trong file đó. Với `baseURL` trỏ tới API, lời gọi chỉ cần đường dẫn tương đối, và `params` được Playwright ghép thành query string `?q=pliers`:
 
-{% code title="tests/api/products.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect } from "@playwright/test";
-import { apiUrl } from "@utils/env";
+![products.spec.ts dùng test.use để đặt baseURL và header Accept cho API test](../.gitbook/assets/buoi-10-test-use.png)
 
-test.use({ baseURL: apiUrl, extraHTTPHeaders: { Accept: "application/json" } });
+Các file UI test không bị ảnh hưởng và vẫn dùng `baseURL` của config. `extraHTTPHeaders` gửi header `Accept: application/json` kèm mọi request trong file, báo cho server biết client muốn nhận kết quả dạng JSON. Header này là bắt buộc với Toolshop: thiếu header, khi dữ liệu gửi lên không hợp lệ, server không trả lỗi dạng JSON mà chuyển hướng sang một trang khác, và test nhận về status 404. Hiện tượng này được minh họa trong phần kiểm tra lỗi validation của giỏ hàng.
 
-test("tìm sản phẩm theo từ khóa trả về sản phẩm phù hợp", async ({ request }) => {
-  const response = await request.get("/products/search", { params: { q: "pliers" } });
-
-  expect(response.status()).toBe(200);
-  const body = await response.json();
-  expect(body.data[0].name).toContain("Pliers");
-});
-```
-{% endcode %}
-
-| Thiết lập                                          | Ý nghĩa                                                                                                   |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `"@utils/env"`                                     | Path alias (Buổi 9): cùng một cách viết ở mọi file, kể cả file nằm trong `tests/api/`                       |
-| `baseURL: apiUrl`                                  | Đường dẫn tương đối như `/products/search` được ghép vào địa chỉ API. Các file UI test vẫn dùng `baseURL` của config |
-| `extraHTTPHeaders: { Accept: "application/json" }` | Header gửi kèm mọi request trong file. `Accept` báo cho server biết client muốn nhận kết quả dạng JSON     |
-| `params: { q: "pliers" }`                          | Query string. Playwright ghép thành `/products/search?q=pliers`                                           |
-
-Header `Accept` là bắt buộc với Toolshop: khi request không có header này và dữ liệu gửi lên không hợp lệ, server không trả lỗi dạng JSON mà chuyển hướng sang một trang khác, và test nhận về status 404. Hiện tượng này được minh họa trong phần kiểm tra lỗi validation của giỏ hàng.
-
-Mọi file trong `tests/api/` bắt đầu bằng cùng dòng `test.use(...)` như trên. Từ đây, các đoạn code trong buổi này viết đường dẫn tương đối.
+Mọi file trong `tests/api/` bắt đầu bằng cùng dòng `test.use(...)` như trên.
 
 ## 3. GET và assertion trên response
 
 ### Khai báo kiểu cho body
 
-`response.json()` trả về kiểu `any`: TypeScript không biết body có những trường nào, nên gõ sai tên trường không bị báo lỗi, test chỉ fail lúc chạy với giá trị `undefined`. Khai báo interface (Buổi 3) cho body để VS Code gợi ý tên trường và báo lỗi khi gõ sai.
+`response.json()` trả về kiểu `any`: gõ sai tên trường không bị báo lỗi, test chỉ fail lúc chạy với giá trị `undefined`. Khai báo interface (Buổi 3) cho body để VS Code gợi ý tên trường. `GET /products` trả về danh sách có phân trang, mỗi trang 9 sản phẩm nằm trong mảng `data`:
 
-`GET /products` trả về danh sách có phân trang: mỗi trang 9 sản phẩm, nằm trong mảng `data`, kèm thông tin trang hiện tại và tổng số sản phẩm. Hoàn thiện `tests/api/products.spec.ts`:
+![Interface Product và ProductListResponse ở đầu products.spec.ts](../.gitbook/assets/buoi-10-product-interfaces.png)
 
-{% code title="tests/api/products.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect } from "@playwright/test";
-import { apiUrl } from "@utils/env";
+### Kiểm tra status, header và body
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  in_stock: boolean;
-}
+Gán body vào biến có kiểu `ProductListResponse`, từ đó `body.data` và `body.current_page` được VS Code kiểm tra. `toBeOK()` pass khi status nằm trong khoảng 200-299 và là matcher bất đồng bộ, bắt buộc có `await`. Tên header trong `response.headers()` luôn viết thường:
 
-interface ProductListResponse {
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-  data: Product[];
-}
+![Test GET /products kiểm tra status, header content-type và các trường của body](../.gitbook/assets/buoi-10-get-products.png)
 
-test.use({ baseURL: apiUrl, extraHTTPHeaders: { Accept: "application/json" } });
+### Kiểm tra quy tắc thay vì dữ liệu cụ thể
 
-test("GET /products trả về trang đầu tiên gồm 9 sản phẩm", { tag: "@api" }, async ({ request }) => {
-  const response = await request.get("/products");
+Test sắp xếp không ghi cứng danh sách giá mong đợi. `map` (Buổi 3) lấy mảng giá, và bản sao đã sắp xếp tăng dần phải trùng với mảng gốc. `sort()` thay đổi mảng gốc, nên cần sao chép bằng spread (Buổi 9) trước khi sắp xếp:
 
-  await expect(response).toBeOK();
-  expect(response.headers()["content-type"]).toContain("application/json");
+![Test sắp xếp sản phẩm theo giá tăng dần](../.gitbook/assets/buoi-10-sort-products.png)
 
-  const body: ProductListResponse = await response.json();
-  expect(body.current_page).toBe(1);
-  expect(body.data).toHaveLength(9);
-  expect(body.data[0]).toMatchObject({ name: "Combination Pliers", in_stock: true });
-});
+Assertion kiểm tra quy tắc (giá tăng dần), nên test vẫn đúng khi danh sách sản phẩm thay đổi.
 
-test("GET /products sắp xếp theo giá tăng dần với sort=price,asc", { tag: "@api" }, async ({ request }) => {
-  const response = await request.get("/products", { params: { sort: "price,asc" } });
+### Trường hợp sản phẩm không tồn tại
 
-  await expect(response).toBeOK();
-  const body: ProductListResponse = await response.json();
-  const prices = body.data.map((product) => product.price);
-  const sortedPrices = [...prices].sort((a, b) => a - b);
-  expect(prices).toEqual(sortedPrices);
-});
+Mỗi endpoint cần ít nhất một test cho dữ liệu không tồn tại. Toolshop trả status 404 kèm thông báo trong trường `message`:
 
-test("GET /products/{id} trả về 404 khi sản phẩm không tồn tại", { tag: "@api" }, async ({ request }) => {
-  const response = await request.get("/products/01ZZZZZZZZZZZZZZZZZZZZZZZZ");
-
-  expect(response.status()).toBe(404);
-  const body = await response.json();
-  expect(body.message).toBe("Requested item not found");
-});
-```
-{% endcode %}
-
-| Phần                                        | Ý nghĩa                                                                                                    |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `const body: ProductListResponse = ...`     | Gán body vào biến có kiểu. Từ dòng này, `body.data[0].price` được VS Code gợi ý và kiểm tra                 |
-| `{ tag: "@api" }`                           | Tag theo quy ước tag của khóa học (Buổi 9), dùng để chọn API test bằng `--grep @api`                        |
-| `await expect(response).toBeOK()`           | Pass khi status nằm trong khoảng 200-299. Đây là matcher bất đồng bộ, bắt buộc có `await`                   |
-| `response.headers()["content-type"]`        | Đọc một header của response. Tên header luôn viết thường                                                   |
-| `body.data.map((product) => product.price)` | `map` (Buổi 3) lấy mảng giá từ mảng sản phẩm                                                               |
-| `[...prices].sort((a, b) => a - b)`         | Tạo bản sao bằng spread (Buổi 9) rồi sắp xếp tăng dần. `sort()` thay đổi mảng gốc, nên cần sao chép trước   |
-| `expect(prices).toEqual(sortedPrices)`      | Mảng giá trả về phải trùng với chính nó sau khi sắp xếp, tức là đã đúng thứ tự tăng dần                     |
-
-Test sắp xếp không ghi cứng danh sách giá mong đợi. Assertion kiểm tra quy tắc (giá tăng dần) thay vì dữ liệu cụ thể, nên test vẫn đúng khi danh sách sản phẩm thay đổi.
+![Test GET /products/{id} với id không tồn tại trả về 404](../.gitbook/assets/buoi-10-product-404.png)
 
 ### id của dữ liệu thay đổi mỗi ngày
 
-Dữ liệu của Toolshop được khôi phục về trạng thái ban đầu mỗi ngày, và mỗi lần khôi phục, mọi sản phẩm nhận `id` mới. Vì vậy test không ghi cứng `id` lấy từ DevTools hay Swagger: test hôm nay pass, ngày mai fail với 404. Test cần chi tiết một sản phẩm thì lấy `id` từ một request khác trước, ví dụ từ kết quả tìm kiếm theo tên. Bổ sung vào `tests/api/products.spec.ts`:
+Dữ liệu của Toolshop được khôi phục về trạng thái ban đầu mỗi ngày, và mỗi lần khôi phục, mọi sản phẩm nhận `id` mới. Test ghi cứng `id` lấy từ DevTools hay Swagger sẽ pass hôm nay và fail ngày mai với 404. Test cần chi tiết một sản phẩm thì lấy `id` từ một request khác trước, ví dụ từ kết quả tìm kiếm theo tên:
 
-{% code title="tests/api/products.spec.ts" %}
-```typescript
-test("GET /products/{id} trả về chi tiết sản phẩm theo id lấy từ kết quả tìm kiếm", { tag: "@api" }, async ({ request }) => {
-  const searchResponse = await request.get("/products/search", { params: { q: "Combination Pliers" } });
-  const searchBody: ProductListResponse = await searchResponse.json();
-  const productId = searchBody.data[0].id;
+![Test lấy id sản phẩm từ kết quả tìm kiếm rồi gọi GET /products/{id}](../.gitbook/assets/buoi-10-product-by-id.png)
 
-  const response = await request.get(`/products/${productId}`);
-
-  await expect(response).toBeOK();
-  const product: Product = await response.json();
-  expect(product).toMatchObject({ id: productId, name: "Combination Pliers" });
-  expect(product.price).toBeGreaterThan(0);
-});
-```
-{% endcode %}
-
-Tên sản phẩm là dữ liệu ổn định qua các lần khôi phục, còn `id` thì không. Test 404 ở trên dùng một `id` cố ý không tồn tại, nên không bị ảnh hưởng.
+Tên sản phẩm ổn định qua các lần khôi phục, còn `id` thì không. Test 404 ở trên dùng một `id` cố ý không tồn tại, nên không bị ảnh hưởng.
 
 ### Các method của response
 
@@ -258,110 +167,31 @@ Các method ghi dữ liệu được minh họa trên API giỏ hàng của Tool
 | DELETE | `/carts/{cartId}/product/{productId}` | Không có                   | 204, xóa một sản phẩm khỏi giỏ      |
 | DELETE | `/carts/{cartId}`                     | Không có                   | 204, xóa giỏ hàng                   |
 
-Status 204 (No Content) nghĩa là thành công và body rỗng: không gọi `response.json()` với response 204.
+### Bước chuẩn bị dùng chung
 
-### Viết test cho giỏ hàng
+Mọi test giỏ hàng cần `id` của một sản phẩm và một giỏ hàng mới. Hai bước chuẩn bị này được tách thành hai hàm (Buổi 1) ở đầu `tests/api/carts.spec.ts`. Fixture chỉ có trong tham số của test, nên hàm nhận `request` qua tham số với kiểu `APIRequestContext`:
 
-Mọi test giỏ hàng cần hai thứ giống nhau: `id` của một sản phẩm và một giỏ hàng mới. Hai bước chuẩn bị này được tách thành hai hàm (Buổi 1) trong file để không lặp code. Tạo `tests/api/carts.spec.ts`:
+![Phần đầu carts.spec.ts với interface Cart và hai hàm findProductId, createCart](../.gitbook/assets/buoi-10-cart-helpers.png)
 
-{% code title="tests/api/carts.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect, APIRequestContext } from "@playwright/test";
-import { apiUrl } from "@utils/env";
+`createCart` assert status 201 ngay ở bước chuẩn bị: nếu API tạo giỏ hàng hỏng, test fail với lý do rõ ràng thay vì fail mơ hồ ở bước sau.
 
-interface CartItem {
-  id: string;
-  quantity: number;
-  product_id: string;
-}
+### POST
 
-interface Cart {
-  id: string;
-  cart_items: CartItem[];
-}
+`request.post()` gửi body qua `data`: Playwright tự chuyển object thành JSON và đặt header `Content-Type: application/json`. Response của thao tác ghi chỉ báo thành công, nên test đọc lại giỏ hàng bằng `GET` để kiểm tra dữ liệu thực sự đã thay đổi:
 
-test.use({ baseURL: apiUrl, extraHTTPHeaders: { Accept: "application/json" } });
+![Test POST thêm sản phẩm vào giỏ rồi đọc lại giỏ hàng để kiểm tra](../.gitbook/assets/buoi-10-cart-post.png)
 
-async function findProductId(request: APIRequestContext, productName: string): Promise<string> {
-  const response = await request.get("/products/search", { params: { q: productName } });
-  const body = await response.json();
-  return body.data[0].id;
-}
+### PUT và DELETE
 
-async function createCart(request: APIRequestContext): Promise<string> {
-  const response = await request.post("/carts");
-  expect(response.status()).toBe(201);
-  const body = await response.json();
-  return body.id;
-}
+`put` và `delete` dùng cùng cú pháp với `post`, chỉ khác method. Thao tác thêm sản phẩm ở đầu test là bước chuẩn bị, chỉ thao tác cập nhật được assert:
 
-test("POST thêm sản phẩm vào giỏ", { tag: "@api" }, async ({ request }) => {
-  const productId = await findProductId(request, "Combination Pliers");
-  const cartId = await createCart(request);
+![Test PUT cập nhật số lượng sản phẩm trong giỏ](../.gitbook/assets/buoi-10-cart-put.png)
 
-  const response = await request.post(`/carts/${cartId}`, {
-    data: { product_id: productId, quantity: 2 },
-  });
+Status 204 (No Content) nghĩa là thành công và body rỗng, nên test DELETE không gọi `response.json()` trên response đó:
 
-  await expect(response).toBeOK();
-  expect(await response.json()).toEqual({ result: "item added or updated" });
+![Hai test DELETE: xóa sản phẩm khỏi giỏ và xóa giỏ hàng](../.gitbook/assets/buoi-10-cart-delete.png)
 
-  const cartResponse = await request.get(`/carts/${cartId}`);
-  const cart: Cart = await cartResponse.json();
-  expect(cart.cart_items).toHaveLength(1);
-  expect(cart.cart_items[0]).toMatchObject({ product_id: productId, quantity: 2 });
-});
-
-test("PUT cập nhật số lượng sản phẩm trong giỏ", { tag: "@api" }, async ({ request }) => {
-  const productId = await findProductId(request, "Combination Pliers");
-  const cartId = await createCart(request);
-  await request.post(`/carts/${cartId}`, { data: { product_id: productId, quantity: 1 } });
-
-  const response = await request.put(`/carts/${cartId}/product/quantity`, {
-    data: { product_id: productId, quantity: 5 },
-  });
-
-  await expect(response).toBeOK();
-  const cartResponse = await request.get(`/carts/${cartId}`);
-  const cart: Cart = await cartResponse.json();
-  expect(cart.cart_items[0].quantity).toBe(5);
-});
-
-test("DELETE xóa sản phẩm khỏi giỏ", { tag: "@api" }, async ({ request }) => {
-  const productId = await findProductId(request, "Combination Pliers");
-  const cartId = await createCart(request);
-  await request.post(`/carts/${cartId}`, { data: { product_id: productId, quantity: 1 } });
-
-  const response = await request.delete(`/carts/${cartId}/product/${productId}`);
-
-  expect(response.status()).toBe(204);
-  const cartResponse = await request.get(`/carts/${cartId}`);
-  const cart: Cart = await cartResponse.json();
-  expect(cart.cart_items).toEqual([]);
-});
-
-test("DELETE xóa giỏ hàng, GET sau đó trả về 404", { tag: "@api" }, async ({ request }) => {
-  const cartId = await createCart(request);
-
-  const response = await request.delete(`/carts/${cartId}`);
-
-  expect(response.status()).toBe(204);
-  const getResponse = await request.get(`/carts/${cartId}`);
-  expect(getResponse.status()).toBe(404);
-});
-```
-{% endcode %}
-
-| Phần                                          | Ý nghĩa                                                                                                          |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `APIRequestContext`                           | Kiểu của fixture `request`, import từ `@playwright/test` để khai báo kiểu cho tham số của hàm                    |
-| `findProductId(request, ...)`                 | Hàm nhận `request` từ test qua tham số, vì fixture chỉ có trong tham số của test                                 |
-| `expect(response.status()).toBe(201)`         | Assert ngay ở bước chuẩn bị: API tạo giỏ hàng hỏng thì test fail với lý do rõ ràng, thay vì fail ở bước sau      |
-| `request.post(url, { data: {...} })`          | Gửi body dạng JSON. Playwright tự chuyển object thành chuỗi JSON và đặt header `Content-Type: application/json`  |
-| `request.put(...)`, `request.delete(...)`     | Cùng cú pháp với `get` và `post`, chỉ khác method                                                                |
-| GET lại giỏ hàng sau khi ghi                  | Response của thao tác ghi chỉ báo thành công. Kiểm tra dữ liệu thực sự đã thay đổi bằng một request đọc           |
-
-Mỗi test chỉ kiểm tra một thao tác. Các thao tác khác trong test (tạo giỏ hàng, thêm sản phẩm trước khi cập nhật hoặc xóa) là bước chuẩn bị. Mỗi test vẫn phải gọi hai hàm chuẩn bị ở đầu thân test; Buổi 11 trình bày hook `beforeEach` để Playwright tự chạy các bước chuẩn bị này trước mỗi test.
+Mỗi test vẫn gọi hai hàm chuẩn bị ở đầu thân test. Buổi 11 trình bày hook `beforeEach` để Playwright tự chạy các bước chuẩn bị này trước mỗi test.
 
 `request` còn có method `patch` với cú pháp giống hệt `put`, dùng cho các API cập nhật một phần dữ liệu. API giỏ hàng của Toolshop không có endpoint `PATCH`.
 
@@ -380,24 +210,9 @@ Tham số thứ hai của `get`, `post`, `put`, `patch`, `delete` là object tù
 
 ### Kiểm tra lỗi validation
 
-Mỗi endpoint cần ít nhất một test cho dữ liệu sai. Khi body thiếu trường bắt buộc, Toolshop trả status 422 (Unprocessable Content) kèm danh sách lỗi theo từng trường. Bổ sung vào `tests/api/carts.spec.ts`:
+Khi body thiếu trường bắt buộc, Toolshop trả status 422 (Unprocessable Content). Body lỗi có dạng `{ message, errors }`, trong đó `errors` chứa danh sách thông báo lỗi theo tên từng trường:
 
-{% code title="tests/api/carts.spec.ts" %}
-```typescript
-test("POST trả về 422 khi thiếu quantity", { tag: "@api" }, async ({ request }) => {
-  const productId = await findProductId(request, "Combination Pliers");
-  const cartId = await createCart(request);
-
-  const response = await request.post(`/carts/${cartId}`, { data: { product_id: productId } });
-
-  expect(response.status()).toBe(422);
-  const body = await response.json();
-  expect(body.errors.quantity).toContain("The quantity field is required.");
-});
-```
-{% endcode %}
-
-Body lỗi có dạng `{ message, errors }`, trong đó `errors` là object với tên trường làm key và mảng thông báo lỗi làm giá trị.
+![Test POST thiếu quantity trả về 422 kèm lỗi của trường quantity](../.gitbook/assets/buoi-10-cart-422.png)
 
 {% hint style="warning" %}
 Xóa `extraHTTPHeaders` khỏi dòng `test.use(...)` rồi chạy lại test trên: test fail với `Expected: 422, Received: 404`, body là `{"message":"Resource not found"}`. Thiếu header `Accept: application/json`, server xử lý request như một form trên trình duyệt: dữ liệu không hợp lệ thì chuyển hướng về trang trước, và địa chỉ chuyển hướng không tồn tại trên server API. Status 404 trong trường hợp này không phản ánh lỗi thật. Khi status trả về không khớp với tài liệu Swagger, kiểm tra header trước tiên.
@@ -424,104 +239,31 @@ Các API chứa dữ liệu riêng của tài khoản (thông tin cá nhân, s�
 | GET    | `/favorites`   | Có        | Mảng sản phẩm yêu thích của tài khoản                                      |
 | GET    | `/invoices`    | Có        | Danh sách hóa đơn có phân trang                                            |
 
-`expires_in` bằng `300`: token hết hạn sau 300 giây (5 phút). Không ghi token vào code hay `.env`; mỗi test lấy token mới bằng cách gọi login. Email và password của tài khoản chung đọc từ `.env` qua `sharedCustomer` (Buổi 8).
+`expires_in` bằng `300`: token hết hạn sau 300 giây (5 phút). Không ghi token vào code hay `.env`; mỗi test lấy token mới bằng cách gọi login.
 
-### Viết test xác thực
+### Login
 
-Tạo `tests/api/auth.spec.ts`:
+`sharedCustomer` (Buổi 8) có đúng hai trường `email` và `password` mà endpoint login yêu cầu, nên truyền thẳng vào `data`. Token thay đổi mỗi lần login, nên test chỉ kiểm tra kiểu dữ liệu, không so sánh giá trị:
 
-{% code title="tests/api/auth.spec.ts" lineNumbers="true" %}
-```typescript
-import { test, expect } from "@playwright/test";
-import { apiUrl, sharedCustomer } from "@utils/env";
-
-test.use({ baseURL: apiUrl, extraHTTPHeaders: { Accept: "application/json" } });
-
-test("login thành công trả về access token", { tag: "@api" }, async ({ request }) => {
-  const response = await request.post("/users/login", { data: sharedCustomer });
-
-  await expect(response).toBeOK();
-  const body = await response.json();
-  expect(typeof body.access_token).toBe("string");
-  expect(body.token_type).toBe("bearer");
-});
-
-test("login bằng email chưa đăng ký trả về 401", { tag: "@api" }, async ({ request }) => {
-  const response = await request.post("/users/login", {
-    data: { email: "not-registered@practicesoftwaretesting.com", password: "welcome01" },
-  });
-
-  expect(response.status()).toBe(401);
-  expect(await response.json()).toEqual({ error: "Unauthorized" });
-});
-
-test("GET /users/me không có token trả về 401", { tag: "@api" }, async ({ request }) => {
-  const response = await request.get("/users/me");
-
-  expect(response.status()).toBe(401);
-});
-
-test("GET /users/me kèm Bearer token trả về đúng tài khoản", { tag: "@api" }, async ({ request }) => {
-  const loginResponse = await request.post("/users/login", { data: sharedCustomer });
-  const { access_token } = await loginResponse.json();
-
-  const response = await request.get("/users/me", {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
-
-  await expect(response).toBeOK();
-  const user = await response.json();
-  expect(user.email).toBe(sharedCustomer.email);
-});
-```
-{% endcode %}
-
-| Phần                                       | Ý nghĩa                                                                                                |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `data: sharedCustomer`                     | `sharedCustomer` có kiểu `Account` gồm `email` và `password`, trùng với body mà endpoint login yêu cầu |
-| `typeof body.access_token`                 | Token thay đổi mỗi lần login, nên test chỉ kiểm tra kiểu dữ liệu, không so sánh giá trị                 |
-| `const { access_token } = await ...json()` | Destructuring (Buổi 1) lấy đúng trường cần từ body                                                     |
-| `headers: { Authorization: ... }`          | Header riêng cho lời gọi này, được gộp với header `Accept` khai báo trong `test.use`                   |
-| `` `Bearer ${access_token}` ``             | Định dạng chuẩn: chữ `Bearer`, một dấu cách, rồi token                                                 |
+![Phần đầu auth.spec.ts với test login thành công và login bằng email chưa đăng ký](../.gitbook/assets/buoi-10-auth-login.png)
 
 {% hint style="warning" %}
 Tài khoản `customer@practicesoftwaretesting.com` bị khóa sau 3 lần nhập sai password, và cả lớp dùng chung tài khoản này. Test login thất bại luôn dùng email chưa đăng ký, không dùng password sai cho tài khoản chung.
 {% endhint %}
 
+### Gửi token trong header
+
+Token lấy từ body của response login bằng destructuring (Buổi 1), sau đó gửi trong header `Authorization` theo định dạng `Bearer <token>`: chữ `Bearer`, một dấu cách, rồi token. Header riêng của lời gọi được gộp với header `Accept` khai báo trong `test.use`:
+
+![Test GET /users/me không có token và có Bearer token](../.gitbook/assets/buoi-10-auth-me.png)
+
 ### Context có sẵn token với newContext
 
-Khi nhiều lời gọi trong một test cùng cần token, lặp lại `headers` ở từng dòng làm test dài và dễ thiếu sót. Tạo một `APIRequestContext` riêng có sẵn `baseURL` và header. Bổ sung vào `tests/api/auth.spec.ts`:
+Khi nhiều lời gọi trong một test cùng cần token, lặp lại `headers` ở từng dòng làm test dài và dễ thiếu sót. Fixture có sẵn `playwright` tạo một `APIRequestContext` riêng bằng `playwright.request.newContext()`, với `baseURL` và header áp dụng cho mọi lời gọi qua context đó:
 
-{% code title="tests/api/auth.spec.ts" %}
-```typescript
-test("context đã đăng nhập gọi được các API cần token", { tag: "@api" }, async ({ request, playwright }) => {
-  const loginResponse = await request.post("/users/login", { data: sharedCustomer });
-  const { access_token } = await loginResponse.json();
+![Test dùng context đã có Bearer token để gọi /users/me và /favorites](../.gitbook/assets/buoi-10-auth-context.png)
 
-  const authorizedContext = await playwright.request.newContext({
-    baseURL: apiUrl,
-    extraHTTPHeaders: { Accept: "application/json", Authorization: `Bearer ${access_token}` },
-  });
-
-  const meResponse = await authorizedContext.get("/users/me");
-  await expect(meResponse).toBeOK();
-
-  const favoritesResponse = await authorizedContext.get("/favorites");
-  await expect(favoritesResponse).toBeOK();
-  expect(Array.isArray(await favoritesResponse.json())).toBe(true);
-
-  // Context tự tạo thì tự đóng; fixture request có sẵn được Playwright đóng sau test
-  await authorizedContext.dispose();
-});
-```
-{% endcode %}
-
-| Phần                                        | Ý nghĩa                                                                                                             |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `playwright`                                | Fixture có sẵn, cung cấp `playwright.request.newContext()` để tạo context mới                                       |
-| `newContext({ baseURL, extraHTTPHeaders })` | Context mới với địa chỉ gốc và header riêng, áp dụng cho mọi lời gọi qua context đó                                 |
-| `Array.isArray(...)`                        | Kiểm tra body là mảng. Không assert số lượng, vì dữ liệu của tài khoản chung có thể bị người khác thay đổi (Buổi 9) |
-| `authorizedContext.dispose()`               | Đóng context và giải phóng tài nguyên                                                                               |
+Context tự tạo thì phải tự đóng bằng `dispose()`; fixture `request` có sẵn được Playwright đóng sau test. Test chỉ kiểm tra body của `/favorites` là mảng, không assert số lượng, vì dữ liệu của tài khoản chung có thể bị người khác thay đổi (Buổi 9).
 
 ## 6. Tổ chức bộ test API
 

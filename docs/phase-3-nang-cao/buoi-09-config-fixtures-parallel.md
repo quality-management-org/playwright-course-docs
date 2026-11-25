@@ -11,30 +11,7 @@ Khi bộ test lớn dần, cần kiểm soát được cách bộ test chạy: c
 
 File `playwright.config.ts` được tạo ở thư mục gốc project khi chạy `npm init playwright@latest` ở Buổi 4. Mọi lệnh `npx playwright test` đều đọc file này trước khi chạy test. Sau khi bổ sung `testIdAttribute` ở Buổi 5, phần nạp `.env` ở Buổi 8 và chỉ giữ lại project `chromium` (xem mục tiếp theo), nội dung file tương tự đoạn sau (đã lược bớt comment):
 
-```typescript
-import { defineConfig, devices } from "@playwright/test";
-import dotenv from "dotenv";
-import path from "path";
-
-dotenv.config({ path: path.resolve(__dirname, ".env") });
-
-export default defineConfig({
-  testDir: "./tests",
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: "html",
-  use: {
-    baseURL: process.env.BASE_URL || "https://practicesoftwaretesting.com",
-    testIdAttribute: "data-test",
-    trace: "on-first-retry",
-  },
-  projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-  ],
-});
-```
+![Nội dung playwright.config.ts sau khi chỉ giữ project chromium](../.gitbook/assets/buoi-09-config-overview.png)
 
 | Thiết lập             | Ý nghĩa                                                                                                         |
 | --------------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -99,16 +76,7 @@ Buổi 6 đã giới thiệu timeout của action và assertion. Bảng sau tổ
 
 Đoạn sau minh họa cú pháp khai báo, đơn vị mili giây. Không cần thêm đoạn này vào config của project:
 
-```typescript
-export default defineConfig({
-  timeout: 30000,
-  expect: { timeout: 5000 },
-  use: {
-    actionTimeout: 10000,
-    navigationTimeout: 15000,
-  },
-});
-```
+![Cú pháp khai báo các loại timeout trong playwright.config.ts](../.gitbook/assets/buoi-09-timeout-syntax.png)
 
 Khi action và chuyển trang không có giới hạn riêng, chúng chỉ bị giới hạn bởi timeout của cả test. Khóa học giữ giá trị mặc định cho các timeout. Khi trang web chậm hơn mức mặc định, tăng giá trị trong config thay vì thêm `{ timeout: ... }` vào từng dòng code.
 
@@ -159,7 +127,7 @@ Thiết lập `fullyParallel` quyết định cách chia test cho các worker:
 | `false`                  | Mỗi file test là một đơn vị. Các test trong cùng file chạy lần lượt theo thứ tự khai báo | Mức độ song song thấp hơn, giữ thứ tự trong file     |
 | `true` (config mặc định) | Mỗi test là một đơn vị. Worker nào rảnh nhận test tiếp theo                              | Mức độ song song cao nhất, thứ tự chạy không cố định |
 
-<!-- TODO(image): sơ đồ so sánh cách chia 5 test cho 2 worker, trục ngang là thời gian. Bên trái "fullyParallel: false": file A (test A1, A2, A3) giao trọn cho Worker 1 chạy lần lượt A1, A2, A3; file B (test B1, B2) giao cho Worker 2 chạy B1, B2 rồi rảnh. Bên phải "fullyParallel: true": 5 test xếp thành hàng chờ, Worker 1 chạy A1, A3, B2 và Worker 2 chạy A2, B1, tổng thời gian ngắn hơn. Tô cùng màu các test thuộc cùng một file. -->
+![So sánh cách chia test cho 2 worker khi fullyParallel là false và true](../.gitbook/assets/buoi-09-workers-fully-parallel.png)
 
 ### Mỗi test có browser context riêng
 
@@ -167,28 +135,7 @@ Dù chạy song song hay lần lượt, Playwright tạo cho mỗi test một **
 
 Ví dụ sau là anti-pattern: test thứ hai dựa vào giỏ hàng do test thứ nhất tạo ra.
 
-```typescript
-// Anti-pattern: test thứ hai phụ thuộc vào kết quả của test thứ nhất
-test("thêm sản phẩm vào giỏ", async ({ page }) => {
-  const homePage = new HomePage(page);
-  const productPage = new ProductPage(page);
-
-  await homePage.goto();
-  await homePage.openProduct("Combination Pliers");
-  await productPage.addToCart();
-
-  await expect(productPage.cartQuantity).toHaveText("1");
-});
-
-test("biểu tượng giỏ hàng hiển thị số lượng 1", async ({ page }) => {
-  const homePage = new HomePage(page);
-
-  await homePage.goto();
-
-  // page thuộc một browser context mới, giỏ hàng trống: assertion luôn fail
-  await expect(homePage.cartQuantity).toHaveText("1");
-});
-```
+![Anti-pattern: test thứ hai dựa vào giỏ hàng do test thứ nhất tạo ra](../.gitbook/assets/buoi-09-dependent-tests.png)
 
 Với `fullyParallel: true`, hai test này còn có thể chạy trên hai worker khác nhau, theo thứ tự bất kỳ. Cách viết đúng: mỗi test tự chuẩn bị toàn bộ trạng thái cần thiết, trong ví dụ trên là tự thêm sản phẩm vào giỏ rồi mới kiểm tra. Buổi 11 trình bày cách chuẩn bị trạng thái dùng chung mà không lặp code.
 
@@ -201,7 +148,7 @@ Browser context chỉ cách ly trạng thái lưu trên trình duyệt. Dữ li�
 | Trạng thái trên trình duyệt | Token đăng nhập, giỏ hàng                                              | Có, tự động, mỗi test một browser context                                          |
 | Dữ liệu trên server         | Danh sách sản phẩm yêu thích, hóa đơn, thông tin profile của tài khoản | Không. Mọi test, mọi worker và mọi người dùng chung tài khoản đều thấy cùng dữ liệu |
 
-<!-- TODO(image): sơ đồ cách ly trạng thái. Bên trái là 2 khối Worker 1 và Worker 2, mỗi worker có một Browser; bên trong mỗi Browser có 2 khối browser context (Test 1, Test 2 ở Worker 1; Test 3, Test 4 ở Worker 2), mỗi context ghi "cookie, localStorage, sessionStorage riêng". Bên phải là một khối Server Toolshop ghi "tài khoản customer@practicesoftwaretesting.com: yêu thích, hóa đơn, profile". Mũi tên từ cả 4 context cùng trỏ vào Server. Chú thích: đường viền context = được cách ly, khối Server = dùng chung. -->
+![Mỗi test có browser context riêng, trong khi dữ liệu tài khoản trên server Toolshop dùng chung](../.gitbook/assets/buoi-09-state-isolation.png)
 
 Tài khoản `customer@practicesoftwaretesting.com` được dùng chung bởi mọi test trong bộ test và bởi cả lớp. Vì vậy không viết assertion phụ thuộc vào số lượng chính xác của dữ liệu tài khoản, ví dụ "danh sách yêu thích có đúng 2 sản phẩm": dữ liệu này có thể bị test khác hoặc người khác thay đổi bất kỳ lúc nào.
 
@@ -213,15 +160,7 @@ Một test độc lập phải pass trong cả ba trường hợp: chạy riêng
 
 Khi test fail trên máy của người khác hoặc trên CI, thông báo lỗi trên terminal thường không đủ để biết giao diện tại thời điểm đó. Ba thiết lập trong khối `use` ghi lại thông tin này:
 
-```typescript
-use: {
-  baseURL: process.env.BASE_URL || "https://practicesoftwaretesting.com",
-  testIdAttribute: "data-test",
-  trace: "on-first-retry",
-  screenshot: "only-on-failure",
-  video: "retain-on-failure",
-},
-```
+![Khối use với thiết lập screenshot và video](../.gitbook/assets/buoi-09-screenshot-video.png)
 
 | Thiết lập    | Giá trị sử dụng       | Các giá trị khác                               | Kết quả                                                              |
 | ------------ | --------------------- | ---------------------------------------------- | -------------------------------------------------------------------- |
@@ -253,11 +192,7 @@ Tham số dòng lệnh chọn test theo file hoặc theo dòng. Playwright cung 
 
 ### test.only
 
-```typescript
-test.only("đăng nhập thành công", async ({ page }) => {
-  // Các bước của test
-});
-```
+![test.only giới hạn lần chạy vào một test](../.gitbook/assets/buoi-09-test-only.png)
 
 Khi bất kỳ file nào trong project có `.only`, Playwright chỉ chạy các test có `.only` và bỏ qua mọi test khác, trong mọi file. Chạy `npx playwright test`, terminal báo `Running 1 test using 1 worker`. Các test bị loại không xuất hiện trong kết quả và không được tính là skipped.
 
@@ -267,11 +202,7 @@ Vì vậy `.only` chỉ dùng tạm trên máy của bạn trong lúc sửa test
 
 Giả sử chức năng lọc sản phẩm theo thương hiệu của trang web đang bị tạm tắt. Test của chức năng này được giữ lại trong code nhưng tạm thời không chạy:
 
-```typescript
-test.skip("lọc sản phẩm theo thương hiệu", async ({ page }) => {
-  // Chức năng lọc theo thương hiệu đang tạm tắt, bỏ skip khi chức năng được bật lại
-});
-```
+![test.skip kèm comment ghi lý do](../.gitbook/assets/buoi-09-test-skip.png)
 
 {% hint style="warning" %}
 Không dùng `test.skip` để che một test đang fail mà chưa rõ nguyên nhân. Test fail do lỗi của chính test thì dùng `test.fixme` và sửa trong Pull Request tiếp theo.
@@ -279,11 +210,7 @@ Không dùng `test.skip` để che một test đang fail mà chưa rõ nguyên n
 
 ### test.fixme
 
-```typescript
-test.fixme("xóa sản phẩm khỏi giỏ cập nhật tổng tiền", async ({ page }) => {
-  // Locator ô Total không còn khớp sau khi trang giỏ hàng thay đổi, sửa trong Pull Request tiếp theo
-});
-```
+![test.fixme kèm comment ghi lý do](../.gitbook/assets/buoi-09-test-fixme.png)
 
 Trong report, `skip` và `fixme` đều hiển thị là skipped, nhưng khi đọc code hai lệnh này mang hai ý nghĩa khác nhau: `skip` là "không cần chạy trong điều kiện này", `fixme` là "test có lỗi cần sửa". Cả hai luôn phải kèm lý do, viết bằng comment ngay dòng đầu thân test. Test bị bỏ qua mà không có lý do sẽ nằm mãi trong report mà không ai biết cần làm gì với nó.
 
@@ -297,15 +224,7 @@ Trước khi commit, kiểm tra không còn `test.only` trong code và mọi `te
 
 Khi bộ test có hàng chục test, việc chọn theo file hoặc theo dòng không còn đủ. Ví dụ trước khi tạo Pull Request chỉ cần chạy các luồng chính trong 1-2 phút, còn toàn bộ bộ test chạy trước mỗi lần release. **Tag** là nhãn phân loại gắn vào test, luôn bắt đầu bằng `@`, khai báo trong object tùy chọn đặt giữa tên test và hàm test:
 
-```typescript
-test("đăng nhập thành công", { tag: ["@smoke", "@critical"] }, async ({ page }) => {
-  // Các bước của test
-});
-
-test("hiển thị lỗi khi đăng nhập bằng email chưa đăng ký", { tag: "@regression" }, async ({ page }) => {
-  // Các bước của test
-});
-```
+![Gắn một tag hoặc nhiều tag cho test](../.gitbook/assets/buoi-09-tags.png)
 
 `tag` nhận một chuỗi khi test có một tag, hoặc một mảng khi test có nhiều tag. Tag thiếu ký tự `@` làm Playwright báo lỗi `Tag must start with "@" symbol`. Cú pháp này cần Playwright từ phiên bản 1.42, kiểm tra bằng `npx playwright --version`. Buổi 11 trình bày cách gắn tag cho cả một nhóm test.
 
