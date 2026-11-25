@@ -388,7 +388,7 @@ Trên hệ thống CI không có file `.env`, vì file này không được push
 ## 6. Bài tập về nhà
 
 {% hint style="info" %}
-Sau buổi này, bạn đã có một framework POM nhỏ theo cách tổ chức phổ biến trong dự án thực tế. Phase 3 tiếp tục mở rộng framework này: cấu hình nhiều trình duyệt, chạy song song ([Buổi 9](../phase-3-nang-cao/buoi-09-config-fixtures-parallel.md)), hooks và fixtures ([Buổi 10](../phase-3-nang-cao/buoi-10-test-suite-organization.md)) và API testing ([Buổi 11](../phase-3-nang-cao/buoi-11-api-testing.md)).
+Sau buổi này, bạn đã có một framework POM nhỏ theo cách tổ chức phổ biến trong dự án thực tế. Phase 3 tiếp tục mở rộng framework này: cấu hình và chạy song song ([Buổi 9](../phase-3-nang-cao/buoi-09-config-fixtures-parallel.md)), API testing ([Buổi 10](../phase-3-nang-cao/buoi-10-api-testing.md)), hooks và fixtures ([Buổi 11](../phase-3-nang-cao/buoi-11-hooks-fixtures.md)).
 {% endhint %}
 
 Toàn bộ bài tập làm trên [Toolshop](https://practicesoftwaretesting.com/). Không nhập password sai cho tài khoản chung: tài khoản bị khóa sau 3 lần sai và cả lớp sẽ không sử dụng được nữa.

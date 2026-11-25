@@ -187,7 +187,7 @@ Bài này tổng hợp kiến thức của cả 3 buổi. Tự hoàn thành đư
 | Lỗi "Cannot find module './utils'"                                 | Sai đường dẫn import hoặc thiếu `./`                     | Kiểm tra file tồn tại, import file cùng folder phải bắt đầu bằng `./`   |
 | `find` trả về `undefined`, gọi `.name` báo lỗi                     | Không có phần tử nào thỏa điều kiện                      | Kiểm tra kết quả trước khi dùng: `if (backpack) { ... }`                |
 
-## 8. Bài tập về nhà (45-60 phút)
+## 8. Bài tập về nhà
 
 1. Tạo file `lesson-03/product.ts`, viết class `Product` có constructor, ít nhất 1 field private, và method `getDisplayPrice()` trả về chuỗi dạng `"29.99 USD"`.
 2. Hoàn thiện bài checkpoint ở mục 6 trong file `lesson-03/checkpoint-phase-1.ts` nếu chưa xong tại lớp.

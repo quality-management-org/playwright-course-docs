@@ -3,7 +3,7 @@ description: "Nhóm test theo tính năng bằng test.describe, chuẩn bị tr�
 icon: layer-group
 ---
 
-# Buổi 10 · Hooks, Fixtures & Tổ chức Test Suite
+# Buổi 11 · Hooks, Fixtures & Tổ chức Test Suite
 
 Khi số lượng test tăng, code test bắt đầu lặp lại: cùng một bước chuẩn bị ở đầu nhiều test, cùng một logic kiểm tra cho nhiều bộ dữ liệu. Buổi này trình bày cách tổ chức code test để loại bỏ phần lặp lại.
 
@@ -13,6 +13,7 @@ Khi số lượng test tăng, code test bắt đầu lặp lại: cùng một b�
 
 `test.describe` nhận một tên nhóm và một hàm chứa các test thuộc nhóm đó:
 
+{% code title="tests/login.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "@playwright/test";
 import { LoginPage } from "../pages/login-page";
@@ -34,6 +35,7 @@ test.describe("Đăng nhập", () => {
   });
 });
 ```
+{% endcode %}
 
 Tên nhóm được ghép vào trước tên test ở mọi nơi Playwright hiển thị test: terminal, HTML report, Trace Viewer. Kiểm tra bằng `--list` (Buổi 9):
 
@@ -52,6 +54,7 @@ Total: 2 tests in 1 file
 
 Một `describe` có thể đặt bên trong một `describe` khác để tạo nhóm con:
 
+{% code title="tests/cart.spec.ts" %}
 ```typescript
 test.describe("Giỏ hàng", () => {
   test.describe("Xóa sản phẩm", () => {
@@ -61,6 +64,7 @@ test.describe("Giỏ hàng", () => {
   });
 });
 ```
+{% endcode %}
 
 Tên đầy đủ của test là `Giỏ hàng › Xóa sản phẩm › giỏ hàng trống sau khi xóa sản phẩm duy nhất`.
 
@@ -68,6 +72,7 @@ Tên đầy đủ của test là `Giỏ hàng › Xóa sản phẩm › giỏ h�
 
 Tag (Buổi 9) khai báo ở `describe` áp dụng cho mọi test bên trong nhóm. Test vẫn có thể có thêm tag riêng:
 
+{% code title="tests/checkout.spec.ts" %}
 ```typescript
 test.describe("Thanh toán", { tag: "@regression" }, () => {
   test("hoàn tất đơn hàng với thông tin hợp lệ", { tag: ["@smoke", "@critical"] }, async ({ page }) => {
@@ -79,6 +84,7 @@ test.describe("Thanh toán", { tag: "@regression" }, () => {
   });
 });
 ```
+{% endcode %}
 
 Tương tự, `test.describe.only(...)`, `test.describe.skip(...)` và `test.describe.fixme(...)` áp dụng quy tắc của `only`, `skip`, `fixme` (Buổi 9) cho cả nhóm.
 
@@ -98,6 +104,7 @@ Tương tự, `test.describe.only(...)`, `test.describe.skip(...)` và `test.des
 
 Mọi test trong `cart.spec.ts` và `checkout.spec.ts` bắt đầu bằng cùng một đoạn code đăng nhập:
 
+{% code title="tests/cart.spec.ts" %}
 ```typescript
 test("...", async ({ page }) => {
   const loginPage = new LoginPage(page);
@@ -106,9 +113,11 @@ test("...", async ({ page }) => {
   // Các bước của test
 });
 ```
+{% endcode %}
 
 **Hook** là hàm Playwright tự động gọi tại các thời điểm xác định trong quá trình chạy test. Hook `beforeEach` tập trung đoạn đăng nhập này về một vị trí trong file `tests/cart.spec.ts`:
 
+{% code title="tests/cart.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "@playwright/test";
 import { LoginPage } from "../pages/login-page";
@@ -151,10 +160,48 @@ test.describe("Giỏ hàng", () => {
   });
 });
 ```
+{% endcode %}
 
 `page` trong `beforeEach` và `page` trong test là cùng một object: hook đăng nhập xong, test nhận trang đã đăng nhập.
 
 Dòng `page.waitForURL()` (Buổi 6) là bước chờ cần thiết. `login()` kết thúc ngay sau khi bấm nút Login, trong khi Toolshop cần thêm thời gian để xử lý đăng nhập. Nếu test gọi `homePage.goto()` ngay sau đó, trang có thể chuyển đi trước khi đăng nhập hoàn tất, và test fail không ổn định.
+
+### Hook trong API test
+
+Các test giỏ hàng của Buổi 10 cũng bắt đầu bằng cùng hai bước chuẩn bị: gọi `findProductId()` và `createCart()`. Với `beforeEach`, hai bước này chạy tự động trước mỗi test, và giá trị chuẩn bị được lưu vào biến khai báo trong `describe`. Cập nhật `tests/api/carts.spec.ts`:
+
+{% code title="tests/api/carts.spec.ts" %}
+```typescript
+test.describe("Giỏ hàng qua API", { tag: "@api" }, () => {
+  let productId: string;
+  let cartId: string;
+
+  test.beforeEach(async ({ request }) => {
+    productId = await findProductId(request, "Combination Pliers");
+    cartId = await createCart(request);
+  });
+
+  test("POST thêm sản phẩm vào giỏ", async ({ request }) => {
+    const response = await request.post(`/carts/${cartId}`, {
+      data: { product_id: productId, quantity: 2 },
+    });
+
+    await expect(response).toBeOK();
+    // Các assertion còn lại giữ nguyên như Buổi 10
+  });
+
+  // Các test còn lại bỏ hai dòng gọi findProductId() và createCart() ở đầu thân test
+});
+```
+{% endcode %}
+
+| Thành phần                         | Ý nghĩa                                                                                                    |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `let productId: string;`           | Khai báo trong `describe` để hook và các test trong nhóm cùng sử dụng. Dùng `let` vì hook gán lại giá trị trước mỗi test |
+| `async ({ request })` trong hook   | Hook nhận fixture giống test. `request` của hook và của test là cùng một object                             |
+| `{ tag: "@api" }` ở `describe`     | Gắn tag cho cả nhóm, các test bên trong không cần khai báo tag riêng                                       |
+
+Mỗi test vẫn nhận một giỏ hàng mới, vì `beforeEach` chạy lại trước từng test.
 
 ### Phạm vi của hook
 
@@ -167,6 +214,7 @@ Hook có hiệu lực trong phạm vi nơi nó được khai báo:
 
 Ví dụ, chỉ các test xóa sản phẩm cần có sẵn sản phẩm trong giỏ. Bước chuẩn bị này đặt trong `beforeEach` của nhóm "Xóa sản phẩm", không ảnh hưởng tới các test khác của nhóm "Giỏ hàng":
 
+{% code title="tests/cart.spec.ts" %}
 ```typescript
 test.describe("Giỏ hàng", () => {
   test.beforeEach(async ({ page }) => {
@@ -184,6 +232,7 @@ test.describe("Giỏ hàng", () => {
   });
 });
 ```
+{% endcode %}
 
 Với test "giỏ hàng trống sau khi xóa sản phẩm duy nhất", `beforeEach` của nhóm ngoài chạy trước, sau đó đến `beforeEach` của nhóm trong, cuối cùng là test.
 
@@ -207,6 +256,7 @@ afterAll
 
 Hook `afterEach` nhận tham số thứ hai `testInfo`, chứa thông tin về test vừa chạy. Ví dụ ghi lại URL cuối cùng của các test không pass:
 
+{% code title="tests/cart.spec.ts" %}
 ```typescript
 test.afterEach(async ({ page }, testInfo) => {
   // Chỉ ghi log khi test không pass, hỗ trợ việc điều tra lỗi
@@ -215,6 +265,7 @@ test.afterEach(async ({ page }, testInfo) => {
   }
 });
 ```
+{% endcode %}
 
 {% hint style="warning" %}
 **Không dùng `beforeAll` để đăng nhập một lần rồi dùng chung cho mọi test.** `beforeAll` không có `page`, và Playwright báo lỗi `"context" and "page" fixtures are not supported in "beforeAll"` nếu khai báo `page`. Với nhiều worker, `beforeAll` chạy một lần trên mỗi worker, không phải một lần cho cả bộ test. Tự tạo `page` trong `beforeAll` để dùng chung giữa các test làm các test phụ thuộc nhau (Buổi 9). `beforeAll` chỉ phù hợp với việc chuẩn bị không thao tác trên trang web.
@@ -228,7 +279,7 @@ test.afterEach(async ({ page }, testInfo) => {
 
 ### Khái niệm fixture
 
-Từ Buổi 4, mỗi test nhận `page` qua cú pháp destructuring `async ({ page })` (Buổi 1). `page` là một **fixture**: đối tượng Playwright chuẩn bị trước khi test chạy và dọn dẹp sau khi test kết thúc.
+Từ Buổi 4, mỗi test nhận `page` qua cú pháp destructuring `async ({ page })` (Buổi 1). Buổi 10 sử dụng thêm `request` và `playwright` theo cùng cú pháp. `page` là một **fixture**: đối tượng Playwright chuẩn bị trước khi test chạy và dọn dẹp sau khi test kết thúc.
 
 | Giai đoạn | Việc Playwright thực hiện với fixture `page` |
 | --------- | -------------------------------------------- |
@@ -242,6 +293,7 @@ Playwright cho phép định nghĩa fixture riêng cho project bằng `test.exte
 
 Tạo folder `fixtures/` ngang hàng với `tests/` và `pages/`, sau đó tạo file `fixtures/test-fixtures.ts`:
 
+{% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
 ```typescript
 import { test as base, expect } from "@playwright/test";
 import { LoginPage } from "../pages/login-page";
@@ -259,6 +311,7 @@ export const test = base.extend<CourseFixtures>({
 
 export { expect };
 ```
+{% endcode %}
 
 | Thành phần                           | Ý nghĩa                                                                                                     |
 | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
@@ -273,6 +326,7 @@ export { expect };
 
 File test import `test` và `expect` từ file fixture thay vì từ `@playwright/test`, sau đó khai báo fixture cần dùng trong tham số của test:
 
+{% code title="tests/login.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "../fixtures/test-fixtures";
 import { sharedCustomer } from "../utils/env";
@@ -286,11 +340,12 @@ test.describe("Đăng nhập", () => {
   });
 });
 ```
+{% endcode %}
 
 So với cách viết trước, test không còn dòng `const loginPage = new LoginPage(page);` và không cần import `LoginPage`. Playwright chỉ chạy fixture mà test khai báo: test không khai báo `loginPage` thì fixture `loginPage` không được tạo.
 
 {% hint style="warning" %}
-Sau khi có file fixture, mọi file test phải import `test` từ `../fixtures/test-fixtures`. File còn import từ `@playwright/test` mà khai báo fixture mới sẽ bị VS Code báo lỗi `Property 'loginPage' does not exist on type ...`, và khi chạy, Playwright báo lỗi `Test has unknown parameter "loginPage"`.
+Sau khi có file fixture, mọi file test phải import `test` từ `../fixtures/test-fixtures` (với file API test trong `tests/api/` là `../../fixtures/test-fixtures`). File còn import từ `@playwright/test` mà khai báo fixture mới sẽ bị VS Code báo lỗi `Property 'loginPage' does not exist on type ...`, và khi chạy, Playwright báo lỗi `Test has unknown parameter "loginPage"`.
 {% endhint %}
 
 <!-- TODO(image): VS Code mở một file test còn dòng import { test, expect } from "@playwright/test" nhưng khai báo async ({ page, loginPage }): chữ loginPage bị gạch chân đỏ, tooltip hiển thị lỗi "Property 'loginPage' does not exist on type ...". Khoanh đỏ dòng import ở đầu file và tooltip lỗi. -->
@@ -299,6 +354,7 @@ Sau khi có file fixture, mọi file test phải import `test` từ `../fixtures
 
 Bổ sung fixture `authenticatedPage`: một `page` đã đăng nhập bằng tài khoản chung. Cập nhật `fixtures/test-fixtures.ts`:
 
+{% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
 ```typescript
 import { test as base, expect, Page } from "@playwright/test";
 import { LoginPage } from "../pages/login-page";
@@ -326,6 +382,7 @@ export const test = base.extend<CourseFixtures>({
 
 export { expect };
 ```
+{% endcode %}
 
 `authenticatedPage` khai báo cần hai fixture khác: `page` của Playwright và `loginPage` vừa tạo ở bước 1. Khi một test khai báo `authenticatedPage`, Playwright tự tạo các fixture theo thứ tự phụ thuộc, chạy test, sau đó dọn dẹp theo thứ tự ngược lại:
 
@@ -343,6 +400,7 @@ Teardown:  authenticatedPage → loginPage → page
 
 Tương tự `loginPage`, khai báo fixture cho các page object còn lại. Nội dung hoàn chỉnh của `fixtures/test-fixtures.ts`:
 
+{% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
 ```typescript
 import { test as base, expect, Page } from "@playwright/test";
 import { LoginPage } from "../pages/login-page";
@@ -381,9 +439,11 @@ export const test = base.extend<CourseFixtures>({
 
 export { expect };
 ```
+{% endcode %}
 
 Viết lại `tests/cart.spec.ts` bằng fixture:
 
+{% code title="tests/cart.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "../fixtures/test-fixtures";
 
@@ -411,6 +471,7 @@ test.describe("Giỏ hàng", () => {
   });
 });
 ```
+{% endcode %}
 
 Test thứ nhất khai báo `authenticatedPage` nhưng không sử dụng biến này trong thân test. Việc khai báo tương đương mục **điều kiện tiên quyết** "Đã đăng nhập" của một test case thủ công: Playwright đăng nhập trước khi test chạy. Test không khai báo `authenticatedPage` bắt đầu ở trạng thái chưa đăng nhập.
 
@@ -432,7 +493,7 @@ Test thứ nhất khai báo `authenticatedPage` nhưng không sử dụng biến
 | Kết hợp            | Không dùng lại được ở file khác                              | Fixture sử dụng được fixture khác                                        |
 | Trường hợp sử dụng | Bước chuẩn bị chỉ dành cho các test của một file hoặc một nhóm | Trạng thái dùng chung toàn project: đăng nhập, page object, dữ liệu test |
 
-Quy ước của khóa học từ buổi này: trạng thái dùng chung được khai báo bằng fixture, hook chỉ dùng cho bước chuẩn bị riêng của một file hoặc một nhóm. Ví dụ bước "thêm một sản phẩm vào giỏ" của nhóm "Xóa sản phẩm" vẫn phù hợp với `beforeEach`. Buổi 12 bổ sung fixture tạo dữ liệu qua API, và Buổi 13 đặt `fixtures/` vào cấu trúc folder chuẩn của framework.
+Quy ước của khóa học từ buổi này: trạng thái dùng chung được khai báo bằng fixture, hook chỉ dùng cho bước chuẩn bị riêng của một file hoặc một nhóm. Ví dụ bước "thêm một sản phẩm vào giỏ" của nhóm "Xóa sản phẩm" vẫn phù hợp với `beforeEach`. Buổi 13 đặt `fixtures/` vào cấu trúc folder chuẩn của framework.
 
 {% hint style="info" %}
 Với fixture `authenticatedPage`, mỗi test đăng nhập lại qua giao diện. Với bộ test lớn, Playwright hỗ trợ lưu trạng thái đăng nhập một lần và sử dụng lại cho nhiều test. Nội dung này nằm ngoài phạm vi khóa học, tham khảo tại [Authentication](https://playwright.dev/docs/auth).
@@ -463,6 +524,7 @@ Trả lời các câu hỏi sau trước khi viết code:
 
 Cần kiểm tra trang chi tiết hiển thị đúng tên sản phẩm với ba sản phẩm khác nhau. Cách viết đã dùng ở bài tập Buổi 6, Bài 1 là duyệt mảng dữ liệu bên trong một test:
 
+{% code title="tests/product-detail.spec.ts" %}
 ```typescript
 // Anti-pattern: ba bộ dữ liệu trong cùng một test
 test("trang chi tiết hiển thị đúng tên sản phẩm", async ({ homePage, productPage }) => {
@@ -475,6 +537,7 @@ test("trang chi tiết hiển thị đúng tên sản phẩm", async ({ homePage
   }
 });
 ```
+{% endcode %}
 
 Cách viết này có ba hạn chế:
 
@@ -488,6 +551,7 @@ Cách viết này có ba hạn chế:
 
 Đặt vòng lặp bên ngoài `test`, mỗi vòng khai báo một test riêng:
 
+{% code title="tests/product-detail.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "../fixtures/test-fixtures";
 
@@ -504,6 +568,7 @@ test.describe("Trang chi tiết sản phẩm", () => {
   }
 });
 ```
+{% endcode %}
 
 | Thành phần                         | Ý nghĩa                                                                                                  |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
@@ -567,7 +632,8 @@ Xây dựng `fixtures/test-fixtures.ts` và chuyển toàn bộ file test sang s
 
 ### Bài 2: tổ chức bộ test theo tính năng
 
-* Mỗi file test nhóm các test theo tính năng bằng `test.describe`, tên nhóm và tên test theo quy ước đặt tên của khóa học.
+* Mỗi file test nhóm các test theo tính năng bằng `test.describe`, tên nhóm và tên test theo quy ước đặt tên của khóa học. File API test trong `tests/api/` nhóm theo endpoint.
+* Không còn bước chuẩn bị nào lặp lại ở đầu nhiều test trong cùng một file, kể cả các file API test.
 * Đọc report hoặc kết quả `--list` biết được mỗi test thuộc tính năng nào.
 * Các tag đã gắn ở Buổi 9 vẫn chọn đúng nhóm test khi chạy `--grep`.
 

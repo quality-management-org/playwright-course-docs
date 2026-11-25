@@ -92,7 +92,7 @@ Buổi 6 đã giới thiệu timeout của action và assertion. Bảng sau tổ
 
 | Thiết lập           | Mặc định             | Phạm vi áp dụng                                                  | Vị trí khai báo            |
 | ------------------- | -------------------- | ---------------------------------------------------------------- | -------------------------- |
-| `timeout`           | 30 giây              | Toàn bộ một test, bao gồm hook và fixture (Buổi 10)               | Cấp cao nhất của config    |
+| `timeout`           | 30 giây              | Toàn bộ một test, bao gồm hook và fixture (Buổi 11)               | Cấp cao nhất của config    |
 | `expect.timeout`    | 5 giây               | Mỗi web-first assertion như `toBeVisible()`, `toHaveText()`      | `expect: { timeout: ... }` |
 | `actionTimeout`     | Không giới hạn riêng | Mỗi action như `click()`, `fill()`                               | Khối `use`                 |
 | `navigationTimeout` | Không giới hạn riêng | Mỗi lần chuyển trang như `goto()`, `waitForURL()`                | Khối `use`                 |
@@ -190,7 +190,7 @@ test("biểu tượng giỏ hàng hiển thị số lượng 1", async ({ page }
 });
 ```
 
-Với `fullyParallel: true`, hai test này còn có thể chạy trên hai worker khác nhau, theo thứ tự bất kỳ. Cách viết đúng: mỗi test tự chuẩn bị toàn bộ trạng thái cần thiết, trong ví dụ trên là tự thêm sản phẩm vào giỏ rồi mới kiểm tra. Buổi 10 trình bày cách chuẩn bị trạng thái dùng chung mà không lặp code.
+Với `fullyParallel: true`, hai test này còn có thể chạy trên hai worker khác nhau, theo thứ tự bất kỳ. Cách viết đúng: mỗi test tự chuẩn bị toàn bộ trạng thái cần thiết, trong ví dụ trên là tự thêm sản phẩm vào giỏ rồi mới kiểm tra. Buổi 11 trình bày cách chuẩn bị trạng thái dùng chung mà không lặp code.
 
 ### Trạng thái trên trình duyệt và dữ liệu trên server
 
@@ -203,7 +203,7 @@ Browser context chỉ cách ly trạng thái lưu trên trình duyệt. Dữ li�
 
 <!-- TODO(image): sơ đồ cách ly trạng thái. Bên trái là 2 khối Worker 1 và Worker 2, mỗi worker có một Browser; bên trong mỗi Browser có 2 khối browser context (Test 1, Test 2 ở Worker 1; Test 3, Test 4 ở Worker 2), mỗi context ghi "cookie, localStorage, sessionStorage riêng". Bên phải là một khối Server Toolshop ghi "tài khoản customer@practicesoftwaretesting.com: yêu thích, hóa đơn, profile". Mũi tên từ cả 4 context cùng trỏ vào Server. Chú thích: đường viền context = được cách ly, khối Server = dùng chung. -->
 
-Tài khoản `customer@practicesoftwaretesting.com` được dùng chung bởi mọi test trong bộ test và bởi cả lớp. Vì vậy không viết assertion phụ thuộc vào số lượng chính xác của dữ liệu tài khoản, ví dụ "danh sách yêu thích có đúng 2 sản phẩm": dữ liệu này có thể bị test khác hoặc người khác thay đổi bất kỳ lúc nào. Buổi 12 trình bày cách tạo dữ liệu riêng cho từng test qua API.
+Tài khoản `customer@practicesoftwaretesting.com` được dùng chung bởi mọi test trong bộ test và bởi cả lớp. Vì vậy không viết assertion phụ thuộc vào số lượng chính xác của dữ liệu tài khoản, ví dụ "danh sách yêu thích có đúng 2 sản phẩm": dữ liệu này có thể bị test khác hoặc người khác thay đổi bất kỳ lúc nào.
 
 {% hint style="success" %}
 Một test độc lập phải pass trong cả ba trường hợp: chạy riêng lẻ (ví dụ `npx playwright test tests/cart.spec.ts:12`), chạy cùng toàn bộ bộ test, và chạy với số worker bất kỳ. Test chỉ pass khi chạy cùng các test khác là dấu hiệu test đang phụ thuộc vào test khác.
@@ -307,7 +307,7 @@ test("hiển thị lỗi khi đăng nhập bằng email chưa đăng ký", { tag
 });
 ```
 
-`tag` nhận một chuỗi khi test có một tag, hoặc một mảng khi test có nhiều tag. Tag thiếu ký tự `@` làm Playwright báo lỗi `Tag must start with "@" symbol`. Cú pháp này cần Playwright từ phiên bản 1.42, kiểm tra bằng `npx playwright --version`. Buổi 10 trình bày cách gắn tag cho cả một nhóm test.
+`tag` nhận một chuỗi khi test có một tag, hoặc một mảng khi test có nhiều tag. Tag thiếu ký tự `@` làm Playwright báo lỗi `Tag must start with "@" symbol`. Cú pháp này cần Playwright từ phiên bản 1.42, kiểm tra bằng `npx playwright --version`. Buổi 11 trình bày cách gắn tag cho cả một nhóm test.
 
 Quy ước tag của khóa học, áp dụng đến hết mini project (Buổi 14):
 
@@ -316,7 +316,7 @@ Quy ước tag của khóa học, áp dụng đến hết mini project (Buổi 1
 | `@smoke`      | Luồng chính của sản phẩm, cả nhóm chạy xong trong 1-2 phút, chạy trước mỗi PR  | Khoảng 5-10% số test          |
 | `@critical`   | Test fail thì chặn release, ví dụ đăng nhập, thanh toán                        | Ít, thường trùng với `@smoke` |
 | `@regression` | Các test kiểm tra chi tiết, chạy trước release                                 | Phần lớn test còn lại         |
-| `@api`        | Test gọi API, không mở trình duyệt (Buổi 11)                                   | Theo số endpoint              |
+| `@api`        | Test gọi API, không mở trình duyệt (Buổi 10)                                   | Theo số endpoint              |
 
 ### Chạy theo tag với --grep
 

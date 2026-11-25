@@ -548,7 +548,7 @@ expect(cartCount).toBe("1");
 await expect(page.locator("[data-test='cart-quantity']")).toHaveText("1");
 ```
 
-Assertion trên giá trị dùng cho dữ liệu không nằm trên trang, ví dụ nội dung hộp thoại (mục 1.8), status code của response (mục 4.4), dữ liệu API trả về ở [Buổi 11](../phase-3-nang-cao/buoi-11-api-testing.md).
+Assertion trên giá trị dùng cho dữ liệu không nằm trên trang, ví dụ nội dung hộp thoại (mục 1.8), status code của response (mục 4.4), dữ liệu API trả về ở [Buổi 10](../phase-3-nang-cao/buoi-10-api-testing.md).
 
 ### 2.2 Các assertion thường dùng
 
@@ -745,7 +745,7 @@ test("sắp xếp sản phẩm gọi API thành công", async ({ page }) => {
 });
 ```
 
-Giống sự kiện `popup` ở mục 1.8, Promise phải được tạo **trước** action. Nếu tạo sau, response có thể đã về trước khi bắt đầu chờ và test bị treo đến hết thời gian chờ. `waitForRequest()` dùng theo cùng cách. [Buổi 12](../phase-3-nang-cao/buoi-12-api-ui-network-mocking.md) trình bày chi tiết cách làm việc với request và response của trang.
+Giống sự kiện `popup` ở mục 1.8, Promise phải được tạo **trước** action. Nếu tạo sau, response có thể đã về trước khi bắt đầu chờ và test bị treo đến hết thời gian chờ. `waitForRequest()` dùng theo cùng cách.
 
 #### `page.waitForURL()` và `page.waitForLoadState()`
 
@@ -801,7 +801,7 @@ Tài khoản khách hàng của Toolshop bị khóa sau 3 lần đăng nhập sa
 4. Viết một test dùng `for...of` duyệt mảng và destructuring để lấy các field, kiểm tra kết quả của từng bộ dữ liệu khớp với cột "Expected Result".
 
 {% hint style="info" %}
-Trong bài này, nếu một bộ dữ liệu fail thì test dừng ngay và các bộ dữ liệu phía sau không chạy. [Buổi 10](../phase-3-nang-cao/buoi-10-test-suite-organization.md) trình bày parameterized test, cách viết để mỗi bộ dữ liệu là một test riêng trong report.
+Trong bài này, nếu một bộ dữ liệu fail thì test dừng ngay và các bộ dữ liệu phía sau không chạy. [Buổi 11](../phase-3-nang-cao/buoi-11-hooks-fixtures.md) trình bày parameterized test, cách viết để mỗi bộ dữ liệu là một test riêng trong report.
 {% endhint %}
 
 ### Bài 2: kiểm tra giao diện và trạng thái của form đăng nhập

@@ -141,7 +141,7 @@ Test fail là chuyện bình thường hằng ngày của automation tester. Cá
 | Test chạy loạn thứ tự, fail khó hiểu | Quên `await` trước thao tác page   | Rà lại: mọi dòng page.xxx đều phải có await                     |
 | Timeout dù code đúng                 | Mạng chậm, trang tải lâu           | Chạy lại; kiểm tra mở được Saucedemo bằng tay không             |
 
-## 8. Bài tập về nhà (45–60 phút)
+## 8. Bài tập về nhà
 
 1. Viết test **login thất bại khi sai password**: điền password sai, bấm login, và assert thông báo lỗi hiện ra (gợi ý: quan sát message lỗi trên trang, tìm selector của nó bằng chuột phải → Inspect)
 2. Dùng Codegen record 1 user flow tùy chọn trên Saucedemo, sau đó **dọn code**: xóa thao tác thừa, đổi tên test có nghĩa

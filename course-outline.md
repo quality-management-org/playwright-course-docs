@@ -32,19 +32,16 @@ Vấn đề lặp code và chi phí bảo trì. Xây LoginPage, InventoryPage. Q
 ### Buổi 8: Hoàn thiện POM & Code Review
 BasePage (kế thừa class), CartPage, CheckoutPage. Quy trình refactor an toàn 3 bước. Checklist code review 8 mục, áp dụng từ buổi này đến hết khóa. Tổng kết anti-patterns.
 
-## Phase 3: Nâng cao (Buổi 9-12)
+## Phase 3: Nâng cao (Buổi 9-11)
 
 ### Buổi 9: playwright.config.ts & Điều khiển việc chạy test
 Multiple projects (Chromium, Firefox, WebKit, mobile emulation). baseURL, timeout, retries, workers, chạy song song và test độc lập. Screenshot và video khi test fail. test.only, test.skip, test.fixme. Tags @smoke @regression @critical, chạy theo tag với --grep.
 
-### Buổi 10: Hooks, Fixtures & Tổ chức Test Suite
+### Buổi 10: API Testing với Playwright
+APIRequestContext: get, post, put, delete. Headers, body, Bearer token. Assert status code, response body, JSON fields. Thực hành trên API của Toolshop (api.practicesoftwaretesting.com), không cần mở browser.
+
+### Buổi 11: Hooks, Fixtures & Tổ chức Test Suite
 test.describe. beforeAll/Each, afterAll/Each. Custom fixture (ví dụ authenticatedPage tự động login). Hook hay fixture. Parameterized tests với nhiều bộ dữ liệu.
-
-### Buổi 11: API Testing với Playwright
-APIRequestContext: get, post, put, delete. Headers, body, Bearer token. Assert status code, response body, JSON fields. Thực hành CRUD trên ReqRes hoặc JSONPlaceholder, không cần mở browser.
-
-### Buổi 12: API + UI kết hợp & Network Mocking
-Chiến lược tạo test data qua API rồi verify trên UI; dọn data sau test để test độc lập. page.route mock API response. Giả lập lỗi 500, empty state, timeout.
 
 ## Phase 4: Framework, Mini Project & AI (Buổi 13-15)
 

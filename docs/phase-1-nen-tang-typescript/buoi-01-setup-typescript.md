@@ -244,7 +244,7 @@ console.log(isStrongPassword); // true
 `password.length` là số ký tự của chuỗi. Biểu thức `isStrongPassword` đọc là: password có từ 8 ký tự trở lên **và** khác chuỗi `"password"`.
 
 {% hint style="info" %}
-**Liên hệ với Playwright:** từ Buổi 4, các phép so sánh trong test được viết bằng assertion `expect`, ví dụ `expect(user.name).toBe("Leanne Graham")` ở Buổi 11. Bản chất vẫn là phép so sánh `===` giữa giá trị thực tế và giá trị mong đợi, nhưng khi sai, Playwright in ra cả hai giá trị để dễ tìm nguyên nhân.
+**Liên hệ với Playwright:** từ Buổi 4, các phép so sánh trong test được viết bằng assertion `expect`, ví dụ `expect(response.status()).toBe(404)` ở Buổi 10. Bản chất vẫn là phép so sánh `===` giữa giá trị thực tế và giá trị mong đợi, nhưng khi sai, Playwright in ra cả hai giá trị để dễ tìm nguyên nhân.
 {% endhint %}
 
 ## 6. Câu lệnh điều kiện if / else
@@ -626,7 +626,7 @@ for (const account of accounts) {
 | `account.canLogin ? "..." : "..."` | Toán tử ba ngôi (mục 6): nếu `canLogin` là `true` thì lấy giá trị đầu, ngược lại lấy giá trị sau   |
 
 {% hint style="info" %}
-**Liên hệ với Playwright:** ở Buổi 10, bạn sẽ dùng đúng cấu trúc này để viết parameterized test: đặt `test(...)` bên trong vòng `for`, mỗi object trong array sinh ra một test độc lập trong report.
+**Liên hệ với Playwright:** ở Buổi 11, bạn sẽ dùng đúng cấu trúc này để viết parameterized test: đặt `test(...)` bên trong vòng `for`, mỗi object trong array sinh ra một test độc lập trong report.
 {% endhint %}
 
 ## 10. Destructuring
@@ -700,7 +700,7 @@ Code đặt tên tốt là code người khác đọc hiểu mà không cần gi
 | Gạch đỏ "A required parameter cannot follow an optional parameter" | Tham số tùy chọn (`?`) đứng trước tham số bắt buộc | Chuyển các tham số tùy chọn về cuối danh sách tham số (mục 7) |
 | Gạch đỏ "'role' is possibly 'undefined'" | Dùng tham số tùy chọn mà chưa kiểm tra có giá trị hay không | Bọc trong `if (role) { ... }` trước khi dùng, hoặc chuyển sang giá trị mặc định nếu có giá trị hợp lý (mục 7) |
 
-## 13. Bài tập về nhà (45-60 phút)
+## 13. Bài tập về nhà
 
 Tạo file `lesson-01/homework-lesson-01.ts` và viết các hàm sau, đặt tên đúng convention:
 

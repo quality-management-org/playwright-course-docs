@@ -223,7 +223,7 @@ Ngay sau khi push, GitHub có thể hiện banner màu vàng kèm nút **Compare
 | Không tìm thấy nhánh của mình trong ô `compare` | Nhánh chưa được push lên GitHub                | Chạy lại `git push -u origin your-name/lesson-2`, tải lại trang rồi mở lại danh sách nhánh |
 | `git status` liệt kê hàng nghìn file trong `node_modules/` | Thiếu file `.gitignore` trong `playwright-course` | Tạo `.gitignore` theo mục 2 của Buổi 1, chạy `git rm -r --cached node_modules` rồi `git add .` lại |
 
-## 8. Bài tập về nhà (45-60 phút)
+## 8. Bài tập về nhà
 
 ### Bài 1: gọi API và kiểm tra kết quả trả về
 
