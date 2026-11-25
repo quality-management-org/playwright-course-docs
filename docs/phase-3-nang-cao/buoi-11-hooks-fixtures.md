@@ -15,22 +15,14 @@ Khi số lượng test tăng, code test bắt đầu lặp lại: cùng một b�
 
 ![login.spec.ts nhóm hai test bằng test.describe và kết quả của --list](../.gitbook/assets/buoi-11-describe.png)
 
-<!-- TODO(image): HTML report sau khi chạy npx playwright test với các file test đã nhóm bằng test.describe: mỗi dòng hiển thị đường dẫn nhóm trước tên test, ví dụ "Login › Logs in successfully with a valid account" và "Cart › Remove product › Cart is empty after removing the only product". Khoanh đỏ phần tên nhóm ở hai dòng, một dòng có một cấp describe và một dòng có hai cấp. -->
-
-### Nhóm lồng nhau
-
-Một `describe` có thể đặt bên trong một `describe` khác để tạo nhóm con:
-
-![describe lồng nhau trong cart.spec.ts](../.gitbook/assets/buoi-11-nested-describe.png)
-
-Tên đầy đủ của test là `Cart › Remove product › Cart is empty after removing the only product`.
+<!-- TODO(image): HTML report sau khi chạy npx playwright test với các file test đã nhóm bằng test.describe: mỗi dòng hiển thị đường dẫn nhóm trước tên test, ví dụ "Login › Logs in successfully with a valid account" và "Cart › Cart is empty after removing the only product". Khoanh đỏ phần tên nhóm ở hai dòng. -->
 
 ### Quy ước đặt tên
 
 | Thành phần     | Quy ước                                                                 | Ví dụ                                             |
 | -------------- | ----------------------------------------------------------------------- | ------------------------------------------------- |
 | Tên file       | Một tính năng một file, `<feature>.spec.ts`, tiếng Anh kebab-case       | `checkout.spec.ts`                                |
-| Tên `describe` | Danh từ chỉ tính năng hoặc thao tác, tiếng Anh, viết hoa chữ cái đầu    | `"Checkout"`, `"Remove product"`                  |
+| Tên `describe` | Danh từ chỉ tính năng, tiếng Anh, viết hoa chữ cái đầu                  | `"Login"`, `"Checkout"`                           |
 | Tên `test`     | Câu tiếng Anh mô tả kết quả mong đợi, viết hoa chữ cái đầu             | `"Cart is empty after removing the only product"` |
 
 ## 2. Hooks
@@ -74,17 +66,7 @@ Hook có hiệu lực trong phạm vi nơi nó được khai báo:
 | Vị trí khai báo          | Phạm vi áp dụng                                    |
 | ------------------------ | -------------------------------------------------- |
 | Ngoài mọi `describe`     | Mọi test trong file                                |
-| Bên trong một `describe` | Chỉ các test của nhóm đó, kể cả nhóm con bên trong |
-
-Ví dụ, chỉ các test xóa sản phẩm cần có sẵn sản phẩm trong giỏ. Bước chuẩn bị này đặt trong `beforeEach` của nhóm "Remove product", không ảnh hưởng tới các test khác của nhóm "Cart":
-
-![beforeEach của nhóm Cart và nhóm con Remove product](../.gitbook/assets/buoi-11-hook-scope.png)
-
-Thứ tự chạy với test "Cart is empty after removing the only product":
-
-1. `beforeEach` của nhóm "Cart".
-2. `beforeEach` của nhóm "Remove product".
-3. Test.
+| Bên trong một `describe` | Chỉ các test của nhóm đó                           |
 
 ### Các loại hook
 
@@ -226,7 +208,7 @@ Test thứ nhất khai báo `authenticatedPage` nhưng không sử dụng biến
 Quy ước của khóa học:
 
 * Trạng thái dùng chung toàn project, như đăng nhập và page object, khai báo bằng fixture.
-* Hook chỉ dùng cho bước chuẩn bị riêng của một file hoặc một nhóm, ví dụ bước thêm một sản phẩm vào giỏ của nhóm "Remove product".
+* Hook chỉ dùng cho bước chuẩn bị riêng của một file hoặc một nhóm, ví dụ bước tạo giỏ hàng trong `tests/api/carts.spec.ts`.
 
 ## 4. Thực hành tại lớp: fixture cho checkout
 
