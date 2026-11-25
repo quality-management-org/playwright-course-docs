@@ -86,7 +86,7 @@ export const apiUrl = getEnv("API_URL");
 {% code title="tests/api/products.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "@playwright/test";
-import { apiUrl } from "../../utils/env";
+import { apiUrl } from "@utils/env";
 
 test.use({ baseURL: apiUrl, extraHTTPHeaders: { Accept: "application/json" } });
 
@@ -102,7 +102,7 @@ test("tìm sản phẩm theo từ khóa trả về sản phẩm phù hợp", asy
 
 | Thiết lập                                          | Ý nghĩa                                                                                                   |
 | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `"../../utils/env"`                                | File nằm trong `tests/api/` nên đường dẫn import lùi hai cấp về thư mục gốc project                        |
+| `"@utils/env"`                                     | Path alias (Buổi 9): cùng một cách viết ở mọi file, kể cả file nằm trong `tests/api/`                       |
 | `baseURL: apiUrl`                                  | Đường dẫn tương đối như `/products/search` được ghép vào địa chỉ API. Các file UI test vẫn dùng `baseURL` của config |
 | `extraHTTPHeaders: { Accept: "application/json" }` | Header gửi kèm mọi request trong file. `Accept` báo cho server biết client muốn nhận kết quả dạng JSON     |
 | `params: { q: "pliers" }`                          | Query string. Playwright ghép thành `/products/search?q=pliers`                                           |
@@ -122,7 +122,7 @@ Mọi file trong `tests/api/` bắt đầu bằng cùng dòng `test.use(...)` nh
 {% code title="tests/api/products.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "@playwright/test";
-import { apiUrl } from "../../utils/env";
+import { apiUrl } from "@utils/env";
 
 interface Product {
   id: string;
@@ -267,7 +267,7 @@ Mọi test giỏ hàng cần hai thứ giống nhau: `id` của một sản ph�
 {% code title="tests/api/carts.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect, APIRequestContext } from "@playwright/test";
-import { apiUrl } from "../../utils/env";
+import { apiUrl } from "@utils/env";
 
 interface CartItem {
   id: string;
@@ -433,7 +433,7 @@ Tạo `tests/api/auth.spec.ts`:
 {% code title="tests/api/auth.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "@playwright/test";
-import { apiUrl, sharedCustomer } from "../../utils/env";
+import { apiUrl, sharedCustomer } from "@utils/env";
 
 test.use({ baseURL: apiUrl, extraHTTPHeaders: { Accept: "application/json" } });
 

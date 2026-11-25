@@ -369,7 +369,52 @@ Trả lời các câu hỏi sau trước khi gắn tag:
 * Một test có cả `@smoke` và `@regression` có hợp lý không? Trước release, lệnh nào đảm bảo không bỏ sót test nào?
 * Một test fail vì Toolshop đang có lỗi đã được báo cáo, chưa được sửa. Một test khác fail vì locator trong page object viết sai. Mỗi trường hợp nên dùng `test.skip` hay `test.fixme`?
 
-## 8. Tóm tắt
+## 8. Path alias trong tsconfig.json
+
+Từ Buổi 10, project có thêm file test nằm sâu hơn một cấp, ví dụ `tests/api/auth.spec.ts`. Với đường dẫn tương đối, cùng một file `utils/env.ts` được import theo hai cách khác nhau, tùy vị trí của file test:
+
+| File test                | Import tương đối  |
+| ------------------------ | ----------------- |
+| `tests/login.spec.ts`    | `../utils/env`    |
+| `tests/api/auth.spec.ts` | `../../utils/env` |
+
+Số lượng `../` phải đếm đúng theo vị trí của từng file, và khi chuyển một file test sang folder khác, mọi import trong file đó phải sửa lại. **Path alias** là tên ngắn khai báo trong `tsconfig.json`, trỏ tới một folder của project. Import bằng alias viết giống nhau ở mọi file: `@utils/env`.
+
+### Bước 1: khai báo alias
+
+Mở `tsconfig.json` ở thư mục gốc project và cập nhật nội dung như sau. Phần mới là khối `paths`, cùng với `include` và `exclude`:
+
+![tsconfig.json với khối paths khai báo alias cho các folder của project](../.gitbook/assets/buoi-09-tsconfig-paths.png)
+
+| Thiết lập                           | Ý nghĩa                                                                                                  |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `"@pages/*": ["./pages/*"]`         | `@pages/login-page` được hiểu là file `pages/login-page.ts`. Dấu `*` thay cho phần còn lại của đường dẫn |
+| `./` ở đầu đường dẫn                | Bắt buộc. Đường dẫn tính từ vị trí của `tsconfig.json`                                                   |
+| `"@typings/*": ["./types/*"]`       | Alias cho folder `types/`. Không đặt là `@types` vì TypeScript dành tên này cho các package định nghĩa kiểu trên npm |
+| `include`, `exclude`                | TypeScript kiểm tra mọi file `.ts` trong project, bỏ qua `node_modules` và các folder kết quả chạy test  |
+
+Folder `api/` và `test-data/` chưa có trong project ở thời điểm này. Alias của hai folder được khai báo trước để dùng ở các buổi sau.
+
+{% hint style="warning" %}
+Nhiều hướng dẫn trên mạng khai báo alias kèm thiết lập `baseUrl`. TypeScript bản mới đã bỏ thiết lập này và báo lỗi `Option 'baseUrl' has been removed`. Khai báo `paths` với đường dẫn bắt đầu bằng `./` như trên, không cần `baseUrl`.
+{% endhint %}
+
+### Bước 2: đổi import sang alias
+
+| Vị trí                  | Import tương đối                                        | Import bằng alias                                       |
+| ----------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
+| `tests/login.spec.ts`   | `import { LoginPage } from "../pages/login-page";`      | `import { LoginPage } from "@pages/login-page";`        |
+| `tests/login.spec.ts`   | `import { sharedCustomer } from "../utils/env";`        | `import { sharedCustomer } from "@utils/env";`          |
+| `pages/login-page.ts`   | `import { BasePage } from "./base-page";`               | `import { BasePage } from "@pages/base-page";`          |
+| `utils/env.ts`          | `import { Account } from "../types/user";`              | `import { Account } from "@typings/user";`              |
+
+Import thư viện như `@playwright/test` hay `dotenv` giữ nguyên. Playwright tự đọc `paths` trong `tsconfig.json`, không cần cấu hình thêm trong `playwright.config.ts`: chạy `npx playwright test`, toàn bộ test vẫn pass.
+
+Nếu VS Code vẫn báo `Cannot find module '@pages/login-page'` sau khi đã lưu `tsconfig.json`, mở Command Palette bằng `Ctrl+Shift+P` và chọn **TypeScript: Restart TS Server**.
+
+Quy ước của khóa học từ Buổi 10: mọi import tới file trong project dùng alias.
+
+## 9. Tóm tắt
 
 | Nội dung                 | Điểm chính                                                                                                 |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------- |
@@ -380,8 +425,9 @@ Trả lời các câu hỏi sau trước khi gắn tag:
 | Screenshot, video, trace | Cấu hình trong khối `use`, kết quả nằm trong `test-results/` và HTML report                                |
 | only, skip, fixme        | `.only` có hiệu lực trên toàn bộ lần chạy, không commit. `skip` và `fixme` luôn kèm lý do                  |
 | Tag và `--grep`          | Tag phân loại test theo mức độ quan trọng. `--grep` chọn test theo tag hoặc theo tên                       |
+| Path alias               | Khai báo trong `paths` của `tsconfig.json`. Import file trong project bằng alias, viết giống nhau ở mọi file |
 
-## 9. Bài tập về nhà
+## 10. Bài tập về nhà
 
 Không nhập password sai cho tài khoản chung.
 
@@ -401,3 +447,8 @@ Cập nhật `playwright.config.ts` để bộ test:
 
 * Mọi test có tag theo quy ước tag của khóa học. Lệnh `--grep @smoke` chỉ chạy các luồng chính và hoàn thành nhanh hơn rõ rệt so với toàn bộ bộ test.
 * Project không còn `test.only`. Mọi `test.skip` và `test.fixme` có lý do.
+
+### Bài 4: path alias
+
+* `tsconfig.json` khai báo alias cho các folder của project.
+* Không còn import tương đối nào tới file trong project, VS Code không báo lỗi import, và toàn bộ test vẫn pass.

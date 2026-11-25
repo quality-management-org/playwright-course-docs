@@ -16,8 +16,8 @@ Khi số lượng test tăng, code test bắt đầu lặp lại: cùng một b�
 {% code title="tests/login.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "../pages/login-page";
-import { sharedCustomer } from "../utils/env";
+import { LoginPage } from "@pages/login-page";
+import { sharedCustomer } from "@utils/env";
 
 test.describe("Đăng nhập", () => {
   test("đăng nhập thành công với tài khoản hợp lệ", async ({ page }) => {
@@ -120,10 +120,10 @@ test("...", async ({ page }) => {
 {% code title="tests/cart.spec.ts" lineNumbers="true" %}
 ```typescript
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "../pages/login-page";
-import { HomePage } from "../pages/home-page";
-import { ProductPage } from "../pages/product-page";
-import { sharedCustomer } from "../utils/env";
+import { LoginPage } from "@pages/login-page";
+import { HomePage } from "@pages/home-page";
+import { ProductPage } from "@pages/product-page";
+import { sharedCustomer } from "@utils/env";
 
 test.describe("Giỏ hàng", () => {
   test.beforeEach(async ({ page }) => {
@@ -296,7 +296,7 @@ Tạo folder `fixtures/` ngang hàng với `tests/` và `pages/`, sau đó tạo
 {% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
 ```typescript
 import { test as base, expect } from "@playwright/test";
-import { LoginPage } from "../pages/login-page";
+import { LoginPage } from "@pages/login-page";
 
 // Khai báo tên và kiểu của từng fixture, tương tự type alias ở Buổi 3
 type CourseFixtures = {
@@ -328,8 +328,8 @@ File test import `test` và `expect` từ file fixture thay vì từ `@playwrigh
 
 {% code title="tests/login.spec.ts" lineNumbers="true" %}
 ```typescript
-import { test, expect } from "../fixtures/test-fixtures";
-import { sharedCustomer } from "../utils/env";
+import { test, expect } from "@fixtures/test-fixtures";
+import { sharedCustomer } from "@utils/env";
 
 test.describe("Đăng nhập", () => {
   test("đăng nhập thành công với tài khoản hợp lệ", async ({ page, loginPage }) => {
@@ -345,7 +345,7 @@ test.describe("Đăng nhập", () => {
 So với cách viết trước, test không còn dòng `const loginPage = new LoginPage(page);` và không cần import `LoginPage`. Playwright chỉ chạy fixture mà test khai báo: test không khai báo `loginPage` thì fixture `loginPage` không được tạo.
 
 {% hint style="warning" %}
-Sau khi có file fixture, mọi file test phải import `test` từ `../fixtures/test-fixtures` (với file API test trong `tests/api/` là `../../fixtures/test-fixtures`). File còn import từ `@playwright/test` mà khai báo fixture mới sẽ bị VS Code báo lỗi `Property 'loginPage' does not exist on type ...`, và khi chạy, Playwright báo lỗi `Test has unknown parameter "loginPage"`.
+Sau khi có file fixture, mọi file test phải import `test` từ `@fixtures/test-fixtures`, kể cả các file API test trong `tests/api/`. File còn import từ `@playwright/test` mà khai báo fixture mới sẽ bị VS Code báo lỗi `Property 'loginPage' does not exist on type ...`, và khi chạy, Playwright báo lỗi `Test has unknown parameter "loginPage"`.
 {% endhint %}
 
 <!-- TODO(image): VS Code mở một file test còn dòng import { test, expect } from "@playwright/test" nhưng khai báo async ({ page, loginPage }): chữ loginPage bị gạch chân đỏ, tooltip hiển thị lỗi "Property 'loginPage' does not exist on type ...". Khoanh đỏ dòng import ở đầu file và tooltip lỗi. -->
@@ -357,8 +357,8 @@ Bổ sung fixture `authenticatedPage`: một `page` đã đăng nhập bằng t�
 {% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
 ```typescript
 import { test as base, expect, Page } from "@playwright/test";
-import { LoginPage } from "../pages/login-page";
-import { sharedCustomer } from "../utils/env";
+import { LoginPage } from "@pages/login-page";
+import { sharedCustomer } from "@utils/env";
 
 type CourseFixtures = {
   loginPage: LoginPage;
@@ -403,10 +403,10 @@ Tương tự `loginPage`, khai báo fixture cho các page object còn lại. N�
 {% code title="fixtures/test-fixtures.ts" lineNumbers="true" %}
 ```typescript
 import { test as base, expect, Page } from "@playwright/test";
-import { LoginPage } from "../pages/login-page";
-import { HomePage } from "../pages/home-page";
-import { ProductPage } from "../pages/product-page";
-import { sharedCustomer } from "../utils/env";
+import { LoginPage } from "@pages/login-page";
+import { HomePage } from "@pages/home-page";
+import { ProductPage } from "@pages/product-page";
+import { sharedCustomer } from "@utils/env";
 
 type CourseFixtures = {
   loginPage: LoginPage;
@@ -445,7 +445,7 @@ Viết lại `tests/cart.spec.ts` bằng fixture:
 
 {% code title="tests/cart.spec.ts" lineNumbers="true" %}
 ```typescript
-import { test, expect } from "../fixtures/test-fixtures";
+import { test, expect } from "@fixtures/test-fixtures";
 
 test.describe("Giỏ hàng", () => {
   test("thêm sản phẩm vào giỏ cập nhật số lượng trên biểu tượng giỏ hàng", async ({
@@ -553,7 +553,7 @@ Cách viết này có ba hạn chế:
 
 {% code title="tests/product-detail.spec.ts" lineNumbers="true" %}
 ```typescript
-import { test, expect } from "../fixtures/test-fixtures";
+import { test, expect } from "@fixtures/test-fixtures";
 
 const productNames = ["Combination Pliers", "Bolt Cutters", "Long Nose Pliers"];
 
