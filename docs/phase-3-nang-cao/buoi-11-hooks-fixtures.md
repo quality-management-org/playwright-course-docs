@@ -144,6 +144,10 @@ Playwright cho phép định nghĩa fixture riêng cho project bằng `test.exte
 
 Tạo folder `fixtures/` ngang hàng với `tests/` và `pages/`, sau đó tạo file `fixtures/test-fixtures.ts`:
 
+![Cấu trúc project sau khi thêm folder fixtures](../.gitbook/assets/buoi-11-project-structure.png)
+
+Nội dung file `fixtures/test-fixtures.ts`:
+
 ![fixtures/test-fixtures.ts với fixture loginPage đầu tiên](../.gitbook/assets/buoi-11-fixture-first.png)
 
 Các thành phần của một fixture:
