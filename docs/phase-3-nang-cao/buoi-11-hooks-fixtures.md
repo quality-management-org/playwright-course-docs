@@ -159,14 +159,9 @@ Tạo folder `fixtures/` ngang hàng với `tests/` và `pages/`, sau đó tạo
 
 ![fixtures/test-fixtures.ts với fixture loginPage đầu tiên](../.gitbook/assets/buoi-11-fixture-first.png)
 
-| Thành phần                           | Ý nghĩa                                                                                                     |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| `import { test as base }`            | Đổi tên `test` gốc thành `base`, dành tên `test` cho phiên bản mở rộng                                      |
-| `type CourseFixtures`                | Khai báo tên và kiểu của fixture, nhờ đó VS Code gợi ý `loginPage` khi viết test                            |
-| `base.extend<CourseFixtures>({...})` | Tạo `test` mới, gồm mọi fixture có sẵn của Playwright và các fixture khai báo trong object                  |
-| `async ({ page }, use) => {...}`     | Hàm định nghĩa fixture. Tham số thứ nhất chứa các fixture mà fixture này cần, tham số thứ hai là hàm `use` |
-| `await use(...)`                     | Giá trị truyền vào `use` là giá trị test nhận được. Code trước `use` là setup, code sau `use` là teardown  |
-| `export { expect }`                  | Xuất lại `expect` để file test import `test` và `expect` từ cùng một file                                  |
+Các thành phần của một fixture:
+
+![Cấu tạo của một fixture: test as base, base.extend, tên fixture, các fixture cần dùng và hàm use](../.gitbook/assets/buoi-11-fixture-anatomy.png)
 
 ### Bước 2: sử dụng fixture trong test
 
