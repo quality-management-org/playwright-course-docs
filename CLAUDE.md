@@ -55,7 +55,7 @@ Naming language: everything inside code samples is English.
 
 - Folder and file names in examples: English kebab-case (`lesson-01`, `homework-lesson-01.ts`, `login-page.ts`). Not Vietnamese-without-diacritics (`buoi-01`, `baitap-buoi1.ts`).
 - Variables/functions: camelCase. Classes/interfaces: PascalCase.
-- `test.describe("...")` titles start with a capital letter ("Login", "Remove product"); `test("...")` titles are lowercase sentences describing the expected result.
+- `test.describe("...")` and `test("...")` titles always start with a capital letter ("Login", "Remove product", "Logs in successfully with a valid account"). Test titles are sentences describing the expected result.
 - Comments, `test("...")` and `test.describe("...")` titles, error messages and `--list` output are English. Lesson prose that quotes a test name uses the English name. Phase 3 is converted; Buoi 1-8 still have Vietnamese comments and test titles until they are migrated.
 - Git branch names in submission instructions: `your-name/lesson-X` (concrete example: `linh/lesson-2`).
 - Commit messages in examples: short English (e.g. `lesson 2: async await homework`).

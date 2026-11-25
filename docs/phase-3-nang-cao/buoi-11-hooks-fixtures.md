@@ -15,7 +15,7 @@ Khi số lượng test tăng, code test bắt đầu lặp lại: cùng một b�
 
 ![login.spec.ts nhóm hai test bằng test.describe và kết quả của --list](../.gitbook/assets/buoi-11-describe.png)
 
-<!-- TODO(image): HTML report sau khi chạy npx playwright test với các file test đã nhóm bằng test.describe: mỗi dòng hiển thị đường dẫn nhóm trước tên test, ví dụ "Login › logs in successfully with a valid account" và "Cart › Remove product › cart is empty after removing the only product". Khoanh đỏ phần tên nhóm ở hai dòng, một dòng có một cấp describe và một dòng có hai cấp. -->
+<!-- TODO(image): HTML report sau khi chạy npx playwright test với các file test đã nhóm bằng test.describe: mỗi dòng hiển thị đường dẫn nhóm trước tên test, ví dụ "Login › Logs in successfully with a valid account" và "Cart › Remove product › Cart is empty after removing the only product". Khoanh đỏ phần tên nhóm ở hai dòng, một dòng có một cấp describe và một dòng có hai cấp. -->
 
 ### Nhóm lồng nhau
 
@@ -23,7 +23,7 @@ Một `describe` có thể đặt bên trong một `describe` khác để tạo 
 
 ![describe lồng nhau trong cart.spec.ts](../.gitbook/assets/buoi-11-nested-describe.png)
 
-Tên đầy đủ của test là `Cart › Remove product › cart is empty after removing the only product`.
+Tên đầy đủ của test là `Cart › Remove product › Cart is empty after removing the only product`.
 
 ### Tag và only, skip cho cả nhóm
 
@@ -40,7 +40,7 @@ Tương tự, `test.describe.only(...)`, `test.describe.skip(...)` và `test.des
 | -------------- | ----------------------------------------------------------------------- | ------------------------------------------------- |
 | Tên file       | Một tính năng một file, `<feature>.spec.ts`, tiếng Anh kebab-case       | `checkout.spec.ts`                                |
 | Tên `describe` | Danh từ chỉ tính năng hoặc thao tác, tiếng Anh, viết hoa chữ cái đầu    | `"Checkout"`, `"Remove product"`                  |
-| Tên `test`     | Câu tiếng Anh mô tả kết quả mong đợi, đọc được mà không cần mở code     | `"cart is empty after removing the only product"` |
+| Tên `test`     | Câu tiếng Anh mô tả kết quả mong đợi, viết hoa chữ cái đầu             | `"Cart is empty after removing the only product"` |
 
 {% hint style="warning" %}
 `test.describe.configure({ mode: "serial" })` buộc các test trong nhóm chạy tuần tự và dừng cả nhóm khi một test fail. Cấu hình này không phải cách để test A chuẩn bị dữ liệu cho test B: mỗi test vẫn phải tự chuẩn bị trạng thái của mình. Khóa học không sử dụng `serial`.
@@ -93,7 +93,7 @@ Ví dụ, chỉ các test xóa sản phẩm cần có sẵn sản phẩm trong g
 
 ![beforeEach của nhóm Cart và nhóm con Remove product](../.gitbook/assets/buoi-11-hook-scope.png)
 
-Thứ tự chạy với test "cart is empty after removing the only product":
+Thứ tự chạy với test "Cart is empty after removing the only product":
 
 1. `beforeEach` của nhóm "Cart".
 2. `beforeEach` của nhóm "Remove product".
@@ -293,7 +293,7 @@ Ba test có cùng vị trí khai báo (dòng 7) nhưng là ba test độc lập:
 
 ### Tên test phải duy nhất
 
-Playwright yêu cầu tên đầy đủ của mỗi test là duy nhất. Nếu tên test trong vòng lặp không chứa dữ liệu, ví dụ `test("shows the correct name", ...)`, ba vòng lặp sinh ra ba test cùng tên và Playwright báo lỗi `duplicate test title` ngay khi đọc file, trước khi chạy bất kỳ test nào.
+Playwright yêu cầu tên đầy đủ của mỗi test là duy nhất. Nếu tên test trong vòng lặp không chứa dữ liệu, ví dụ `test("Shows the correct name", ...)`, ba vòng lặp sinh ra ba test cùng tên và Playwright báo lỗi `duplicate test title` ngay khi đọc file, trước khi chạy bất kỳ test nào.
 
 Khi mỗi bộ dữ liệu là một object gồm nhiều trường, ví dụ email, password và kết quả mong đợi của một lần đăng nhập:
 
@@ -335,7 +335,7 @@ Xây dựng `fixtures/test-fixtures.ts` và chuyển toàn bộ file test sang s
 ### Bài 2: tổ chức bộ test theo tính năng
 
 * Mỗi file test nhóm các test theo tính năng bằng `test.describe`. File API test trong `tests/api/` nhóm theo endpoint.
-* Tên nhóm và tên test theo quy ước đặt tên của khóa học: tiếng Anh, tên nhóm viết hoa chữ cái đầu.
+* Tên nhóm và tên test theo quy ước đặt tên của khóa học: tiếng Anh, viết hoa chữ cái đầu.
 * Không còn bước chuẩn bị nào lặp lại ở đầu nhiều test trong cùng một file, kể cả các file API test.
 * Đọc report hoặc kết quả `--list` biết được mỗi test thuộc tính năng nào.
 * Các tag đã gắn trước đó vẫn chọn đúng nhóm test khi chạy `--grep`.

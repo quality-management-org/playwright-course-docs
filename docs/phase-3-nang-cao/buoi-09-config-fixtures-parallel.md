@@ -284,7 +284,7 @@ Config có thiết lập `grep` để đặt bộ lọc mặc định, ví dụ 
 
 Trả lời các câu hỏi sau trước khi gắn tag:
 
-* Test "login form shows the email field, password field and Login button" có cần tag `@smoke` không, khi test "logs in successfully" đã có tag này?
+* Test "Login form shows the email field, password field and Login button" có cần tag `@smoke` không, khi test "Logs in successfully" đã có tag này?
 * Một test có cả `@smoke` và `@regression` có hợp lý không? Trước release, lệnh nào đảm bảo không bỏ sót test nào?
 * Một test fail vì Toolshop đang có lỗi đã được báo cáo, chưa được sửa. Một test khác fail vì locator trong page object viết sai. Mỗi trường hợp nên dùng `test.skip` hay `test.fixme`?
 
